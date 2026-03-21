@@ -1,0 +1,273 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  background-color: hsl(var(--background));
+}
+
+body {
+  background-color: hsl(var(--background));
+}
+
+@layer base {
+  :root {
+    /* Fonts */
+    --font-heading: 'Assistant', sans-serif;
+    --font-sans: 'Assistant', sans-serif;
+    --font-mono: 'Inconsolata', monospace;
+
+    /* Clean dark palette - inspired by Linear, Vercel */
+    --background: 0 0% 7%;
+    --foreground: 0 0% 95%;
+
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 210 100% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 90%;
+
+    --muted: 0 0% 40%;
+    --muted-foreground: 0 0% 55%;
+
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 90%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 210 100% 60%;
+
+    --radius: 0.5rem;
+
+    --accent-green: 152 69% 50%;
+    --accent-orange: 38 92% 50%;
+    --accent-purple: 270 70% 60%;
+    --accent-cyan: 190 90% 50%;
+
+    /* Pro Theme */
+    --pro-light: #e6c98f;
+    --pro-primary: #c5a059;
+    --pro-dark: #b08d4a;
+    --pro-bg: #0f0e0a;
+    --pro-grad-1: #1a1812;
+    --pro-grad-2: #252015;
+
+    /* Social Colors */
+    --social-whatsapp: #25D366;
+    --social-whatsapp-active: #1fb85a;
+    --social-twitter: #1DA1F2;
+    --social-twitter-active: #1a91da;
+
+    /* Editor Theme (Must be Hex format for Monaco) */
+    --editor-base: vs-dark;
+    --editor-bg: #121212;
+    --editor-fg: #f2f2f2;
+    --editor-line-highlight: #1a1a1a;
+    --editor-line-number: #4a4a4a;
+    --editor-line-number-active: #a0a0a0;
+    --editor-selection: #3a3a3a;
+    --editor-selection-inactive: #1a1a1a;
+    --editor-indent-guide: #2a2a2a;
+    --editor-indent-guide-active: #3a3a3a;
+    --editor-cursor: #a0a0a0;
+    --editor-whitespace: #2a2a2a;
+    --editor-widget-bg: #1e1e1e;
+    --editor-widget-border: #333333;
+    --editor-suggest-selected: #3a3a3a;
+  }
+
+  :root[data-theme='light'] {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 210 100% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 90%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 0 0% 90%;
+    --muted-foreground: 0 0% 40%;
+    --border: 0 0% 85%;
+    --input: 0 0% 85%;
+    --ring: 210 100% 40%;
+    --accent: 0 0% 90%;
+    --accent-foreground: 0 0% 10%;
+    --editor-base: vs;
+    --editor-bg: #f8f9fa;
+    --editor-fg: #24292e;
+    --editor-line-highlight: #f1f3f5;
+    --editor-line-number: #adb5bd;
+    --editor-line-number-active: #495057;
+    --editor-selection: #cce5ff;
+    --editor-selection-inactive: #e6f2ff;
+    --editor-indent-guide: #dee2e6;
+    --editor-indent-guide-active: #adb5bd;
+    --editor-cursor: #24292e;
+    --editor-whitespace: #e9ecef;
+    --editor-widget-bg: #f8f9fa;
+    --editor-widget-border: #dee2e6;
+    --editor-suggest-selected: #e9ecef;
+  }
+
+  :root[data-theme='neon'] {
+    --background: 120 100% 2%;
+    --foreground: 120 100% 50%;
+    --card: 120 100% 4%;
+    --card-foreground: 120 100% 50%;
+    --popover: 120 100% 4%;
+    --popover-foreground: 120 100% 50%;
+    --primary: 120 100% 40%;
+    --primary-foreground: 120 100% 5%;
+    --secondary: 120 100% 10%;
+    --secondary-foreground: 120 100% 60%;
+    --muted: 120 100% 10%;
+    --muted-foreground: 120 100% 40%;
+    --border: 120 100% 20%;
+    --input: 120 100% 20%;
+    --ring: 120 100% 40%;
+    --accent: 120 100% 10%;
+    --accent-foreground: 120 100% 60%;
+    --editor-base: vs-dark;
+    --editor-bg: #030a03;
+    --editor-fg: #00ff00;
+    --editor-line-highlight: #002200;
+    --editor-line-number: #006600;
+    --editor-line-number-active: #00ff00;
+    --editor-selection: #004400;
+    --editor-selection-inactive: #001100;
+    --editor-indent-guide: #002200;
+    --editor-indent-guide-active: #006600;
+    --editor-cursor: #00ff00;
+    --editor-whitespace: #001100;
+    --editor-widget-bg: #051a05;
+    --editor-widget-border: #004400;
+    --editor-suggest-selected: #002200;
+  }
+
+  :root[data-theme='ocean'] {
+    --background: 220 50% 10%;
+    --foreground: 200 100% 90%;
+    --card: 220 50% 12%;
+    --card-foreground: 200 100% 90%;
+    --popover: 220 50% 12%;
+    --popover-foreground: 200 100% 90%;
+    --primary: 200 100% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 50% 15%;
+    --secondary-foreground: 200 100% 80%;
+    --muted: 220 30% 20%;
+    --muted-foreground: 220 40% 60%;
+    --border: 200 50% 25%;
+    --input: 220 40% 20%;
+    --ring: 200 100% 40%;
+    --accent: 220 50% 15%;
+    --accent-foreground: 200 100% 80%;
+    --editor-base: vs-dark;
+    --editor-bg: #0f172a;
+    --editor-fg: #cbd5e1;
+    --editor-line-highlight: #1e293b;
+    --editor-line-number: #475569;
+    --editor-line-number-active: #94a3b8;
+    --editor-selection: #0369a1;
+    --editor-selection-inactive: #0f172a;
+    --editor-indent-guide: #1e293b; 
+    --editor-indent-guide-active: #334155; 
+    --editor-cursor: #38bdf8;
+    --editor-whitespace: #1e293b;
+    --editor-widget-bg: #020617;
+    --editor-widget-border: #1e293b;
+    --editor-suggest-selected: #0f172a;
+  }
+
+  :root[data-theme='sunset'] {
+    --background: 0 50% 10%;
+    --foreground: 30 100% 90%;
+    --card: 0 50% 12%;
+    --card-foreground: 30 100% 90%;
+    --popover: 0 50% 12%;
+    --popover-foreground: 30 100% 90%;
+    --primary: 15 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 50% 15%;
+    --secondary-foreground: 30 100% 80%;
+    --muted: 0 30% 20%;
+    --muted-foreground: 15 40% 60%;
+    --border: 15 50% 25%;
+    --input: 0 40% 20%;
+    --ring: 15 100% 50%;
+    --accent: 0 50% 15%;
+    --accent-foreground: 30 100% 80%;
+    --editor-base: vs-dark;
+    --editor-bg: #2a0a0a; 
+    --editor-fg: #fcd34d; 
+    --editor-line-highlight: #450a0a;
+    --editor-line-number: #7f1d1d; 
+    --editor-line-number-active: #f87171; 
+    --editor-selection: #991b1b; 
+    --editor-selection-inactive: #2a0a0a;
+    --editor-indent-guide: #450a0a; 
+    --editor-indent-guide-active: #7f1d1d; 
+    --editor-cursor: #fb923c;
+    --editor-whitespace: #450a0a;
+    --editor-widget-bg: #1a0505; 
+    --editor-widget-border: #450a0a;
+    --editor-suggest-selected: #2a0a0a;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  *:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    --tw-ring-color: transparent !important;
+    --tw-ring-offset-color: transparent !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    width: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Custom scrollbar for dark theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 0;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted));
+  }
+}

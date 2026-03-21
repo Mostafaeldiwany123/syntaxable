@@ -1,0 +1,46 @@
+import { ProjectType } from '@/hooks/projects';
+
+export interface TemplateInfo {
+  filename: string;
+  content: string;
+}
+
+export const getProjectTemplate = (projectType: ProjectType): TemplateInfo => {
+  switch (projectType) {
+    case 'cpp':
+      return {
+        filename: 'main.cpp',
+        content: '#include <iostream>\n#include <string>\n\nint main() {\n    std::string name;\n    std::cout << "Welcome to Syntaxable!" << std::endl;\n    std::cout << "Enter your name: ";\n    std::getline(std::cin, name);\n    std::cout << "Hello, " << name << "!" << std::endl;\n    return 0;\n}',
+      };
+    case 'c':
+      return {
+        filename: 'main.c',
+        content: '#include <stdio.h>\n#include <string.h>\n\nint main() {\n    char name[100];\n    printf("Welcome to Syntaxable!\\n");\n    printf("Enter your name: ");\n    fgets(name, sizeof(name), stdin);\n    name[strcspn(name, "\\n")] = 0;\n    printf("Hello, %s!\\n", name);\n    return 0;\n}',
+      };
+    case 'csharp':
+      return {
+        filename: 'Program.cs',
+        content: 'using System;\n\nclass Program {\n    static void Main(string[] args) {\n        Console.WriteLine("Welcome to Syntaxable!");\n        Console.Write("Enter your name: ");\n        string name = Console.ReadLine();\n        Console.WriteLine($"Hello, {name}!");\n    }\n}',
+      };
+    case 'python':
+      return {
+        filename: 'main.py',
+        content: 'def greet(name):\n    return f"Hello, {name}! Welcome to Syntaxable."\n\nif __name__ == "__main__":\n    user_name = input("Enter your name: ")\n    print(greet(user_name))',
+      };
+    case 'html':
+      return {
+        filename: 'index.html',
+        content: '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Syntaxable Project</title>\n  <style>\n    body {\n      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;\n      display: flex;\n      justify-content: center;\n      align-items: center;\n      height: 100vh;\n      margin: 0;\n      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n      color: white;\n    }\n    .container {\n      text-align: center;\n    }\n    h1 {\n      font-size: 3rem;\n      margin-bottom: 0.5rem;\n    }\n    p {\n      font-size: 1.2rem;\n      opacity: 0.9;\n    }\n  </style>\n</head>\n<body>\n  <div class="container">\n    <h1>Welcome to Syntaxable!</h1>\n    <p>Start building your project here.</p>\n  </div>\n</body>\n</html>',
+      };
+    case 'react':
+      return {
+        filename: 'App.tsx',
+        content: 'import React, { useState } from "react";\n\nexport default function App() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div style={{ \n      textAlign: "center", \n      padding: "50px",\n      fontFamily: "sans-serif"\n    }}>\n      <h1>Welcome to Syntaxable!</h1>\n      <p>React project ready for development.</p>\n      <button \n        onClick={() => setCount(count + 1)}\n        style={{\n          padding: "10px 20px",\n          fontSize: "16px",\n          cursor: "pointer",\n          backgroundColor: "#667eea",\n          color: "white",\n          border: "none",\n          borderRadius: "5px"\n        }}\n      >\n        Count: {count}\n      </button>\n    </div>\n  );\n}',
+      };
+    default:
+      return {
+        filename: 'main.cpp',
+        content: '#include <iostream>\n#include <string>\n\nint main() {\n    std::string name;\n    std::cout << "Welcome to Syntaxable!" << std::endl;\n    std::cout << "Enter your name: ";\n    std::getline(std::cin, name);\n    std::cout << "Hello, " << name << "!" << std::endl;\n    return 0;\n}',
+      };
+  }
+};
