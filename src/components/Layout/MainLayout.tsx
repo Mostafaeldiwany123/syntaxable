@@ -201,11 +201,11 @@ const MainLayout = (props: MainLayoutProps) => {
         <div className="h-dvh w-full bg-background flex flex-col overflow-hidden text-foreground font-sans">
             <div className="flex-1 overflow-hidden">
                 <ResizablePanelGroup direction="horizontal">
-                    {/* File Explorer - Fixed width, won't change when AI agent opens */}
+                    {/* File Explorer - Resizable sidebar */}
                     <ResizablePanel 
                         defaultSize={15} 
-                        minSize={15} 
-                        maxSize={15} 
+                        minSize={10} 
+                        maxSize={30} 
                         className="bg-card border-r border-border"
                     >
                         <FileExplorer
