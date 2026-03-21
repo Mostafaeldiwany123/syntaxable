@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/syntaxable.png" alt="Syntaxable" width="72" />
+  <img src="public/syntaxable.png" alt="Syntaxable" width="128" />
 </p>
 
 # Syntaxable
@@ -27,6 +27,10 @@ npm run dev
 
 - **Frontend**: React + TypeScript + Vite + Tailwind
 - **Backend**: Supabase (Postgres, Auth, Realtime, Edge Functions)
+
+## License
+
+Non-commercial license. You can use and modify this project for free for private/personal/educational/internal use. Commercial use requires permission—contact the author. See `LICENSE`.
 
 ---
 
