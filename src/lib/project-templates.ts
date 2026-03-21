@@ -10,7 +10,7 @@ export const getProjectTemplate = (projectType: ProjectType): TemplateInfo => {
     case 'cpp':
       return {
         filename: 'main.cpp',
-        content: '#include <iostream>\n#include <string>\n\nint main() {\n    std::string name;\n    std::cout << "Welcome to Syntaxable!" << std::endl;\n    std::cout << "Enter your name: ";\n    std::getline(std::cin, name);\n    std::cout << "Hello, " << name << "!" << std::endl;\n    return 0;\n}',
+        content: '#include <iostream>\n#include <string>\n\nusing namespace std;\n\nint main() {\n    string name;\n    cout << "Welcome to Syntaxable!" << endl;\n    cout << "Enter your name: ";\n    getline(cin, name);\n    cout << "Hello, " << name << "!" << endl;\n    return 0;\n}',
       };
     case 'c':
       return {
@@ -40,7 +40,7 @@ export const getProjectTemplate = (projectType: ProjectType): TemplateInfo => {
     default:
       return {
         filename: 'main.cpp',
-        content: '#include <iostream>\n#include <string>\n\nint main() {\n    std::string name;\n    std::cout << "Welcome to Syntaxable!" << std::endl;\n    std::cout << "Enter your name: ";\n    std::getline(std::cin, name);\n    std::cout << "Hello, " << name << "!" << std::endl;\n    return 0;\n}',
+        content: '#include <iostream>\n#include <string>\n\nusing namespace std;\n\nint main() {\n    string name;\n    cout << "Welcome to Syntaxable!" << endl;\n    cout << "Enter your name: ";\n    getline(cin, name);\n    cout << "Hello, " << name << "!" << endl;\n    return 0;\n}',
       };
   }
 };
