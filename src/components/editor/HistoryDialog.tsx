@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2, GitCommit, ArrowLeft, Clock, User, FileText } from 'lucide-react';
@@ -82,6 +82,7 @@ export const HistoryDialog = ({ isOpen, onOpenChange, fileId, fileName }: Histor
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] p-0 m-0 flex flex-col bg-background border-0 [&>button]:hidden overflow-hidden gap-0">
+                <DialogTitle className="sr-only">Commit History</DialogTitle>
                 {/* Header with Back Button */}
                 <div className="bg-card px-6 py-4 border-b border-border">
                     <div className="flex items-center justify-between">

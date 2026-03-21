@@ -8,6 +8,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -28,8 +35,9 @@ interface FileOperationDialogProps {
   type: FileOpType;
   path?: string;
   initialValue?: string;
+  folders?: string[];
   onClose: () => void;
-  onSubmit: (value: string) => void;
+  onSubmit: (value: string, folder?: string) => void;
 }
 
 export const FileOperationDialog = ({
@@ -37,14 +45,17 @@ export const FileOperationDialog = ({
   type,
   path,
   initialValue = "",
+  folders = [],
   onClose,
   onSubmit,
 }: FileOperationDialogProps) => {
   const [value, setValue] = useState(initialValue);
+  const [selectedFolder, setSelectedFolder] = useState<string>("root");
 
   useEffect(() => {
     if (open) {
       setValue(initialValue);
+      setSelectedFolder("root");
     }
   }, [open, initialValue]);
 
@@ -77,7 +88,7 @@ export const FileOperationDialog = ({
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (value.trim()) {
-      onSubmit(value.trim());
+      onSubmit(value.trim(), selectedFolder === "root" ? "" : selectedFolder);
       onClose();
     }
   };
@@ -116,6 +127,26 @@ export const FileOperationDialog = ({
         </DialogHeader>
         <form onSubmit={handleFormSubmit}>
           <div className="grid gap-4 py-4">
+            {(type === "create_file" || type === "create_folder") && folders.length > 0 && (
+              <div className="grid items-center gap-2">
+                <Label htmlFor="folder" className="text-left text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                  Location
+                </Label>
+                <Select value={selectedFolder} onValueChange={setSelectedFolder}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select folder" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="root">Project Root ( / )</SelectItem>
+                    {folders.map(f => (
+                      <SelectItem key={f} value={f}>
+                        {f.endsWith('/') ? f : `${f}/`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="grid items-center gap-4">
               <Label htmlFor="name" className="text-left text-xs text-muted-foreground uppercase tracking-wider font-semibold">
                 {type === "rename" ? "New Name" : "Name"}

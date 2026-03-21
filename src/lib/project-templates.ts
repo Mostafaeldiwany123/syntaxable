@@ -44,3 +44,29 @@ export const getProjectTemplate = (projectType: ProjectType): TemplateInfo => {
       };
   }
 };
+export const getFileTemplate = (fileName: string): string => {
+  const ext = fileName.split('.').pop()?.toLowerCase();
+  
+  switch (ext) {
+    case 'html':
+      return '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <title>Syntaxable</title>\n</head>\n<body>\n  <h1>New File</h1>\n</body>\n</html>';
+    case 'tsx':
+    case 'jsx':
+      return 'import React from "react";\n\nexport default function Component() {\n  return (\n    <div>\n      <h1>New Component</h1>\n    </div>\n  );\n}';
+    case 'ts':
+    case 'js':
+      return '// Your JavaScript/TypeScript code here\n';
+    case 'css':
+      return '/* Styles */\nbody {\n  margin: 0;\n}';
+    case 'py':
+      return 'def main():\n    print("Hello from Syntaxable!")\n\nif __name__ == "__main__":\n    main()';
+    case 'cpp':
+    case 'c':
+    case 'h':
+      return '#include <iostream>\n\nint main() {\n    std::cout << "Hello from Syntaxable!" << std::endl;\n    return 0;\n}';
+    case 'cs':
+      return 'using System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello from Syntaxable!");\n    }\n}';
+    default:
+      return '';
+  }
+};

@@ -13,6 +13,7 @@ import { CommitDialog } from "@/components/editor/CommitDialog";
 import { HistoryDialog } from "@/components/editor/HistoryDialog";
 import { ProjectType } from "@/hooks/projects";
 import { FileOperationDialog, FileOpType } from "@/components/editor/FileOperationDialog";
+import { getFileTemplate } from "@/lib/project-templates";
 
 // Types
 interface CursorPosition {
@@ -43,20 +44,26 @@ const buildFileTree = (files: { path: string }[]): FileNode[] => {
   const root: FileNode = { name: "root", path: "", type: "folder", children: [] };
 
   files.forEach(({ path }) => {
+    const isExplicitFolder = path.endsWith("/");
+    const parts = path.split("/").filter(Boolean);
+    
     let currentLevel = root;
-    path.split("/").forEach((part, index, arr) => {
-      const isFile = index === arr.length - 1;
+    parts.forEach((part, index) => {
+      const isLastPart = index === parts.length - 1;
+      const nodeType = (isLastPart && !isExplicitFolder) ? "file" : "folder";
+      
       let node = currentLevel.children?.find(child => child.name === part);
 
       if (!node) {
         node = {
           name: part,
-          path: arr.slice(0, index + 1).join("/"),
-          type: isFile ? "file" : "folder",
-          children: isFile ? undefined : [],
+          path: parts.slice(0, index + 1).join("/"),
+          type: nodeType,
+          children: nodeType === "folder" ? [] : undefined,
         };
         currentLevel.children?.push(node);
       }
+      
       if (node.type === "folder") {
         currentLevel = node;
       }
@@ -64,6 +71,20 @@ const buildFileTree = (files: { path: string }[]): FileNode[] => {
   });
 
   return root.children || [];
+};
+
+const getFoldersFromTree = (tree: FileNode[]): string[] => {
+  const folders: string[] = [];
+  const traverse = (nodes: FileNode[]) => {
+    nodes.forEach(node => {
+      if (node.type === "folder") {
+        folders.push(node.path);
+        if (node.children) traverse(node.children);
+      }
+    });
+  };
+  traverse(tree);
+  return folders.sort();
 };
 
 // localStorage key helpers
@@ -700,16 +721,21 @@ const EditorPage = () => {
     setFileOpDialog({ open: true, type: "create_folder" });
   };
 
-  const executeNewFile = async (fileName: string) => {
+  const executeNewFile = async (fileName: string, folderPath: string = "") => {
     if (!roomId) return;
-    if (Object.keys(fileData).some(path => path === fileName)) {
+    const finalPath = folderPath 
+      ? `${folderPath.endsWith('/') ? folderPath : folderPath + '/'}${fileName}`
+      : fileName;
+
+    if (Object.keys(fileData).some(path => path === finalPath)) {
       toast.error("File already exists");
       return;
     }
 
+    const initialContent = getFileTemplate(fileName);
     const { data: newFile, error } = await supabase
       .from("files")
-      .insert({ room_id: roomId, path: fileName, content: "" })
+      .insert({ room_id: roomId, path: finalPath, content: initialContent })
       .select("id, path, content")
       .single();
 
@@ -727,6 +753,9 @@ const EditorPage = () => {
         dirtyFilesRef.current = next;
         return next;
       });
+      // Also update localStorage so it's not marked as empty state
+      setSavedContentForPreview(prev => ({ ...prev, [newPath]: initialContent }));
+
       setActiveFile(newPath);
       setOpenFiles(prev => [...prev, newPath]);
 
@@ -734,17 +763,21 @@ const EditorPage = () => {
     }
   };
 
-  const executeNewFolder = async (folderName: string) => {
+  const executeNewFolder = async (folderName: string, folderPath: string = "") => {
     if (!roomId) return;
-    const placeholderPath = `${folderName}/.gitkeep`;
-    if (Object.keys(fileData).some(p => p.startsWith(folderName + '/'))) {
+    const baseDir = folderPath 
+      ? (folderPath.endsWith('/') ? folderPath : folderPath + '/')
+      : "";
+    const finalPath = `${baseDir}${folderName}/`;
+
+    if (Object.keys(fileData).some(p => p.startsWith(finalPath))) {
       toast.error("Folder already exists");
       return;
     }
 
     const { data: newFile, error } = await supabase
       .from("files")
-      .insert({ room_id: roomId, path: placeholderPath, content: "" })
+      .insert({ room_id: roomId, path: finalPath, content: "" })
       .select("id, path, content")
       .single();
 
@@ -808,14 +841,30 @@ const EditorPage = () => {
   };
 
   const executeDeleteFile = async (path: string) => {
-    const isFolder = fileTree.some(node => node.path === path && node.type === 'folder');
+    // We need to recursively search the tree to determine if it's a folder,
+    // or simply check if any known database path starts with path + '/'
+    const isFolder = path.endsWith("/") || Object.keys(fileData).some(p => p.startsWith(`${path}/`)) || fileTree.some(function checkFolder(node: any): boolean {
+      if (node.path === path && node.type === 'folder') return true;
+      if (node.children) return node.children.some(checkFolder);
+      return false;
+    });
+
     let deleteError = null;
     
     if (isFolder) {
-      const { error } = await supabase.from("files").delete().eq("room_id", roomId).like("path", `${path}/%`);
+      // Correctly delete the folder itself AND all items inside
+      // We check for path, path/ and path/% to be absolutely safe
+      const { error } = await supabase.from("files")
+        .delete()
+        .eq("room_id", roomId)
+        .or(`path.eq."${path}",path.eq."${path}/",path.like."${path}/%"`);
+
       deleteError = error;
     } else {
-      const { error } = await supabase.from("files").delete().eq("room_id", roomId).eq("path", path);
+      const { error } = await supabase.from("files")
+        .delete()
+        .eq("room_id", roomId)
+        .eq("path", path);
       deleteError = error;
     }
 
@@ -841,23 +890,6 @@ const EditorPage = () => {
       }
       
       broadcastFileOperation("delete", { path });
-    }
-  };
-
-  const handleFileOpSubmit = (value: string) => {
-    switch (fileOpDialog.type) {
-      case "create_file":
-        executeNewFile(value);
-        break;
-      case "create_folder":
-        executeNewFolder(value);
-        break;
-      case "rename":
-        if (fileOpDialog.path) executeRenameFile(fileOpDialog.path, value);
-        break;
-      case "delete":
-        if (fileOpDialog.path) executeDeleteFile(fileOpDialog.path);
-        break;
     }
   };
 
@@ -923,8 +955,14 @@ const EditorPage = () => {
         type={fileOpDialog.type}
         path={fileOpDialog.path}
         initialValue={fileOpDialog.initialValue}
-        onClose={() => setFileOpDialog(prev => ({ ...prev, open: false }))}
-        onSubmit={handleFileOpSubmit}
+        folders={getFoldersFromTree(fileTree)}
+        onClose={() => setFileOpDialog({ open: false, type: "create_file" })}
+        onSubmit={(value, folder) => {
+          if (fileOpDialog.type === "create_file") executeNewFile(value, folder);
+          if (fileOpDialog.type === "create_folder") executeNewFolder(value, folder);
+          if (fileOpDialog.type === "rename" && fileOpDialog.path) executeRenameFile(fileOpDialog.path, value);
+          if (fileOpDialog.type === "delete" && fileOpDialog.path) executeDeleteFile(fileOpDialog.path);
+        }}
       />
     </>
   );
