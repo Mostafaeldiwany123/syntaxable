@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronRight, Brain } from 'lucide-react';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface ThinkingSectionProps {
   content: string;
@@ -26,10 +27,10 @@ export const ThinkingSection: React.FC<ThinkingSectionProps> = ({ content }) => 
       </button>
       
       {isExpanded && (
-        <div className="mt-2 pl-3 border-l border-muted">
-          <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
-            {content}
-          </p>
+        <div className="mt-2 pl-3 border-l-2 border-muted bg-muted/5 py-1 pr-1 opacity-80">
+          <div className="text-sm text-muted-foreground mix-blend-luminosity">
+            <MarkdownRenderer content={content} />
+          </div>
         </div>
       )}
     </div>

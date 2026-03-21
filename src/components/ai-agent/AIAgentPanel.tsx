@@ -92,16 +92,25 @@ const AIAgentPanel: React.FC<AIAgentPanelProps> = React.memo(({
     }
   });
 
-  // Track previous messages to avoid saving on every render
   const prevMessagesRef = useRef<typeof messages>([]);
   const prevSessionIdRef = useRef<string | null>(null);
 
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    // Consider it at the bottom if within 100px
+    const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 100;
+    setShouldAutoScroll(isAtBottom);
+  }, []);
+
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    if (scrollRef.current && view === 'chat') {
+    if (scrollRef.current && view === 'chat' && shouldAutoScroll) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, view]);
+  }, [messages, view, shouldAutoScroll]);
 
   // Save session when messages change (but only if they actually changed)
   useEffect(() => {
@@ -146,6 +155,7 @@ const AIAgentPanel: React.FC<AIAgentPanelProps> = React.memo(({
   const handleSend = async (input: string) => {
     if (!input.trim() || !user) return;
 
+    setShouldAutoScroll(true);
     const context = getChatContext ? getChatContext() : undefined;
 
     // Create a new session if this is the first message
@@ -330,7 +340,7 @@ const AIAgentPanel: React.FC<AIAgentPanelProps> = React.memo(({
         ) : (
           <>
             {/* Messages or Initial State */}
-            <div className="flex-1 overflow-y-auto" ref={scrollRef}>
+            <div className="flex-1 overflow-y-auto" ref={scrollRef} onScroll={handleScroll}>
               <div className="p-4">
                 {!hasMessages ? (
                   <EmptyState />

@@ -5,6 +5,15 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Copy, Check } from 'lucide-react';
 
+const customTheme = Object.fromEntries(
+  Object.entries(oneDark).map(([key, value]) => {
+    if (typeof value === 'object' && value !== null) {
+      return [key, { ...value, textShadow: 'none' }];
+    }
+    return [key, value];
+  })
+);
+
 interface CodeBlockProps {
   language: string;
   children: string;
@@ -42,7 +51,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ language, children }) => {
       </div>
       <SyntaxHighlighter
         language={language || 'text'}
-        style={oneDark}
+        style={customTheme as any}
         customStyle={{
           margin: 0,
           borderTopLeftRadius: 0,
