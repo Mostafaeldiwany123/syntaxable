@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/favicon.png" alt="Syntaxable" width="72" />
+  <img src="public/syntaxable.png" alt="Syntaxable" width="72" />
 </p>
 
 # Syntaxable
