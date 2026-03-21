@@ -101,9 +101,9 @@ const CustomSetViewPage = () => {
     return new Set(problems.filter((p) => p.completed).map((p) => p.id));
   }, [problems]);
 
-  const handleProblemComplete = (problemId: string) => {
+  const handleProblemComplete = (problemId: string, solutionCode?: string, language?: string) => {
     if (setId) {
-      markComplete({ setId, problemId });
+      markComplete({ setId, problemId, solutionCode, language });
     }
   };
 
@@ -141,6 +141,8 @@ const CustomSetViewPage = () => {
   }
 
   if (selectedProblemIndex !== null && convertedProblems[selectedProblemIndex]) {
+    const currentProblemWithSolution = problems?.find(p => p.id === convertedProblems[selectedProblemIndex].id);
+
     return (
       <ProblemSolvingView
         course={mockCourse}
@@ -164,6 +166,7 @@ const CustomSetViewPage = () => {
           const index = convertedProblems.findIndex((p) => p.id === problem.id);
           if (index !== -1) setSelectedProblemIndex(index);
         }}
+        savedSolutionCode={currentProblemWithSolution?.solution_code}
       />
     );
   }
@@ -237,7 +240,7 @@ const CustomSetViewPage = () => {
               const isSelected = selectedProblemIndex === index;
               const isCompleted = completedProblems.has(problem.id);
               const problemNumber = index + 1;
-              
+
               return (
                 <button
                   key={problem.id}
@@ -394,8 +397,8 @@ const CustomSetViewPage = () => {
             <Button variant="ghost" onClick={() => setIsShareDialogOpen(false)} size="sm">
               Cancel
             </Button>
-            <Button 
-              onClick={handleShare} 
+            <Button
+              onClick={handleShare}
               disabled={selectedUsers.length === 0}
               size="sm"
             >

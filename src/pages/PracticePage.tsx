@@ -7,7 +7,7 @@ import { Course, Problem, cppCourse, csharpCourse, pythonCourse } from '@/data/p
 import { usePracticeProgress, useMarkProblemComplete } from '@/hooks/practice';
 import { useAuth } from '@/hooks/useAuth';
 
-type ViewState = 
+type ViewState =
   | { type: 'landing' }
   | { type: 'categories'; course: Course }
   | { type: 'solving'; course: Course; currentProblem: Problem };
@@ -22,7 +22,7 @@ const PracticePage: React.FC<PracticePageProps> = ({ initialLanguage, initialPro
   const { data: progress } = usePracticeProgress();
   const markProblemComplete = useMarkProblemComplete();
   const navigate = useNavigate();
-  
+
   const courses: Course[] = useMemo(() => [cppCourse, csharpCourse, pythonCourse], []);
 
   const [viewState, setViewState] = useState<ViewState>(() => {
@@ -77,11 +77,11 @@ const PracticePage: React.FC<PracticePageProps> = ({ initialLanguage, initialPro
 
   const handleNextProblem = useCallback(() => {
     if (viewState.type !== 'solving') return;
-    
+
     const { course, currentProblem } = viewState;
     const allProblems = course.lessons.flatMap(l => l.problems);
     const currentIndex = allProblems.findIndex(p => p.id === currentProblem.id);
-    
+
     if (currentIndex < allProblems.length - 1) {
       setViewState({
         ...viewState,
@@ -92,11 +92,11 @@ const PracticePage: React.FC<PracticePageProps> = ({ initialLanguage, initialPro
 
   const handlePrevProblem = useCallback(() => {
     if (viewState.type !== 'solving') return;
-    
+
     const { course, currentProblem } = viewState;
     const allProblems = course.lessons.flatMap(l => l.problems);
     const currentIndex = allProblems.findIndex(p => p.id === currentProblem.id);
-    
+
     if (currentIndex > 0) {
       setViewState({
         ...viewState,
@@ -105,8 +105,8 @@ const PracticePage: React.FC<PracticePageProps> = ({ initialLanguage, initialPro
     }
   }, [viewState]);
 
-  const handleProblemComplete = useCallback((problemId: string) => {
-    markProblemComplete.mutate(problemId);
+  const handleProblemComplete = useCallback((problemId: string, solutionCode?: string, language?: string) => {
+    markProblemComplete.mutate({ problemId, solutionCode, language });
   }, [markProblemComplete]);
 
   if (viewState.type === 'landing') {

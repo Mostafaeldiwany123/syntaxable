@@ -36,12 +36,13 @@ interface ProblemSolvingViewProps {
   currentProblem: Problem;
   lessons: Lesson[];
   onBack: () => void;
-  onProblemComplete: (problemId: string) => void;
+  onProblemComplete: (problemId: string, solutionCode?: string, language?: string) => void;
   onNextProblem: () => void;
   onPrevProblem: () => void;
   hasNext: boolean;
   hasPrev: boolean;
   onSelectProblem: (problem: Problem) => void;
+  savedSolutionCode?: string | null;
 }
 
 export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
@@ -55,12 +56,22 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
   hasNext,
   hasPrev,
   onSelectProblem,
+  savedSolutionCode,
 }) => {
   const { user } = useAuth();
   const { data: progress } = usePracticeProgress();
   const { collapseForAIAgent } = useSidebar();
   const [practiceCode, setPracticeCode] = useState<string>(() => {
-    // Load saved code from localStorage
+    // First check if there's a saved solution passed as prop (for custom sets)
+    if (savedSolutionCode) {
+      return savedSolutionCode;
+    }
+    // Then check if there's a saved solution in the database (for regular practice)
+    const savedProgress = progress?.find(p => p.problem_id === currentProblem.id);
+    if (savedProgress?.solution_code) {
+      return savedProgress.solution_code;
+    }
+    // Fall back to localStorage
     const saved = localStorage.getItem(`practice-code-${currentProblem.id}`);
     return saved || currentProblem.starterCode;
   });
@@ -71,8 +82,20 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
 
   // Reset test results when problem changes
   React.useEffect(() => {
-    setPracticeCode(localStorage.getItem(`practice-code-${currentProblem.id}`) || currentProblem.starterCode);
-  }, [currentProblem.id, currentProblem.starterCode]);
+    // First check if there's a saved solution passed as prop (for custom sets)
+    if (savedSolutionCode) {
+      setPracticeCode(savedSolutionCode);
+    } else {
+      // Then check if there's a saved solution in the database (for regular practice)
+      const savedProgress = progress?.find(p => p.problem_id === currentProblem.id);
+      if (savedProgress?.solution_code) {
+        setPracticeCode(savedProgress.solution_code);
+      } else {
+        // Fall back to localStorage
+        setPracticeCode(localStorage.getItem(`practice-code-${currentProblem.id}`) || currentProblem.starterCode);
+      }
+    }
+  }, [currentProblem.id, currentProblem.starterCode, progress, savedSolutionCode]);
 
   // Only collapse sidebar when AI agent opens, don't restore when it closes
   useEffect(() => {
@@ -135,9 +158,9 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
             <List className="h-4 w-4" />
             All Questions
           </Button>
-          
+
           <div className="h-6 w-px bg-border mx-1" />
-          
+
           <Button
             variant="outline"
             size="sm"
@@ -190,8 +213,8 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
                   fileContents={{ [fileName]: practiceCode }}
                   dirtyFiles={new Set()}
                   onChange={handleCodeChange}
-                  onTabClick={() => {}}
-                  onTabClose={() => {}}
+                  onTabClick={() => { }}
+                  onTabClose={() => { }}
                   isReadOnly={false}
                   onAIAgentClick={() => setIsAIAgentOpen(!isAIAgentOpen)}
                 />
@@ -206,12 +229,12 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
             </ResizablePanel>
 
             <ResizableHandle className="bg-border w-[1px] hover:bg-primary transition-all" />
-            
+
             {/* Problem Panel */}
             <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
               <PracticePanel
                 isOpen={true}
-                onClose={() => {}}
+                onClose={() => { }}
                 problem={currentProblem}
                 code={practiceCode}
                 onCodeChange={setPracticeCode}

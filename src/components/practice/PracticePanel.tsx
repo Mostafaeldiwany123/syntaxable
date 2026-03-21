@@ -20,7 +20,7 @@ interface PracticePanelProps {
   problem: Problem | null;
   code: string;
   onCodeChange: (code: string) => void;
-  onProblemComplete: (problemId: string) => void;
+  onProblemComplete: (problemId: string, solutionCode?: string, language?: string) => void;
   practiceCode?: string;
   language?: CourseLanguage;
 }
@@ -70,7 +70,7 @@ const PracticePanel: React.FC<PracticePanelProps> = ({
 
   const runTests = useCallback(async () => {
     if (!problem) return;
-    
+
     setIsRunning(true);
     setTestResults(null);
     setActiveTab('results');
@@ -91,16 +91,16 @@ const PracticePanel: React.FC<PracticePanelProps> = ({
 
     // Run all tests in a SINGLE API call
     const results = await runBatchTests(code, batchTestCases, language);
-    
+
     setTestResults(results);
     setIsRunning(false);
 
     // Check if all passed
     const allPassed = results.every(r => r.passed);
     if (allPassed) {
-      onProblemComplete(problem.id);
+      onProblemComplete(problem.id, code, language);
     }
-  }, [problem, code, onProblemComplete]);
+  }, [problem, code, onProblemComplete, language]);
 
   const handleCopyProblem = useCallback(() => {
     if (problem) {
@@ -124,7 +124,7 @@ ${problem.sampleInput || '(empty)'}
 ${problem.sampleOutput}
 
 ${problem.explanation ? `**Explanation:**\n${problem.explanation}` : ''}`;
-      
+
       navigator.clipboard.writeText(problemText);
       toast.success('Problem copied to clipboard!');
     }
@@ -170,21 +170,19 @@ ${problem.explanation ? `**Explanation:**\n${problem.explanation}` : ''}`;
       <div className="flex border-b border-border bg-card">
         <button
           onClick={() => setActiveTab('description')}
-          className={`px-4 py-1.5 text-xs font-medium transition-colors ${
-            activeTab === 'description'
+          className={`px-4 py-1.5 text-xs font-medium transition-colors ${activeTab === 'description'
               ? 'text-primary border-b-2 border-primary'
               : 'text-muted-foreground hover:text-foreground'
-          }`}
+            }`}
         >
           Description
         </button>
         <button
           onClick={() => setActiveTab('results')}
-          className={`px-4 py-1.5 text-xs font-medium transition-colors ${
-            activeTab === 'results'
+          className={`px-4 py-1.5 text-xs font-medium transition-colors ${activeTab === 'results'
               ? 'text-primary border-b-2 border-primary'
               : 'text-muted-foreground hover:text-foreground'
-          }`}
+            }`}
         >
           Results {testResults && `(${passedCount}/${totalCount})`}
         </button>
@@ -292,7 +290,7 @@ ${problem.explanation ? `**Explanation:**\n${problem.explanation}` : ''}`;
                           All tests passed! 🎉
                         </span>
                         <p className="text-xs text-[hsl(152,69%,45%)]">
-                          {passedCount}/{totalCount} test cases succeeded
+                          {passedCount}/{totalCount} test cases succeeded • Solution saved to database
                         </p>
                       </div>
                     </div>
@@ -323,11 +321,10 @@ ${problem.explanation ? `**Explanation:**\n${problem.explanation}` : ''}`;
                 {visibleTestResults.map((result, index) => (
                   <div
                     key={index}
-                    className={`p-3 rounded-lg border ${
-                      result.passed
+                    className={`p-3 rounded-lg border ${result.passed
                         ? 'bg-accent-green/5 border-accent-green/20'
                         : 'bg-destructive/5 border-destructive/20'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-2 mb-2">
                       {result.passed ? (

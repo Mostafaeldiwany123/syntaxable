@@ -53,6 +53,7 @@ export interface CustomSetProblem {
   };
   order_index: number;
   completed: boolean;
+  solution_code?: string | null;
 }
 
 export interface CustomSetDetail {
@@ -207,7 +208,7 @@ export const useMarkProblemComplete = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ setId, problemId }: { setId: string; problemId: string }) => {
+    mutationFn: async ({ setId, problemId, solutionCode, language }: { setId: string; problemId: string; solutionCode?: string; language?: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -217,7 +218,9 @@ export const useMarkProblemComplete = () => {
         .upsert({
           user_id: user.id,
           set_id: setId,
-          problem_id: problemId
+          problem_id: problemId,
+          solution_code: solutionCode || null,
+          language: language || null,
         }, {
           onConflict: 'user_id,set_id,problem_id'
         });
@@ -311,7 +314,7 @@ export const useCustomSetParticipants = (setId: string | undefined) => {
     queryKey: ['customSetParticipants', setId],
     queryFn: async () => {
       if (!setId) return [];
-      
+
       const { data, error } = await supabase
         .from('custom_set_participants')
         .select(`
@@ -324,7 +327,7 @@ export const useCustomSetParticipants = (setId: string | undefined) => {
         .eq('set_id', setId);
 
       if (error) throw error;
-      
+
       return data?.map(p => {
         const profile = Array.isArray(p.profiles) ? p.profiles[0] : p.profiles;
         return {
@@ -350,13 +353,13 @@ export const useCustomSetParticipantsWithProgress = (setId: string | undefined) 
     queryKey: ['customSetParticipantsWithProgress', setId],
     queryFn: async () => {
       if (!setId) return [];
-      
+
       const { data, error } = await supabase.rpc('get_custom_set_participants_with_progress', {
         p_set_id: setId
       });
 
       if (error) throw error;
-      
+
       return data?.map(p => ({
         user_id: p.user_id,
         username: p.username || 'Unknown',
