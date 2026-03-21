@@ -6,8 +6,8 @@ import { Loader2, GitCommit, ArrowLeft, Clock, User, FileText } from 'lucide-rea
 import { formatDistanceToNow, format } from 'date-fns';
 import { useFileHistory } from '@/hooks/files';
 import { diffLines } from 'diff';
-import { DiffEditor } from '@monaco-editor/react';
-import { getCustomDarkTheme } from '@/lib/editor-theme';
+import { DiffEditor, useMonaco } from '@monaco-editor/react';
+import { getDynamicTheme } from '@/lib/editor-theme';
 import { Button } from '@/components/ui/button';
 
 interface HistoryDialogProps {
@@ -56,6 +56,20 @@ export const HistoryDialog = ({ isOpen, onOpenChange, fileId, fileName }: Histor
     const selectedVersion = history?.find(v => v.id === selectedVersionId);
     const previousVersionIndex = history?.findIndex(v => v.id === selectedVersionId) ?? -1;
     const previousVersion = history && previousVersionIndex > -1 ? history[previousVersionIndex + 1] : null;
+
+    // Handle theme changes for Monaco
+    const monaco = useMonaco();
+    useEffect(() => {
+        const handleThemeChange = () => {
+            if (monaco) {
+                monaco.editor.defineTheme('custom-dynamic', getDynamicTheme());
+                monaco.editor.setTheme('custom-dynamic');
+            }
+        };
+        handleThemeChange(); // Initial set
+        window.addEventListener('themeChanged', handleThemeChange);
+        return () => window.removeEventListener('themeChanged', handleThemeChange);
+    }, [monaco]);
 
     // Reset state when dialog closes to trigger proper cleanup
     useEffect(() => {
@@ -135,12 +149,12 @@ export const HistoryDialog = ({ isOpen, onOpenChange, fileId, fileName }: Histor
                                                     </p>
                                                     <div className="flex items-center gap-1 flex-shrink-0">
                                                         {stats.added > 0 && (
-                                                            <span className="text-xs font-semibold text-green-400">
+                                                            <span className="text-xs font-semibold text-green-600 dark:text-green-400">
                                                                 +{stats.added}
                                                             </span>
                                                         )}
                                                         {stats.removed > 0 && (
-                                                            <span className="text-xs font-semibold text-red-400">
+                                                            <span className="text-xs font-semibold text-red-600 dark:text-red-400">
                                                                 -{stats.removed}
                                                             </span>
                                                         )}
@@ -198,10 +212,10 @@ export const HistoryDialog = ({ isOpen, onOpenChange, fileId, fileName }: Histor
                                                 const stats = getDiffStats(prevContent, selectedVersion.content);
                                                 return (
                                                     <>
-                                                        <div className="flex items-center gap-1 px-3 py-1 bg-green-500/15 text-green-400 rounded text-sm font-semibold">
+                                                        <div className="flex items-center gap-1 px-3 py-1 bg-green-500/15 text-green-600 dark:text-green-400 rounded text-sm font-semibold">
                                                             +{stats.added}
                                                         </div>
-                                                        <div className="flex items-center gap-1 px-3 py-1 bg-red-500/15 text-red-400 rounded text-sm font-semibold">
+                                                        <div className="flex items-center gap-1 px-3 py-1 bg-red-500/15 text-red-600 dark:text-red-400 rounded text-sm font-semibold">
                                                             -{stats.removed}
                                                         </div>
                                                     </>
@@ -218,9 +232,9 @@ export const HistoryDialog = ({ isOpen, onOpenChange, fileId, fileName }: Histor
                                         language={getLanguageFromFile(fileName)}
                                         original={previousVersion?.content || ''}
                                         modified={selectedVersion.content}
-                                        theme="custom-dark"
+                                        theme="custom-dynamic"
                                         beforeMount={(monaco) => {
-                                            monaco.editor.defineTheme('custom-dark', getCustomDarkTheme());
+                                            monaco.editor.defineTheme('custom-dynamic', getDynamicTheme());
                                         }}
                                         options={{
                                             readOnly: true,

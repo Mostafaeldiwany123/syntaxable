@@ -4,7 +4,7 @@ const getEditorVar = (name: string, fallback: string) => {
   return val || fallback;
 };
 
-export const getCustomDarkTheme = (): any => ({
+export const getDynamicTheme = (): any => ({
     base: getEditorVar('--editor-base', 'vs-dark') as any,
     inherit: true,
     rules: [
@@ -20,9 +20,9 @@ export const getCustomDarkTheme = (): any => ({
         'editor.inactiveSelectionBackground': getEditorVar('--editor-selection-inactive', '#121212'),
         'editorIndentGuide.background': getEditorVar('--editor-indent-guide', '#2D2F36'),
         'editorIndentGuide.activeBackground': getEditorVar('--editor-indent-guide-active', '#3B3E45'),
-        'diffEditor.insertedTextBackground': '#22c55e20',
-        'diffEditor.removedTextBackground': '#ef444420',
-        'diffEditor.insertedLineBackground': '#121212',
-        'diffEditor.removedLineBackground': '#121212',
+        'diffEditor.insertedLineBackground': '#10b98115',
+        'diffEditor.removedLineBackground': '#ef444415',
+        'diffEditor.insertedTextBackground': '#10b98130',
+        'diffEditor.removedTextBackground': '#ef444430',
     }
 });

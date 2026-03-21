@@ -43,7 +43,9 @@ export const ProjectCard = ({ project, isOwner, onRename, onDelete }: ProjectCar
     >
       <CardHeader className="cursor-pointer" onClick={() => navigate(`/editor/${project.room_id}`)}>
         <div className="flex items-center gap-3">
-          <img src={getProjectTypeIcon(project.project_type)} alt={project.project_type} className="h-6 w-6" />
+          <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+            <img src={getProjectTypeIcon(project.project_type)} alt={project.project_type} className="h-5 w-5" />
+          </div>
           <div className="flex-1 min-w-0">
             <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors truncate">{project.name}</CardTitle>
             <CardDescription>{lastEdited}</CardDescription>

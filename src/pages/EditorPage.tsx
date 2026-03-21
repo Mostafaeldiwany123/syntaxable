@@ -12,6 +12,7 @@ import { useCommitChange } from "@/hooks/files";
 import { CommitDialog } from "@/components/editor/CommitDialog";
 import { HistoryDialog } from "@/components/editor/HistoryDialog";
 import { ProjectType } from "@/hooks/projects";
+import { FileOperationDialog, FileOpType } from "@/components/editor/FileOperationDialog";
 
 // Types
 interface CursorPosition {
@@ -95,6 +96,12 @@ const EditorPage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [projectType, setProjectType] = useState<ProjectType | null>(null);
   const [isInitialFilesLoaded, setIsInitialFilesLoaded] = useState(false);
+  const [fileOpDialog, setFileOpDialog] = useState<{
+    open: boolean;
+    type: FileOpType;
+    path?: string;
+    initialValue?: string;
+  }>({ open: false, type: "create_file" });
 
   // Store the last saved content for preview (only updates when files are saved)
   const [savedContentForPreview, setSavedContentForPreview] = useState<Record<string, string>>({});
@@ -685,9 +692,16 @@ const EditorPage = () => {
 
   const handleNewFile = async () => {
     if (!checkPermissions()) return;
-    const fileName = prompt("Enter file name (e.g., components/Button.tsx):");
-    if (!fileName || !roomId) return;
+    setFileOpDialog({ open: true, type: "create_file" });
+  };
 
+  const handleNewFolder = async () => {
+    if (!checkPermissions()) return;
+    setFileOpDialog({ open: true, type: "create_folder" });
+  };
+
+  const executeNewFile = async (fileName: string) => {
+    if (!roomId) return;
     if (Object.keys(fileData).some(path => path === fileName)) {
       toast.error("File already exists");
       return;
@@ -720,11 +734,8 @@ const EditorPage = () => {
     }
   };
 
-  const handleNewFolder = async () => {
-    if (!checkPermissions()) return;
-    const folderName = prompt("Enter folder name:");
-    if (!folderName || !roomId) return;
-
+  const executeNewFolder = async (folderName: string) => {
+    if (!roomId) return;
     const placeholderPath = `${folderName}/.gitkeep`;
     if (Object.keys(fileData).some(p => p.startsWith(folderName + '/'))) {
       toast.error("Folder already exists");
@@ -756,16 +767,23 @@ const EditorPage = () => {
     }
   };
 
-  const handleRenameFile = async (oldPath: string, newPath: string) => {
+  const handleRenameFile = async (path: string, currentName: string) => {
     if (!checkPermissions()) return;
-    
-    // Rename in DB
+    setFileOpDialog({ open: true, type: "rename", path: path, initialValue: currentName });
+  };
+
+  const executeRenameFile = async (oldPath: string, newName: string) => {
+    const pathParts = oldPath.split('/');
+    pathParts[pathParts.length - 1] = newName;
+    const newPath = pathParts.join('/');
+
+    if (newPath === oldPath) return;
+
     const { error } = await supabase.from("files").update({ path: newPath }).eq("room_id", roomId).eq("path", oldPath);
 
     if (error) {
       toast.error(error.message);
     } else {
-      // Also rename localStorage key if exists
       if (roomId) {
         const oldKey = getLocalStorageKey(roomId, oldPath);
         const newKey = getLocalStorageKey(roomId, newPath);
@@ -776,7 +794,7 @@ const EditorPage = () => {
         }
       }
 
-      toast.success("File renamed!");
+      toast.success("Renamed successfully!");
       await refreshFileTree();
       setOpenFiles(prev => prev.map(p => p === oldPath ? newPath : p));
       if (activeFile === oldPath) setActiveFile(newPath);
@@ -786,18 +804,15 @@ const EditorPage = () => {
 
   const handleDeleteFile = async (path: string) => {
     if (!checkPermissions()) return;
-    
+    setFileOpDialog({ open: true, type: "delete", path: path });
+  };
+
+  const executeDeleteFile = async (path: string) => {
     const isFolder = fileTree.some(node => node.path === path && node.type === 'folder');
-    
     let deleteError = null;
     
     if (isFolder) {
-      const { error } = await supabase
-        .from("files")
-        .delete()
-        .eq("room_id", roomId)
-        .like("path", `${path}/%`);
-      
+      const { error } = await supabase.from("files").delete().eq("room_id", roomId).like("path", `${path}/%`);
       deleteError = error;
     } else {
       const { error } = await supabase.from("files").delete().eq("room_id", roomId).eq("path", path);
@@ -807,7 +822,6 @@ const EditorPage = () => {
     if (deleteError) {
       toast.error(deleteError.message);
     } else {
-      // Clear localStorage for deleted file
       if (roomId) {
         const localKey = getLocalStorageKey(roomId, path);
         localStorage.removeItem(localKey);
@@ -827,6 +841,23 @@ const EditorPage = () => {
       }
       
       broadcastFileOperation("delete", { path });
+    }
+  };
+
+  const handleFileOpSubmit = (value: string) => {
+    switch (fileOpDialog.type) {
+      case "create_file":
+        executeNewFile(value);
+        break;
+      case "create_folder":
+        executeNewFolder(value);
+        break;
+      case "rename":
+        if (fileOpDialog.path) executeRenameFile(fileOpDialog.path, value);
+        break;
+      case "delete":
+        if (fileOpDialog.path) executeDeleteFile(fileOpDialog.path);
+        break;
     }
   };
 
@@ -886,6 +917,14 @@ const EditorPage = () => {
         onOpenChange={setIsHistoryDialogOpen}
         fileId={activeFile ? fileData[activeFile]?.id : null}
         fileName={activeFile ? activeFile.split('/').pop() || activeFile : null}
+      />
+      <FileOperationDialog
+        open={fileOpDialog.open}
+        type={fileOpDialog.type}
+        path={fileOpDialog.path}
+        initialValue={fileOpDialog.initialValue}
+        onClose={() => setFileOpDialog(prev => ({ ...prev, open: false }))}
+        onSubmit={handleFileOpSubmit}
       />
     </>
   );

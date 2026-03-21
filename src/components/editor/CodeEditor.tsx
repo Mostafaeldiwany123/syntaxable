@@ -5,8 +5,9 @@ import { getFileIconUrl } from '@/lib/project-utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { getDynamicTheme } from '@/lib/editor-theme';
 
-type Theme = 'vs-dark' | 'light' | 'custom-dark';
+type Theme = 'vs-dark' | 'light' | 'custom-dynamic';
 
 declare global {
   interface Window {
@@ -16,39 +17,7 @@ declare global {
   }
 }
 
-const getEditorVar = (name: string, fallback: string) => {
-  if (typeof window === 'undefined') return fallback;
-  const val = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  return val || fallback;
-};
-
-const getCustomDarkTheme = (): any => ({
-  base: getEditorVar('--editor-base', 'vs-dark') as any,
-  inherit: true,
-  rules: [
-    { token: '', background: getEditorVar('--editor-bg', '#121212').replace('#', '') },
-  ],
-  colors: {
-    'editor.background': getEditorVar('--editor-bg', '#121212'),
-    'editor.foreground': getEditorVar('--editor-fg', '#f2f2f2'),
-    'editor.lineHighlightBackground': getEditorVar('--editor-line-highlight', '#1a1a1a'),
-    'editorLineNumber.foreground': getEditorVar('--editor-line-number', '#4a4a4a'),
-    'editorLineNumber.activeForeground': getEditorVar('--editor-line-number-active', '#a0a0a0'),
-    'editor.selectionBackground': getEditorVar('--editor-selection', '#3a3a3a'),
-    'editor.inactiveSelectionBackground': getEditorVar('--editor-selection-inactive', '#1a1a1a'),
-    'editorIndentGuide.background': getEditorVar('--editor-indent-guide', '#2a2a2a'),
-    'editorIndentGuide.activeBackground': getEditorVar('--editor-indent-guide-active', '#3a3a3a'),
-    'editorCursor.foreground': getEditorVar('--editor-cursor', '#a0a0a0'),
-    'editorWhitespace.foreground': getEditorVar('--editor-whitespace', '#2a2a2a'),
-    'editorWidget.background': getEditorVar('--editor-widget-bg', '#1e1e1e'),
-    'editorWidget.border': getEditorVar('--editor-widget-border', '#333333'),
-    'editorSuggestWidget.background': getEditorVar('--editor-widget-bg', '#1e1e1e'),
-    'editorSuggestWidget.border': getEditorVar('--editor-widget-border', '#333333'),
-    'editorSuggestWidget.selectedBackground': getEditorVar('--editor-suggest-selected', '#3a3a3a'),
-    'editorHoverWidget.background': getEditorVar('--editor-widget-bg', '#1e1e1e'),
-    'editorHoverWidget.border': getEditorVar('--editor-widget-border', '#333333'),
-  }
-});
+// Dynamic theme helper is now imported from @/lib/editor-theme
 
 interface CodeEditorProps {
   openFiles: string[];
@@ -125,8 +94,8 @@ const CodeEditor = ({
   useEffect(() => {
     const handleThemeChange = () => {
       if (monaco) {
-        monaco.editor.defineTheme('custom-dark', getCustomDarkTheme());
-        monaco.editor.setTheme('custom-dark');
+        monaco.editor.defineTheme('custom-dynamic', getDynamicTheme());
+        monaco.editor.setTheme('custom-dynamic');
       }
     };
     window.addEventListener('themeChanged', handleThemeChange);
@@ -157,8 +126,8 @@ const CodeEditor = ({
     // Store editor reference
     editorRef.current = editor;
     
-    monacoInstance.editor.defineTheme('custom-dark', getCustomDarkTheme());
-    monacoInstance.editor.setTheme('custom-dark');
+    monacoInstance.editor.defineTheme('custom-dynamic', getDynamicTheme());
+    monacoInstance.editor.setTheme('custom-dynamic');
     setIsEditorLoading(false);
 
     // Add keybinding for Ctrl/Cmd+K in Monaco editor
@@ -308,10 +277,10 @@ const CodeEditor = ({
           onChange={onChange}
           beforeMount={(monaco) => {
             setIsEditorLoading(true);
-            monaco.editor.defineTheme('custom-dark', getCustomDarkTheme());
+            monaco.editor.defineTheme('custom-dynamic', getDynamicTheme());
           }}
           onMount={handleEditorDidMount}
-          theme="custom-dark"
+          theme="custom-dynamic"
           loading=""
           options={{
             readOnly: isReadOnly,

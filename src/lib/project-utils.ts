@@ -11,7 +11,7 @@ export const getFileIconUrl = (name: string): string => {
   if (baseName.startsWith('vite.config')) return `${CDN_BASE}/vite.svg`;
   if (baseName.startsWith('tsconfig')) return `${CDN_BASE}/tsconfig.svg`;
   if (baseName.startsWith('tailwind.config')) return `${CDN_BASE}/tailwindcss.svg`;
-  if (baseName === '.gitignore') return `${CDN_BASE}/git.svg`;
+  if (baseName === '.gitignore' || baseName === '.gitkeep') return `${CDN_BASE}/git.svg`;
   if (baseName.startsWith('postcss.config')) return `${CDN_BASE}/postcss.svg`;
   if (baseName.startsWith('.eslintrc')) return `${CDN_BASE}/eslint.svg`;
   if (baseName.startsWith('.prettierrc') || baseName === 'prettier.config.js') return `${CDN_BASE}/prettier.svg`;

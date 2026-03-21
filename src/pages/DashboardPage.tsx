@@ -321,7 +321,7 @@ const DashboardPage = () => {
                         className="flex items-center justify-between p-4 border border-border bg-card hover:border-primary/50 hover:bg-secondary/30 transition-colors group rounded-lg"
                       >
                         <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                          <div className="p-2 bg-secondary shrink-0">
+                          <div className="p-2 bg-secondary rounded-lg shrink-0">
                             <img src={getProjectTypeIcon(project.project_type)} alt={project.project_type} className="h-5 w-5" />
                           </div>
                           <div className="min-w-0">

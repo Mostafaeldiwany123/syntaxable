@@ -5,6 +5,8 @@ import {
     FilePlus,
     FolderPlus,
     MoreVertical,
+    Folder,
+    FolderOpen,
 } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -21,7 +23,7 @@ import {
     DropdownMenuTrigger,
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { getFileIconUrl, getFolderIconUrl, getFolderOpenIconUrl } from '@/lib/project-utils';
+import { getFileIconUrl } from '@/lib/project-utils';
 
 export type FileNode = {
     path: string;
@@ -35,7 +37,7 @@ interface FileExplorerProps {
     onFileSelect: (path: string) => void;
     onNewFile: () => void;
     onNewFolder: () => void;
-    onRenameFile: (oldPath: string, newName: string) => void;
+    onRenameFile: (path: string, currentName: string) => void;
     onDeleteFile: (path: string) => void;
     activeFile: string | null;
     isReadOnly?: boolean;
@@ -59,7 +61,7 @@ const FileItem = ({
     level?: number,
     onSelect: (path: string) => void,
     activeFile: string | null,
-    onRename: (oldPath: string, newPath: string) => void,
+    onRename: (path: string, currentName: string) => void,
     onDelete: (path: string) => void,
     isReadOnly?: boolean,
     dirtyFiles: Set<string>,
@@ -86,20 +88,12 @@ const FileItem = ({
 
     const handleRename = () => {
         if (isReadOnly) return;
-        const newName = prompt(`Rename ${item.type}:`, item.name);
-        if (newName && newName !== item.name) {
-            const pathParts = item.path.split('/');
-            pathParts[pathParts.length - 1] = newName;
-            const newPath = pathParts.join('/');
-            onRename(item.path, newPath);
-        }
+        onRename(item.path, item.name);
     };
 
     const handleDelete = () => {
         if (isReadOnly) return;
-        if (confirm(`Are you sure you want to delete "${item.name}"?`)) {
-            onDelete(item.path);
-        }
+        onDelete(item.path);
     };
 
     return (
@@ -125,13 +119,13 @@ const FileItem = ({
                             )}
                         </span>
 
-                        <span className="mr-2 shrink-0">
+                        <span className="mr-2 shrink-0 flex items-center justify-center w-4">
                             {isFolder ? (
-                                <img 
-                                    src={isOpen ? getFolderOpenIconUrl() : getFolderIconUrl()} 
-                                    alt="" 
-                                    className="w-4 h-4" 
-                                />
+                                isOpen ? (
+                                    <FolderOpen size={16} className="text-blue-400 fill-blue-400/20" />
+                                ) : (
+                                    <Folder size={16} className="text-blue-400 fill-blue-400/20" />
+                                )
                             ) : (
                                 <img src={getFileIconUrl(item.name)} alt="" className="w-4 h-4" />
                             )}
