@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { Share2, Plus, Home, Users, Save, History, Play, Upload, GitCommit, RotateCcw } from 'lucide-react';
+import { Share2, Plus, Home, Users, Save, History, Play, Upload, GitCommit, RotateCcw, Download } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -31,6 +31,7 @@ interface StatusBarProps {
   onRestoreClick?: () => void;
   projectType?: ProjectType | null;
   isSaving?: boolean;
+  onExportClick?: () => void;
 }
 
 const getInitials = (username: string | undefined): string => {
@@ -54,7 +55,8 @@ const StatusBar = ({
   onHistoryClick,
   onRestoreClick,
   projectType,
-  isSaving = false
+  isSaving = false,
+  onExportClick
 }: StatusBarProps) => {
   const navigate = useNavigate();
   const { roomId } = useParams<{ roomId: string }>();
@@ -108,6 +110,16 @@ const StatusBar = ({
             </TooltipTrigger>
             <TooltipContent>
               <p>View History</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onExportClick}>
+                <Download className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Export to ZIP</p>
             </TooltipContent>
           </Tooltip>
           <AlertDialog>

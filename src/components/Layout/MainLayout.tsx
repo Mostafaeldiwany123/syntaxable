@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
+import JSZip from 'jszip';
 import {
     ResizableHandle,
     ResizablePanel,
@@ -43,6 +44,7 @@ interface MainLayoutProps {
     onHistoryClick: () => void;
     projectType: ProjectType | null;
     isSaving?: boolean;
+    projectName?: string;
 }
 
 const MainLayout = (props: MainLayoutProps) => {
@@ -72,6 +74,7 @@ const MainLayout = (props: MainLayoutProps) => {
         onHistoryClick,
         projectType,
         isSaving = false,
+        projectName: customProjectName,
     } = props;
 
     const [isCompilationOutputOpen, setIsCompilationOutputOpen] = useState(false);
@@ -122,6 +125,29 @@ const MainLayout = (props: MainLayoutProps) => {
     const handleMobileFileSelect = (path: string) => {
         onFileSelect(path);
         setIsSidebarOpen(false);
+    };
+
+    const handleExportToZip = async () => {
+        const zip = new JSZip();
+        
+        // Add all project files to the ZIP
+        Object.entries(fileContents).forEach(([path, content]) => {
+            zip.file(path, content);
+        });
+
+        try {
+            const blob = await zip.generateAsync({ type: "blob" });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${customProjectName || 'project'}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (error) {
+            console.error("Export failed:", error);
+        }
     };
 
     // Determine if this project should show terminal or preview
@@ -192,6 +218,7 @@ const MainLayout = (props: MainLayoutProps) => {
                     onRestoreClick={onRestoreClick}
                     projectType={projectType}
                     isSaving={isSaving}
+                    onExportClick={handleExportToZip}
                 />
             </div>
         );
@@ -304,6 +331,7 @@ const MainLayout = (props: MainLayoutProps) => {
                 onHistoryClick={onHistoryClick}
                 projectType={projectType}
                 isSaving={isSaving}
+                onExportClick={handleExportToZip}
             />
         </div>
     );

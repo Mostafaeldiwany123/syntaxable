@@ -71,6 +71,32 @@ export const useUserPublicRepos = (userId: string | undefined) => {
   });
 };
 
+export const useProjectByRoomId = (roomId: string | undefined) => {
+  return useQuery<Project, Error>({
+    queryKey: ["project-room", roomId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("projects")
+        .select(`
+          *,
+          owner:profiles!projects_owner_id_fkey(username, avatar_url)
+        `)
+        .eq("room_id", roomId)
+        .single();
+
+      if (error) throw error;
+      const projectData = data as any;
+      return {
+        ...projectData,
+        owner_username: projectData.owner?.username,
+        owner_avatar_url: projectData.owner?.avatar_url
+      } as Project;
+    },
+    enabled: !!roomId,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
 // --- Mutation Hooks ---
 
 interface CreateProjectResult {

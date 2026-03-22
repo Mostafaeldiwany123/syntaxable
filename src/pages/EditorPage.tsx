@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { FileNode } from "@/components/editor/FileExplorer";
 import { Loader2 } from "lucide-react";
 import { useRoomPermission } from "@/hooks/rooms";
+import { useProjectByRoomId } from "@/hooks/projects";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCommitChange } from "@/hooks/files";
 import { CommitDialog } from "@/components/editor/CommitDialog";
@@ -95,6 +96,7 @@ const EditorPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: permission, isLoading: isPermissionLoading } = useRoomPermission(roomId);
+  const { data: project } = useProjectByRoomId(roomId);
   const { mutate: commitChange } = useCommitChange();
 
   // State
@@ -936,6 +938,7 @@ const EditorPage = () => {
         onRestoreClick={handleRestore}
         projectType={projectType}
         isSaving={isSaving}
+        projectName={project?.name}
       />
       <CommitDialog
         isOpen={isCommitDialogOpen}
