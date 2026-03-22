@@ -441,9 +441,38 @@ export const useJoinCustomSet = () => {
     onSuccess: (_, { setId }) => {
       queryClient.invalidateQueries({ queryKey: ['customSetParticipants', setId] });
       queryClient.invalidateQueries({ queryKey: ['customSetParticipantsWithProgress', setId] });
+      queryClient.invalidateQueries({ queryKey: ['recentPracticeRooms'] });
     },
     onError: (error: any) => {
       console.error('Failed to join custom set:', error);
+    },
+  });
+};
+
+// Fetch recent practice rooms the user has joined
+export interface RecentPracticeRoom {
+  id: string;
+  title: string;
+  description: string | null;
+  language: 'cpp' | 'csharp' | 'python';
+  owner_id: string;
+  owner_username: string | null;
+  owner_avatar_url: string | null;
+  created_at: string;
+  joined_at: string;
+  problem_count: number;
+  completed_count: number;
+  is_owner: boolean;
+  is_public: boolean;
+}
+
+export const useRecentPracticeRooms = (limit: number = 5) => {
+  return useQuery<RecentPracticeRoom[], Error>({
+    queryKey: ['recentPracticeRooms', limit],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_recent_practice_rooms', { p_limit: limit });
+      if (error) throw error;
+      return data || [];
     },
   });
 };

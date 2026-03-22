@@ -12,7 +12,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Plus, LogIn, Loader2, ArrowRight, Folder, Users, Lock, Code2, GitCommit, Clock, FolderPlus } from "lucide-react";
+import { Plus, LogIn, Loader2, ArrowRight, Folder, Users, Lock, Code2, GitCommit, Clock, FolderPlus, BookOpen, Target } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useRecentProjects, useProjects } from "@/hooks/projects";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,7 +26,7 @@ import { UpgradeDialog } from "@/components/projects/UpgradeDialog";
 import { CreateProjectDialog } from "@/components/projects/CreateProjectDialog";
 import { getFileIconUrl } from "@/lib/project-utils";
 import { toast } from "sonner";
-import { useCustomSetByShortCode } from "@/hooks/customSets";
+import { useCustomSetByShortCode, useRecentPracticeRooms } from "@/hooks/customSets";
 
 const DashboardPage = () => {
   const [roomId, setRoomId] = useState("");
@@ -39,6 +39,7 @@ const DashboardPage = () => {
 
   const { data: projects } = useProjects();
   const { data: recentProjects, isLoading: isLoadingRecent } = useRecentProjects(3);
+  const { data: recentPractice, isLoading: isLoadingPractice } = useRecentPracticeRooms(3);
   const { data: friends } = useFriends();
   const { data: totalCommits } = useTotalCommits();
   const { canCreate, projectCount, limit } = useProjectLimit();
@@ -217,59 +218,116 @@ const DashboardPage = () => {
                 </div>
               </div>
 
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold">Recent Projects</h2>
-                  <Link to="/projects" className="text-sm text-primary hover:underline">
-                    View all
-                  </Link>
+              {isLoadingRecent || isLoadingPractice ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                 </div>
-                {isLoadingRecent ? (
-                  <div className="flex justify-center py-12">
-                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                  </div>
-                ) : recentProjects && recentProjects.length > 0 ? (
-                  <div className="space-y-2">
-                    {recentProjects.map((project) => (
-                      <Link
-                        to={`/editor/${project.room_id}`}
-                        key={project.id}
-                        className="flex items-center justify-between p-4 border border-border bg-card hover:border-primary/50 hover:bg-secondary/30 transition-colors group rounded-lg"
-                      >
-                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                          <div className="p-2 bg-secondary rounded-lg shrink-0">
-                            <img src={getProjectTypeIcon(project.project_type)} alt={project.project_type} className="h-5 w-5" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-medium truncate">{project.name}</p>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <Clock className="h-3 w-3 shrink-0" />
-                              <span className="truncate">{formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 shrink-0">
-                          <Avatar className="h-7 w-7 border border-border hidden sm:block">
-                            <AvatarImage src={project.owner_avatar_url || undefined} />
-                            <AvatarFallback className="text-xs">
-                              {project.owner_username?.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                        </div>
+              ) : (
+                <div className="space-y-6 lg:space-y-8">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-lg font-semibold">Recent Projects</h2>
+                      <Link to="/projects" className="text-sm text-primary hover:underline">
+                        View all
                       </Link>
-                    ))}
+                    </div>
+                    {recentProjects && recentProjects.length > 0 ? (
+                      <div className="space-y-2">
+                        {recentProjects.map((project) => (
+                          <Link
+                            to={`/editor/${project.room_id}`}
+                            key={project.id}
+                            className="flex items-center justify-between p-4 border border-border bg-card hover:border-primary/50 hover:bg-secondary/30 transition-colors group rounded-lg"
+                          >
+                            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                              <div className="p-2 bg-secondary rounded-lg shrink-0">
+                                <img src={getProjectTypeIcon(project.project_type)} alt={project.project_type} className="h-5 w-5" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-medium truncate">{project.name}</p>
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                  <Clock className="h-3 w-3 shrink-0" />
+                                  <span className="truncate">{formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3 shrink-0">
+                              <Avatar className="h-7 w-7 border border-border hidden sm:block">
+                                <AvatarImage src={project.owner_avatar_url || undefined} />
+                                <AvatarFallback className="text-xs">
+                                  {project.owner_username?.charAt(0).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="border border-dashed border-border py-12 text-center rounded-lg">
+                        <Folder className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+                        <p className="text-muted-foreground">No projects yet.</p>
+                        <Button className="mt-4" onClick={handleOpenCreateDialog}>
+                          Create Your First Project
+                        </Button>
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="border border-dashed border-border py-12 text-center rounded-lg">
-                    <Folder className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                    <p className="text-muted-foreground">No projects yet.</p>
-                    <Button className="mt-4" onClick={handleOpenCreateDialog}>
-                      Create Your First Project
-                    </Button>
+
+                  {/* Recent Practice Section */}
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-lg font-semibold">Recent Practice</h2>
+                      <Link to="/practice/sets" className="text-sm text-primary hover:underline">
+                        View all
+                      </Link>
+                    </div>
+                    {recentPractice && recentPractice.length > 0 ? (
+                      <div className="space-y-2">
+                        {recentPractice.map((practice) => (
+                          <Link
+                            to={`/practice/custom/${practice.id}`}
+                            key={practice.id}
+                            className="flex items-center justify-between p-4 border border-border bg-card hover:border-primary/50 hover:bg-secondary/30 transition-colors group rounded-lg"
+                          >
+                            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                              <div className="p-2 bg-secondary rounded-lg shrink-0">
+                                <img src={getProjectTypeIcon(practice.language)} alt={practice.language} className="h-5 w-5" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-medium truncate">{practice.title}</p>
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                  <Target className="h-3 w-3 shrink-0" />
+                                  <span>{practice.completed_count}/{practice.problem_count} completed</span>
+                                  <span className="text-border">|</span>
+                                  <span className="uppercase text-[10px] font-medium px-1.5 py-0.5 bg-secondary rounded">{practice.language}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3 shrink-0">
+                              <Avatar className="h-7 w-7 border border-border hidden sm:block">
+                                <AvatarImage src={practice.owner_avatar_url || undefined} />
+                                <AvatarFallback className="text-xs">
+                                  {practice.owner_username?.charAt(0).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="border border-dashed border-border py-8 text-center rounded-lg">
+                        <BookOpen className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
+                        <p className="text-muted-foreground text-sm">No practice rooms joined yet.</p>
+                        <Button variant="outline" size="sm" className="mt-3" onClick={() => navigate('/practice/sets')}>
+                          Browse Practice Sets
+                        </Button>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
             <div className="lg:col-span-4 space-y-6">
