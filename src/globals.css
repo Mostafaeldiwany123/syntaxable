@@ -105,6 +105,15 @@ body {
     --ring: 210 100% 40%;
     --accent: 0 0% 90%;
     --accent-foreground: 0 0% 10%;
+    
+    /* Pro Theme (Light mode equivalents) */
+    --pro-light: #9e7f41;
+    --pro-primary: #b08d4a;
+    --pro-dark: #8c6a2f;
+    --pro-bg: #fffbf0;
+    --pro-grad-1: #fffdf5;
+    --pro-grad-2: #fef5e0;
+
     --editor-base: vs;
     --editor-bg: #f8f9fa;
     --editor-fg: #24292e;

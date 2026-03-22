@@ -1,28 +1,17 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Loader2, Plus, Search, Users, Lock, Folder } from "lucide-react";
-import { useProjects, useRenameProject, useDeleteProject, useCreateProject, Project, ProjectType } from "@/hooks/projects";
+import { toast } from "sonner";
+import { useProjects, useRenameProject, useDeleteProject, Project } from "@/hooks/projects";
 import { useAuth } from "@/hooks/useAuth";
 import { useProjectLimit } from "@/hooks/useProjectLimit";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { useFriends } from "@/hooks/friends";
-import { MultiSelect } from "@/components/ui/multi-select";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { UpgradeDialog } from "@/components/projects/UpgradeDialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ProjectTypeSelector } from "@/components/projects/ProjectTypeSelector";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { CreateProjectDialog } from "@/components/projects/CreateProjectDialog";
 
 const ProjectsPage = () => {
   const navigate = useNavigate();
@@ -30,8 +19,6 @@ const ProjectsPage = () => {
   const { data: projects, isLoading } = useProjects();
   const { mutate: renameProject, isPending: isRenaming } = useRenameProject();
   const { mutate: deleteProject, isPending: isDeleting } = useDeleteProject();
-  const { mutate: createProject, isPending: isCreating } = useCreateProject();
-  const { data: friends } = useFriends();
   const { canCreate, projectCount, limit } = useProjectLimit();
 
   // State for modals and forms
@@ -42,32 +29,9 @@ const ProjectsPage = () => {
   
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   
-  const [newProjectName, setNewProjectName] = useState("");
-  const [newProjectType, setNewProjectType] = useState<ProjectType>('cpp');
-  const [newProjectPermission, setNewProjectPermission] = useState<'editor' | 'viewer'>('viewer');
-  const [invitedFriends, setInvitedFriends] = useState<string[]>([]);
   const [renameValue, setRenameValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState('last_edited_at');
-
-  const handleCreateProject = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newProjectName.trim()) return;
-    createProject({
-      projectName: newProjectName,
-      projectType: newProjectType,
-      defaultPermission: newProjectPermission,
-      inviteeIds: invitedFriends
-    }, {
-      onSuccess: (data) => {
-        navigate(`/editor/${data.new_room_id}`);
-        setIsCreateOpen(false);
-        setNewProjectName("");
-        setNewProjectType('cpp');
-        setInvitedFriends([]);
-      }
-    });
-  };
 
   const handleRenameProject = (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,8 +102,6 @@ const ProjectsPage = () => {
       </div>
     );
   }
-  
-  const friendOptions = friends?.map(f => ({ value: f.id, label: f.username })) || [];
 
   return (
     <div className="min-h-full">
@@ -159,65 +121,7 @@ const ProjectsPage = () => {
       
       <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
         <div>
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create a New Project</DialogTitle>
-                <DialogDescription>Choose a project type, give it a name, and set permissions.</DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleCreateProject}>
-                <div className="py-4 space-y-6">
-                  <div>
-                    <Label className="text-sm font-medium mb-3 block">Project Type</Label>
-                    <ProjectTypeSelector value={newProjectType} onChange={setNewProjectType} />
-                  </div>
-                  <Input
-                    id="project-name"
-                    placeholder="e.g., My Awesome App"
-                    value={newProjectName}
-                    onChange={(e) => setNewProjectName(e.target.value)}
-                    autoFocus
-                  />
-                  <div>
-                    <Label className="text-sm font-medium mb-2 block">Invite Friends (Optional)</Label>
-                    <MultiSelect
-                      options={friendOptions}
-                      selected={invitedFriends}
-                      onChange={setInvitedFriends}
-                      placeholder="Select friends to invite..."
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium mb-2 block">Default Permissions</Label>
-                    <RadioGroup
-                      value={newProjectPermission}
-                      onValueChange={(value: 'editor' | 'viewer') => setNewProjectPermission(value)}
-                      className="grid grid-cols-2 gap-4"
-                    >
-                      <div>
-                        <RadioGroupItem value="viewer" id="create-private" className="peer sr-only" />
-                        <Label htmlFor="create-private" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 transition-colors hover:bg-secondary/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                          <Lock className="mb-3 h-6 w-6" /> Private
-                        </Label>
-                      </div>
-                      <div>
-                        <RadioGroupItem value="editor" id="create-collaborative" className="peer sr-only" />
-                        <Label htmlFor="create-collaborative" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 transition-colors hover:bg-secondary/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                          <Users className="mb-3 h-6 w-6" /> Collaborative
-                        </Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button type="submit" disabled={isCreating || !newProjectName.trim()}>
-                    {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Create Project
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <CreateProjectDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
         </div>
 
         <div className="mb-6 mt-4 flex flex-col sm:flex-row gap-4">

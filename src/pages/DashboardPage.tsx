@@ -11,33 +11,26 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Plus, LogIn, Loader2, ArrowRight, Folder, Users, Lock, Code2, GitCommit, Clock, FolderPlus } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { useRecentProjects, useCreateProject, useProjects, ProjectType } from "@/hooks/projects";
+import { useRecentProjects, useProjects } from "@/hooks/projects";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/profiles";
 import { useFriends } from "@/hooks/friends";
 import { useTotalCommits } from "@/hooks/stats";
 import { useProjectLimit } from "@/hooks/useProjectLimit";
-import { MultiSelect } from "@/components/ui/multi-select";
 import { ActivityChart } from "@/components/dashboard/ActivityChart";
 import { OnlineFriends } from "@/components/dashboard/OnlineFriends";
-import { ProjectTypeSelector } from "@/components/projects/ProjectTypeSelector";
 import { UpgradeDialog } from "@/components/projects/UpgradeDialog";
+import { CreateProjectDialog } from "@/components/projects/CreateProjectDialog";
 import { getFileIconUrl } from "@/lib/project-utils";
 import { toast } from "sonner";
 import { useCustomSetByShortCode } from "@/hooks/customSets";
 
 const DashboardPage = () => {
-  const [projectName, setProjectName] = useState("");
-  const [projectType, setProjectType] = useState<ProjectType>('cpp');
-  const [permission, setPermission] = useState<'editor' | 'viewer'>('viewer');
   const [roomId, setRoomId] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [invitedFriends, setInvitedFriends] = useState<string[]>([]);
   const [isSearchingSet, setIsSearchingSet] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const navigate = useNavigate();
@@ -46,7 +39,6 @@ const DashboardPage = () => {
 
   const { data: projects } = useProjects();
   const { data: recentProjects, isLoading: isLoadingRecent } = useRecentProjects(3);
-  const { mutate: createProjectMutate, isPending: isCreating } = useCreateProject();
   const { data: friends } = useFriends();
   const { data: totalCommits } = useTotalCommits();
   const { canCreate, projectCount, limit } = useProjectLimit();
@@ -65,33 +57,18 @@ const DashboardPage = () => {
     setIsDialogOpen(true);
   };
 
-  const handleCreateProject = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!projectName.trim()) return;
-
-    createProjectMutate({ projectName, projectType, defaultPermission: permission, inviteeIds: invitedFriends }, {
-      onSuccess: (data) => {
-        const { new_room_id } = data;
-        navigate(`/editor/${new_room_id}`);
-        setIsDialogOpen(false);
-        setProjectName("");
-        setProjectType('cpp');
-        setInvitedFriends([]);
-      },
-    });
-  };
 
   const handleJoinRoom = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedId = roomId.trim();
-    
+
     if (!trimmedId) {
       toast.error("Please enter a code");
       return;
     }
-    
+
     const isShortCode = /^[a-zA-Z0-9]{8}$/i.test(trimmedId);
-    
+
     if (isShortCode) {
       // Try to find custom set first, then fall back to room
       setIsSearchingSet(true);
@@ -101,11 +78,11 @@ const DashboardPage = () => {
           navigate(`/practice/custom/${setData.id}`);
           return;
         }
-        
+
         // If custom set not found, try to join as room
         // First verify the room exists by checking permission
         const { data: roomData, error: roomError } = await supabase.rpc('ensure_user_permission', { p_room_id: trimmedId });
-        
+
         if (!roomError && roomData && roomData[0]?.level) {
           navigate(`/editor/${trimmedId}`);
         } else {
@@ -124,7 +101,6 @@ const DashboardPage = () => {
   };
 
   const welcomeMessage = profile?.username ? `Welcome back, ${profile.username}` : "Welcome to Syntaxable";
-  const friendOptions = friends?.map(f => ({ value: f.id, label: f.username })) || [];
 
   const getProjectTypeIcon = (projectType: string) => {
     const type = projectType?.toLowerCase() || '';
@@ -157,67 +133,7 @@ const DashboardPage = () => {
                   <Plus className="mr-2 h-4 w-4" />
                   New Project
                 </Button>
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Create a New Project</DialogTitle>
-                      <DialogDescription>Give your project a name and set its initial permissions.</DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleCreateProject}>
-                      <div className="py-4 space-y-6">
-                        <div>
-                          <Label className="text-sm font-medium mb-3 block">Project Type</Label>
-                          <ProjectTypeSelector value={projectType} onChange={setProjectType} />
-                        </div>
-                        <Input
-                          id="project-name"
-                          placeholder="e.g., My Awesome App"
-                          value={projectName}
-                          onChange={(e) => setProjectName(e.target.value)}
-                          autoFocus
-                        />
-                        <div>
-                          <Label className="text-sm font-medium mb-2 block">Invite Friends (Optional)</Label>
-                          <MultiSelect
-                            options={friendOptions}
-                            selected={invitedFriends}
-                            onChange={setInvitedFriends}
-                            placeholder="Select friends to invite..."
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-sm font-medium mb-2 block">Default Permissions</Label>
-                          <RadioGroup
-                            value={permission}
-                            onValueChange={(value: 'editor' | 'viewer') => setPermission(value)}
-                            className="grid grid-cols-2 gap-4"
-                          >
-                            <div>
-                              <RadioGroupItem value="viewer" id="private" className="peer sr-only" />
-                              <Label htmlFor="private" className="flex flex-col items-center justify-between border border-border bg-card p-4 transition-colors hover:bg-secondary/50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 rounded-lg">
-                                <Lock className="mb-3 h-5 w-5" />
-                                <span className="text-sm font-medium">Private</span>
-                              </Label>
-                            </div>
-                            <div>
-                              <RadioGroupItem value="editor" id="collaborative" className="peer sr-only" />
-                              <Label htmlFor="collaborative" className="flex flex-col items-center justify-between border border-border bg-card p-4 transition-colors hover:bg-secondary/50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 rounded-lg">
-                                <Users className="mb-3 h-5 w-5" />
-                                <span className="text-sm font-medium">Collaborative</span>
-                              </Label>
-                            </div>
-                          </RadioGroup>
-                        </div>
-                      </div>
-                      <DialogFooter>
-                        <Button type="submit" disabled={isCreating || !projectName.trim()}>
-                          {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                          Create Project
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                <CreateProjectDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
                 <UpgradeDialog
                   open={showUpgradeDialog}
                   onOpenChange={setShowUpgradeDialog}

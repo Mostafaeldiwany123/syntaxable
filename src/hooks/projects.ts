@@ -83,9 +83,10 @@ interface CreateProjectPayload {
   projectType: ProjectType;
   defaultPermission: 'editor' | 'viewer';
   inviteeIds?: string[];
+  initialFiles?: { path: string; content: string }[];
 }
 
-const createProject = async ({ projectName, projectType, defaultPermission, inviteeIds }: CreateProjectPayload): Promise<CreateProjectResult> => {
+const createProject = async ({ projectName, projectType, defaultPermission, inviteeIds, initialFiles }: CreateProjectPayload): Promise<CreateProjectResult> => {
   const { data, error } = await supabase.rpc("create_new_project", {
     project_name: projectName,
     p_default_permission: defaultPermission,
@@ -104,45 +105,48 @@ const createProject = async ({ projectName, projectType, defaultPermission, invi
 
   const result = data[0] as CreateProjectResult;
 
-  // Populate the initial file with template content
-  const template = getProjectTemplate(projectType);
-  console.log('Template for', projectType, ':', template); // Debug log
-  
-  // First, try to update the existing file
-  const { error: updateError } = await supabase
-    .from("files")
-    .update({ content: template.content })
-    .eq("room_id", result.new_room_id)
-    .eq("path", template.filename);
+  if (initialFiles && initialFiles.length > 0) {
+    // If we have initial files, we need to delete the default file created by RPC first
+    // because we will insert our own file structure.
+    await supabase.from("files").delete().eq("room_id", result.new_room_id);
 
-  if (updateError) {
-    console.error("Error populating template with correct filename:", updateError);
-    
-    // If that fails, try to find and update any existing file in the room
-    const { data: existingFiles, error: fetchError } = await supabase
-      .from("files")
-      .select("path")
-      .eq("room_id", result.new_room_id)
-      .limit(1);
-    
-    if (!fetchError && existingFiles && existingFiles.length > 0) {
-      const existingPath = existingFiles[0].path;
-      console.log('Updating existing file:', existingPath);
-      
-      const { error: updateExistingError } = await supabase
-        .from("files")
-        .update({ content: template.content })
-        .eq("room_id", result.new_room_id)
-        .eq("path", existingPath);
-        
-      if (updateExistingError) {
-        console.error("Error updating existing file:", updateExistingError);
-      } else {
-        console.log('Template populated successfully for', projectType, 'using existing file:', existingPath);
-      }
+    const filesToInsert = initialFiles.map(file => ({
+      room_id: result.new_room_id,
+      path: file.path,
+      content: file.content
+    }));
+
+    const { error: insertError } = await supabase.from("files").insert(filesToInsert);
+    if (insertError) {
+      console.error("Error inserting initial files:", insertError);
+      throw new Error("Failed to upload project files.");
     }
   } else {
-    console.log('Template populated successfully for', projectType);
+    // Populate the initial file with template content (standard behavior)
+    const template = getProjectTemplate(projectType);
+    
+    const { error: updateError } = await supabase
+      .from("files")
+      .update({ content: template.content })
+      .eq("room_id", result.new_room_id)
+      .eq("path", template.filename);
+
+    if (updateError) {
+      // Fallback: try to update any file if specific filename update fails
+      const { data: existingFiles } = await supabase
+        .from("files")
+        .select("path")
+        .eq("room_id", result.new_room_id)
+        .limit(1);
+      
+      if (existingFiles && existingFiles.length > 0) {
+        await supabase
+          .from("files")
+          .update({ content: template.content })
+          .eq("room_id", result.new_room_id)
+          .eq("path", existingFiles[0].path);
+      }
+    }
   }
 
   return result;
