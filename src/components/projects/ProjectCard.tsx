@@ -19,7 +19,7 @@ interface ProjectCardProps {
 export const ProjectCard = ({ project, isOwner, onRename, onDelete }: ProjectCardProps) => {
   const navigate = useNavigate();
 
-  const lastEdited = project.last_edited_at 
+  const lastEdited = project.last_edited_at
     ? `Edited ${formatDistanceToNow(new Date(project.last_edited_at), { addSuffix: true })}`
     : `Created ${formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}`;
 
@@ -31,14 +31,15 @@ export const ProjectCard = ({ project, isOwner, onRename, onDelete }: ProjectCar
       'c': 'c',
       'csharp': 'cs',
       'python': 'py',
-      'html': 'html'
+      'html': 'html',
+      'java': 'java'
     };
     const ext = extMap[type] || 'cpp';
     return getFileIconUrl(`file.${ext}`);
   };
 
   return (
-    <Card 
+    <Card
       className="group flex flex-col hover:border-primary/80 hover:shadow-lg transition-all duration-300 bg-secondary/30 border-border/50"
     >
       <CardHeader className="cursor-pointer" onClick={() => navigate(`/editor/${project.room_id}`)}>
@@ -72,8 +73,8 @@ export const ProjectCard = ({ project, isOwner, onRename, onDelete }: ProjectCar
           </div>
         </div>
         <div className="flex items-center gap-1">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="sm"
             className="text-muted-foreground hover:text-primary hover:bg-primary/10"
             onClick={() => navigate(`/editor/${project.room_id}`)}

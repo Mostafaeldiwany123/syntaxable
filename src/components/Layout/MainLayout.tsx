@@ -129,7 +129,7 @@ const MainLayout = (props: MainLayoutProps) => {
 
     const handleExportToZip = async () => {
         const zip = new JSZip();
-        
+
         // Add all project files to the ZIP
         Object.entries(fileContents).forEach(([path, content]) => {
             zip.file(path, content);
@@ -229,10 +229,10 @@ const MainLayout = (props: MainLayoutProps) => {
             <div className="flex-1 overflow-hidden">
                 <ResizablePanelGroup direction="horizontal">
                     {/* File Explorer - Resizable sidebar */}
-                    <ResizablePanel 
-                        defaultSize={15} 
-                        minSize={10} 
-                        maxSize={30} 
+                    <ResizablePanel
+                        defaultSize={15}
+                        minSize={10}
+                        maxSize={30}
                         className="bg-card border-r border-border"
                     >
                         <FileExplorer
@@ -249,12 +249,12 @@ const MainLayout = (props: MainLayoutProps) => {
                         />
                     </ResizablePanel>
                     <ResizableHandle className="bg-border w-[1px] hover:bg-primary transition-all" />
-                    
+
                     {/* Main Editor Area */}
-                    <ResizablePanel 
-                        defaultSize={isPreviewOpen ? 55 : (isAIAgentOpen ? 60 : 85)} 
-                        minSize={30} 
-                        maxSize={85} 
+                    <ResizablePanel
+                        defaultSize={isPreviewOpen ? 55 : (isAIAgentOpen ? 60 : 85)}
+                        minSize={30}
+                        maxSize={85}
                         className="relative flex flex-col"
                     >
                         <CodeEditor
@@ -268,7 +268,7 @@ const MainLayout = (props: MainLayoutProps) => {
                             isReadOnly={isReadOnly}
                             onAIAgentClick={handleAIAgentClick}
                         />
-                        
+
                         {shouldShowTerminal && (
                             <CompilationOutput
                                 isOpen={isCompilationOutputOpen}
@@ -279,7 +279,7 @@ const MainLayout = (props: MainLayoutProps) => {
                             />
                         )}
                     </ResizablePanel>
-                    
+
                     {/* Preview Panel */}
                     {!shouldShowTerminal && isPreviewOpen && (
                         <>
@@ -341,10 +341,13 @@ const MainLayout = (props: MainLayoutProps) => {
 function useTerminalForProject(files: FileData[]): boolean {
     const hasReact = files.some(f => f.name.endsWith('.tsx') || f.name.endsWith('.jsx'));
     if (hasReact) return false;
-    
+
     const hasHtml = files.some(f => f.name.endsWith('.html') || f.name.endsWith('.htm'));
     if (hasHtml) return false;
-    
+
+    const hasPython = files.some(f => f.name.endsWith('.py'));
+    if (hasPython) return false;
+
     return true;
 }
 

@@ -15,6 +15,7 @@ const allLanguages = [
   { id: 'cpp', label: 'C++', icon: `${CDN_BASE}/cpp.svg` },
   { id: 'csharp', label: 'C#', icon: `${CDN_BASE}/csharp.svg` },
   { id: 'python', label: 'Python', icon: `${CDN_BASE}/python.svg` },
+  { id: 'java', label: 'Java', icon: `${CDN_BASE}/java.svg` },
 ];
 
 const languageFilterOptions = [
@@ -22,6 +23,7 @@ const languageFilterOptions = [
   { value: 'cpp', label: 'C++' },
   { value: 'csharp', label: 'C#' },
   { value: 'python', label: 'Python' },
+  { value: 'java', label: 'Java' },
 ];
 
 const sortOptions = [
@@ -285,7 +287,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
                     <div className="flex items-start gap-3">
                       <div className="p-2 bg-primary/10 rounded-lg shrink-0">
                         <img
-                          src={`${CDN_BASE}/${set.language === 'csharp' ? 'csharp' : set.language === 'cpp' ? 'cpp' : 'python'}.svg`}
+                          src={`${CDN_BASE}/${set.language === 'csharp' ? 'csharp' : set.language === 'cpp' ? 'cpp' : (set.language === 'java' ? 'java' : 'python')}.svg`}
                           alt=""
                           className="w-5 h-5"
                         />

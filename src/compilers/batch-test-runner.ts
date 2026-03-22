@@ -2,8 +2,9 @@ import { FileData } from './types';
 import { cppCompiler } from './cpp-compiler';
 import { csharpCompiler } from './csharp-compiler';
 import { pythonCompiler } from './python-compiler';
+import { javaCompiler } from './java-compiler';
 
-export type LanguageType = 'cpp' | 'csharp' | 'python';
+export type LanguageType = 'cpp' | 'csharp' | 'python' | 'java';
 
 export interface BatchTestCase {
   input: string;
@@ -219,10 +220,10 @@ int main() {
 async function runSingleTest(
   code: string,
   testCase: BatchTestCase,
-  language: 'csharp' | 'python'
+  language: 'csharp' | 'python' | 'java'
 ): Promise<BatchTestResult> {
-  const compiler = language === 'csharp' ? csharpCompiler : pythonCompiler;
-  const entryFile = language === 'csharp' ? 'Program.cs' : 'main.py';
+  const compiler = language === 'csharp' ? csharpCompiler : (language === 'python' ? pythonCompiler : javaCompiler);
+  const entryFile = language === 'csharp' ? 'Program.cs' : (language === 'python' ? 'main.py' : 'Main.java');
 
   try {
     const result = await compiler.compileWithStdin!(
@@ -269,7 +270,7 @@ async function runSingleTest(
 async function runIndividualTests(
   code: string,
   testCases: BatchTestCase[],
-  language: 'csharp' | 'python'
+  language: 'csharp' | 'python' | 'java'
 ): Promise<BatchTestResult[]> {
   // Run all tests in parallel
   const results = await Promise.all(
@@ -385,6 +386,7 @@ export async function runBatchTests(
       return runCppBatchTests(code, testCases);
     case 'csharp':
     case 'python':
+    case 'java':
       return runIndividualTests(code, testCases, language);
     default:
       throw new Error(`Unsupported language: ${language}`);

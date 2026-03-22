@@ -14,7 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { getFileIconUrl } from "@/lib/project-utils";
 import { Switch } from "@/components/ui/switch";
 
-type Language = 'cpp' | 'csharp' | 'python';
+type Language = 'cpp' | 'csharp' | 'python' | 'java';
 
 interface Problem {
   title: string;
@@ -56,6 +56,7 @@ const languageOptions: { value: Language; label: string; extension: string }[] =
   { value: 'cpp', label: 'C++', extension: '.cpp' },
   { value: 'csharp', label: 'C#', extension: '.cs' },
   { value: 'python', label: 'Python', extension: '.py' },
+  { value: 'java', label: 'Java', extension: '.java' },
 ];
 
 const CreateCustomSetPage = () => {

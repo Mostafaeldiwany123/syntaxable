@@ -6,7 +6,7 @@ export interface CustomSet {
   id: string;
   title: string;
   description: string | null;
-  language: 'cpp' | 'csharp' | 'python';
+  language: 'cpp' | 'csharp' | 'python' | 'java';
   owner_id: string;
   owner_username: string | null;
   owner_avatar_url: string | null;
@@ -21,7 +21,7 @@ export interface PublicCustomSet {
   id: string;
   title: string;
   description: string | null;
-  language: 'cpp' | 'csharp' | 'python';
+  language: 'cpp' | 'csharp' | 'python' | 'java';
   owner_id: string;
   owner_username: string | null;
   owner_avatar_url: string | null;
@@ -60,7 +60,7 @@ export interface CustomSetDetail {
   id: string;
   title: string;
   description: string | null;
-  language: 'cpp' | 'csharp' | 'python';
+  language: 'cpp' | 'csharp' | 'python' | 'java';
   owner_id: string;
   owner_username: string | null;
   owner_avatar_url: string | null;
@@ -151,7 +151,7 @@ export const useCreateCustomSet = () => {
     }: {
       title: string;
       description: string;
-      language: 'cpp' | 'csharp' | 'python';
+      language: 'cpp' | 'csharp' | 'python' | 'java';
       problems: Array<{
         title: string;
         difficulty: 'easy' | 'medium' | 'hard';
@@ -454,7 +454,7 @@ export interface RecentPracticeRoom {
   id: string;
   title: string;
   description: string | null;
-  language: 'cpp' | 'csharp' | 'python';
+  language: 'cpp' | 'csharp' | 'python' | 'java';
   owner_id: string;
   owner_username: string | null;
   owner_avatar_url: string | null;

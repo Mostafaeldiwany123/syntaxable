@@ -119,7 +119,6 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
       case 'csharp': return 'cs';
       case 'java': return 'java';
       case 'javascript': return 'js';
-      case 'c': return 'c';
       default: return 'cpp';
     }
   };

@@ -25,7 +25,7 @@ interface PracticePanelProps {
   language?: CourseLanguage;
 }
 
-const VALID_LANGUAGES: LanguageType[] = ['cpp', 'csharp', 'python'];
+const VALID_LANGUAGES: LanguageType[] = ['cpp', 'csharp', 'python', 'java'];
 
 function isValidLanguage(lang: string): lang is LanguageType {
   return VALID_LANGUAGES.includes(lang as LanguageType);
@@ -84,7 +84,7 @@ const PracticePanel: React.FC<PracticePanelProps> = ({
 
     // Validate language is supported
     if (!isValidLanguage(language)) {
-      toast.error(`Language '${language}' is not supported for batch testing. Supported: C++, C#, Python`);
+      toast.error(`Language '${language}' is not supported for batch testing. Supported: C++, C#, Python, Java`);
       setIsRunning(false);
       return;
     }

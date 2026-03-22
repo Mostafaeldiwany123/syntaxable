@@ -111,7 +111,8 @@ const DashboardPage = () => {
       'c': 'c',
       'csharp': 'cs',
       'python': 'py',
-      'html': 'html'
+      'html': 'html',
+      'java': 'java'
     };
     const ext = extMap[type] || 'cpp';
     return getFileIconUrl(`file.${ext}`);

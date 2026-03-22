@@ -69,7 +69,12 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
             Back
           </Button>
           <div className="h-6 w-px bg-border" />
-          <span className="font-medium">{course.language.toUpperCase()}</span>
+          <img
+            src={`${CDN_BASE}/${course.language.toLowerCase() === 'csharp' ? 'csharp' : course.language.toLowerCase() === 'cpp' ? 'cpp' : (course.language.toLowerCase() === 'java' ? 'java' : 'python')}.svg`}
+            alt=""
+            className="w-5 h-5 ml-1"
+          />
+          <span className="font-medium ml-2">{course.language.toUpperCase()}</span>
         </div>
         
         <div className="flex items-center gap-4">

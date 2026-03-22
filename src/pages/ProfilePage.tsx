@@ -43,9 +43,9 @@ const ProfilePage = () => {
   const { user: authUser } = useAuth();
   const { data: profile, isLoading: profileLoading } = useProfile(userId);
   const { data: publicRepos, isLoading: reposLoading } = useUserPublicRepos(userId);
-  
+
   useRealtimeProfile(userId);
-  
+
   const isOwnProfile = authUser?.id === userId;
   const isPro = profile?.tier === 'pro' || profile?.tier === 'admin';
 
@@ -67,9 +67,9 @@ const ProfilePage = () => {
   const { data: commitHistory, isLoading: commitsLoading } = useQuery<CommitHistory[], Error>({
     queryKey: ['userCommitHistory', userId],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_user_commit_history', { 
-        p_user_id: userId!, 
-        p_limit: 100 
+      const { data, error } = await supabase.rpc('get_user_commit_history', {
+        p_user_id: userId!,
+        p_limit: 100
       });
       if (error) throw error;
       return (data as CommitHistory[]) || [];
@@ -83,7 +83,16 @@ const ProfilePage = () => {
   };
 
   const getFileTypeIcon = (type: string) => {
-    const ext = type === 'react' ? 'tsx' : type === 'cpp' ? 'cpp' : type === 'python' ? 'py' : type === 'html' ? 'html' : 'c';
+    const extMap: Record<string, string> = {
+      'react': 'tsx',
+      'cpp': 'cpp',
+      'c': 'c',
+      'csharp': 'cs',
+      'python': 'py',
+      'html': 'html',
+      'java': 'java'
+    };
+    const ext = extMap[type] || 'cpp';
     return getFileIconUrl(`file.${ext}`);
   };
 
@@ -111,7 +120,7 @@ const ProfilePage = () => {
                 <AvatarFallback className={`text-4xl ${isPro ? 'bg-pro/20' : 'bg-primary/10'}`}>{getInitials()}</AvatarFallback>
               </Avatar>
             </div>
-            
+
             {/* Info Section */}
             <div className="flex-1 flex flex-col sm:flex-row justify-between items-center sm:items-end w-full gap-6">
               <div className="space-y-3 text-center sm:text-left">
@@ -126,11 +135,11 @@ const ProfilePage = () => {
                     </Badge>
                   )}
                 </div>
-                
+
                 <div className={`flex items-center justify-center sm:justify-start gap-2 text-sm ${isPro ? 'text-yellow-600/60' : 'text-muted-foreground'}`}>
                   <Calendar className="h-4 w-4" />
                   <span>
-                    {profile?.created_at 
+                    {profile?.created_at
                       ? `Joined ${formatDistanceToNow(new Date(profile.created_at), { addSuffix: true })}`
                       : 'Joined recently'
                     }
@@ -147,9 +156,9 @@ const ProfilePage = () => {
                       Friends
                     </Link>
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setIsProfileSheetOpen(true)}
                     className={`h-9 ${isPro ? 'border-yellow-600/30 hover:bg-yellow-600/10 text-yellow-600/80' : ''}`}
                   >
@@ -231,7 +240,7 @@ const ProfilePage = () => {
                   {isOwnProfile ? 'My Projects' : 'Public Projects'}
                 </h2>
               </div>
-              
+
               {reposLoading ? (
                 <div className="space-y-3">
                   <Skeleton className="h-16 w-full" />
@@ -243,11 +252,10 @@ const ProfilePage = () => {
                     <Link
                       key={repo.id}
                       to={`/editor/${repo.room_id}`}
-                      className={`flex items-center justify-between p-4 rounded-xl border transition-all group ${
-                        isPro 
-                          ? 'border-yellow-600/20 bg-pro-bg hover:bg-pro-grad1 hover:border-yellow-600/40' 
+                      className={`flex items-center justify-between p-4 rounded-xl border transition-all group ${isPro
+                          ? 'border-yellow-600/20 bg-pro-bg hover:bg-pro-grad1 hover:border-yellow-600/40'
                           : 'border-border bg-card hover:bg-secondary/50 hover:border-primary/30'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <img src={getFileTypeIcon(repo.project_type)} alt="" className="w-5 h-5 shrink-0" />
@@ -291,17 +299,16 @@ const ProfilePage = () => {
                 <GitCommit className="h-5 w-5" />
                 Recent Activity
               </h2>
-              
+
               {commitHistory && commitHistory.length > 0 ? (
                 <div className="space-y-2">
                   {commitHistory.slice(0, 8).map((commit) => (
-                    <div 
-                      key={commit.id} 
-                      className={`flex items-start gap-3 p-4 rounded-xl border transition-colors ${
-                        isPro 
-                          ? 'border-yellow-600/10 bg-pro-bg' 
+                    <div
+                      key={commit.id}
+                      className={`flex items-start gap-3 p-4 rounded-xl border transition-colors ${isPro
+                          ? 'border-yellow-600/10 bg-pro-bg'
                           : 'border-border bg-card/50'
-                      }`}
+                        }`}
                     >
                       <div className={`mt-1.5 h-1.5 w-1.5 rounded-full flex-shrink-0 ${isPro ? 'bg-pro' : 'bg-primary'}`} />
                       <div className="flex-1 min-w-0">

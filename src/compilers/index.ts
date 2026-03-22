@@ -5,6 +5,7 @@ import { csharpCompiler } from './csharp-compiler';
 import { pythonCompiler } from './python-compiler';
 import { htmlCompiler } from './html-compiler';
 import { reactCompiler } from './react-compiler';
+import { javaCompiler } from './java-compiler';
 
 export * from './types';
 export { cppCompiler } from './cpp-compiler';
@@ -13,6 +14,7 @@ export { csharpCompiler } from './csharp-compiler';
 export { pythonCompiler } from './python-compiler';
 export { htmlCompiler } from './html-compiler';
 export { reactCompiler } from './react-compiler';
+export { javaCompiler } from './java-compiler';
 export { runBatchTests, type BatchTestCase, type BatchTestResult, type LanguageType } from './batch-test-runner';
 
 // Registry of all compilers
@@ -23,6 +25,7 @@ const compilers: Compiler[] = [
   cppCompiler,
   cCompiler,
   csharpCompiler,
+  javaCompiler,
 ];
 
 export function detectCompiler(fileName: string): Compiler | null {

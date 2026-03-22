@@ -30,13 +30,13 @@ import CustomSetParticipantsPage from "./pages/CustomSetParticipantsPage";
 import PricingPage from "./pages/PricingPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import TermsOfServicePage from "./pages/TermsOfServicePage";
-import { cppCourse, csharpCourse, pythonCourse } from './data/practiceProblems';
+import { cppCourse, csharpCourse, pythonCourse, javaCourse } from './data/practiceProblems';
 
 const PracticeRoutes = () => {
   const { language, problemId } = useParams();
   const navigate = useNavigate();
   
-  const course = language === 'cpp' ? cppCourse : language === 'csharp' ? csharpCourse : language === 'python' ? pythonCourse : null;
+  const course = language === 'cpp' ? cppCourse : language === 'csharp' ? csharpCourse : language === 'python' ? pythonCourse : language === 'java' ? javaCourse : null;
   const problem = course ? course.lessons.flatMap(l => l.problems).find(p => p.id === problemId) : null;
   
   useEffect(() => {

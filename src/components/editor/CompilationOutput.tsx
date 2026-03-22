@@ -109,9 +109,9 @@ const CompilationOutput: React.FC<CompilationOutputProps> = ({
     if (nextIndex < inputAnalysis.inputs.length) {
       // More inputs needed
       setCurrentInputIndex(nextIndex);
-      setTerminalLines(prev => [...prev, { 
-        type: 'system', 
-        content: inputAnalysis.inputs[nextIndex].promptText 
+      setTerminalLines(prev => [...prev, {
+        type: 'system',
+        content: inputAnalysis.inputs[nextIndex].promptText
       }]);
     } else {
       // All inputs collected, execute
@@ -133,8 +133,8 @@ const CompilationOutput: React.FC<CompilationOutputProps> = ({
 
     try {
       const result: CompilerResult = await compiler.compileWithStdin(
-        [{ name: fileName, content: code }], 
-        fileName, 
+        [{ name: fileName, content: code }],
+        fileName,
         stdin
       );
 
@@ -178,8 +178,8 @@ const CompilationOutput: React.FC<CompilationOutputProps> = ({
     setCollectedInputs([]);
     setCurrentInputIndex(0);
 
-    // Check if code has interactive inputs (C/C++/C#)
-    if (compiler.analyzeCode && (language === 'cpp' || language === 'c' || language === 'csharp')) {
+    // Check if code has interactive inputs (C/C++/C#/Java)
+    if (compiler.analyzeCode && (language === 'cpp' || language === 'c' || language === 'csharp' || language === 'java')) {
       const analysis = compiler.analyzeCode(code);
 
       if (analysis.totalInputs > 0) {
@@ -294,13 +294,12 @@ const CompilationOutput: React.FC<CompilationOutputProps> = ({
         style={{ fontFamily: "'Inconsolata', 'Consolas', 'Monaco', 'Courier New', monospace" }}
       >
         {terminalLines.map((line, idx) => (
-          <div key={idx} className={`leading-6 ${
-            line.type === 'error' ? 'text-destructive' :
-            line.type === 'system' ? 'text-primary' :
-            line.type === 'success' ? 'text-green-500' :
-            line.type === 'input' ? 'text-green-400 font-bold' :
-            'text-foreground'
-          } whitespace-pre-wrap break-words`}>
+          <div key={idx} className={`leading-6 ${line.type === 'error' ? 'text-destructive' :
+              line.type === 'system' ? 'text-primary' :
+                line.type === 'success' ? 'text-green-500' :
+                  line.type === 'input' ? 'text-green-400 font-bold' :
+                    'text-foreground'
+            } whitespace-pre-wrap break-words`}>
             {line.content}
           </div>
         ))}
@@ -321,7 +320,7 @@ const CompilationOutput: React.FC<CompilationOutputProps> = ({
             />
           </form>
         )}
-        
+
         <div ref={terminalEndRef} />
       </div>
     </div>

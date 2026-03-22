@@ -104,7 +104,7 @@ const ProblemsSidebar: React.FC<ProblemsSidebarProps> = ({
   onSelectProblem,
   selectedProblemId,
   completedProblems,
-  language = 'C++',
+  language = '',
 }) => {
   // Start with all lessons collapsed (empty Set)
   const [expandedLessons, setExpandedLessons] = useState<Set<string>>(new Set());

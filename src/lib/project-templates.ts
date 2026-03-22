@@ -12,11 +12,6 @@ export const getProjectTemplate = (projectType: ProjectType): TemplateInfo => {
         filename: 'main.cpp',
         content: '#include <iostream>\n#include <string>\n\nusing namespace std;\n\nint main() {\n    string name;\n    cout << "Welcome to Syntaxable!" << endl;\n    cout << "Enter your name: ";\n    getline(cin, name);\n    cout << "Hello, " << name << "!" << endl;\n    return 0;\n}',
       };
-    case 'c':
-      return {
-        filename: 'main.c',
-        content: '#include <stdio.h>\n#include <string.h>\n\nint main() {\n    char name[100];\n    printf("Welcome to Syntaxable!\\n");\n    printf("Enter your name: ");\n    fgets(name, sizeof(name), stdin);\n    name[strcspn(name, "\\n")] = 0;\n    printf("Hello, %s!\\n", name);\n    return 0;\n}',
-      };
     case 'csharp':
       return {
         filename: 'Program.cs',
@@ -26,6 +21,11 @@ export const getProjectTemplate = (projectType: ProjectType): TemplateInfo => {
       return {
         filename: 'main.py',
         content: 'def greet(name):\n    return f"Hello, {name}! Welcome to Syntaxable."\n\nif __name__ == "__main__":\n    user_name = input("Enter your name: ")\n    print(greet(user_name))',
+      };
+    case 'java':
+      return {
+        filename: 'Main.java',
+        content: 'import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        System.out.println("Welcome to Syntaxable!");\n        System.out.print("Enter your name: ");\n        String name = scanner.nextLine();\n        System.out.println("Hello, " + name + "!");\n    }\n}',
       };
     case 'html':
       return {
@@ -61,11 +61,12 @@ export const getFileTemplate = (fileName: string): string => {
     case 'py':
       return 'def main():\n    print("Hello from Syntaxable!")\n\nif __name__ == "__main__":\n    main()';
     case 'cpp':
-    case 'c':
     case 'h':
       return '#include <iostream>\n\nint main() {\n    std::cout << "Hello from Syntaxable!" << std::endl;\n    return 0;\n}';
     case 'cs':
       return 'using System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello from Syntaxable!");\n    }\n}';
+    case 'java':
+      return 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello from Syntaxable!");\n    }\n}';
     default:
       return '';
   }
