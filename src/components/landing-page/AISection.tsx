@@ -4,7 +4,8 @@ import { DemoAIAgentPanel } from "./DemoAIAgentPanel";
 
 export const AISection = () => {
   return (
-    <section className="py-24 px-6 border-t border-border/50">
+    <section id="ai" className="py-24 px-6 border-t border-border/50">
+
       <div className="max-w-6xl mx-auto">
         <div className="grid md:grid-cols-2 gap-16 items-center">
           <motion.div

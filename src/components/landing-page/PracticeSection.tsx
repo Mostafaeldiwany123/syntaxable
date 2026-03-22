@@ -57,8 +57,9 @@ export const PracticeSection = () => {
           >
             Practice at College, 
             <br />
-            <span className="text-muted-foreground">Continue at Home</span>
+            <span className="text-primary">Continue at Home</span>
           </motion.h2>
+
           
           <motion.p
             initial={{ opacity: 0, y: 10 }}
@@ -72,9 +73,9 @@ export const PracticeSection = () => {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left: Value Props */}
-          <div className="space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-12 items-center">
+          {/* Left: Value Props (30%) */}
+          <div className="space-y-8 lg:col-span-3">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -85,8 +86,8 @@ export const PracticeSection = () => {
                 <Laptop className="text-primary" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">College Desktop Ready</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <h3 className="text-lg font-semibold mb-2 text-foreground/90 leading-tight">College Desktop Ready</h3>
+                <p className="text-muted-foreground text-xs leading-relaxed">
                   Log in from any lab computer. Your custom sets, shared links, and practice 
                   history are instantly available.
                 </p>
@@ -104,8 +105,8 @@ export const PracticeSection = () => {
                 <Cloud className="text-primary" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">Real-time Cloud Sync</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <h3 className="text-lg font-semibold mb-2 text-foreground/90 leading-tight">Real-time Cloud Sync</h3>
+                <p className="text-muted-foreground text-xs leading-relaxed">
                   Every test run and solution is persisted. Go back home, open your laptop, 
                   and pick up exactly where you left off.
                 </p>
@@ -123,8 +124,8 @@ export const PracticeSection = () => {
                 <CheckCircle2 className="text-primary" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">Build Your Reputation</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <h3 className="text-lg font-semibold mb-2 text-foreground/90 leading-tight">Build Your Reputation</h3>
+                <p className="text-muted-foreground text-xs leading-relaxed">
                   Solve problems to earn badges and climb the ranking. Your profile showcases 
                   your consistency and skills to peers.
                 </p>
@@ -132,13 +133,14 @@ export const PracticeSection = () => {
             </motion.div>
           </div>
 
-          {/* Right: Mock Practice View */}
+          {/* Right: Mock Practice View (70%) */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="relative"
+            className="lg:col-span-7 relative"
           >
+
             {/* The "Main" Practice UI Mock */}
             <div className="rounded-2xl border border-border bg-background shadow-2xl overflow-hidden h-[480px] flex flex-col transition-all duration-500">
               {/* Header */}
@@ -189,8 +191,9 @@ export const PracticeSection = () => {
                       }}
                       options={{
                         minimap: { enabled: false },
-                        fontSize: 11,
+                        fontSize: 13,
                         fontFamily: "'Inconsolata', 'Consolas', 'Monaco', 'Courier New', monospace",
+
                         padding: { top: 12 },
                         lineNumbers: "on",
                         scrollbar: { vertical: "hidden", alwaysConsumeMouseWheel: false },

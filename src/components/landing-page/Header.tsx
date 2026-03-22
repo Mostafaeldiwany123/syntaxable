@@ -33,7 +33,7 @@ export const Header = ({ onSignIn, onSignUp }: HeaderProps) => {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className={`pointer-events-auto flex items-center justify-between px-5 transition-all duration-500 ease-in-out border border-border/50 bg-background/60 backdrop-blur-xl shadow-2xl rounded-full ${
+        className={`pointer-events-auto flex items-center justify-between px-5 transition-all duration-500 ease-in-out border border-border/50 bg-background/60 backdrop-blur-xl rounded-full ${
           scrolled ? 'w-full md:w-[70%] py-1.5' : 'w-full md:w-[90%] py-2.5'
         }`}
       >
@@ -50,6 +50,8 @@ export const Header = ({ onSignIn, onSignUp }: HeaderProps) => {
         <div className="hidden md:flex items-center gap-8">
           {[
             { name: "Features", id: "features" },
+            { name: "AI", id: "ai" },
+            { name: "Practice", id: "practice" },
             { name: "Education", id: "education" },
             { name: "Pricing", id: "pricing" }
           ].map((link) => (
@@ -64,6 +66,7 @@ export const Header = ({ onSignIn, onSignUp }: HeaderProps) => {
             </a>
           ))}
         </div>
+
 
         {/* Actions */}
         <div className="flex items-center gap-2.5">
