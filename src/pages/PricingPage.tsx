@@ -18,7 +18,7 @@ const PricingPage = () => {
       description: "Essential features for individuals and small side projects.",
       features: [
         "Up to 3 active projects",
-        "20 AI credits per month",
+        "20 AI credits (1 credit = 1 response)",
         "Access to basic practice sets",
         "Community support",
         "Rate limiting on compiler usage",
@@ -34,10 +34,11 @@ const PricingPage = () => {
       description: "Advanced tools for power users and serious learners.",
       features: [
         "Up to 20 active projects",
-        "300 AI credits per month",
+        "300 AI credits (1 credit = 1 response)",
+        "Upload your own folder to the editor",
+        "Unlimited language compiler usage",
         "Create custom practice sets",
         "Professional profile badge",
-        "Unlimited language compiler usage",
         "Early access to new features"
       ],
       cta: "Upgrade to Pro",
@@ -84,13 +85,12 @@ const PricingPage = () => {
             const isCurrentPlan = (plan.tier === 'free' && !isPro) || (plan.tier === 'pro' && isPro);
 
             return (
-              <div 
+              <div
                 key={plan.name}
-                className={`relative group flex flex-col bg-card rounded-xl border transition-all duration-300 ${
-                  plan.popular 
-                    ? 'border-primary shadow-lg ring-1 ring-primary md:scale-[1.02] z-10' 
-                    : 'border-border shadow-sm hover:border-muted-foreground/30'
-                }`}
+                className={`relative group flex flex-col bg-card rounded-xl border transition-all duration-300 ${plan.popular
+                  ? 'border-primary shadow-lg ring-1 ring-primary md:scale-[1.02] z-10'
+                  : 'border-border shadow-sm hover:border-muted-foreground/30'
+                  }`}
               >
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -113,7 +113,7 @@ const PricingPage = () => {
                     <p className="text-sm text-muted-foreground min-h-[36px] leading-relaxed">
                       {plan.description}
                     </p>
-                    
+
                     <div className="mt-5 flex items-baseline">
                       {plan.price === "Custom" ? (
                         <span className="text-3xl font-bold text-foreground tracking-tight">
@@ -172,8 +172,8 @@ const PricingPage = () => {
               <p className="text-muted-foreground text-sm">We offer special discounts for educational institutions and non-profits.</p>
             </div>
             <div className="flex items-center gap-4">
-              <a 
-                href="mailto:25-101623@students.eui.edu.eg" 
+              <a
+                href="mailto:25-101623@students.eui.edu.eg"
                 className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors"
               >
                 <Mail className="h-4 w-4" />
