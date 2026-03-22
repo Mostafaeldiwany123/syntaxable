@@ -1,0 +1,10 @@
+export { Header } from './Header';
+export { HeroSection } from './HeroSection';
+export { FeaturesSection } from './FeaturesSection';
+export { AISection } from './AISection';
+export { EducationSection } from './EducationSection';
+export { CTASection } from './CTASection';
+export { Footer } from './Footer';
+export { DemoEditor } from './DemoEditor';
+export { DemoAIAgentPanel } from './DemoAIAgentPanel';
+export { PricingSection } from './PricingSection';

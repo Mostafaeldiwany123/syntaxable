@@ -105,7 +105,7 @@ body {
     --ring: 210 100% 40%;
     --accent: 0 0% 90%;
     --accent-foreground: 0 0% 10%;
-    
+
     /* Pro Theme (Light mode equivalents) */
     --pro-light: #9e7f41;
     --pro-primary: #b08d4a;
@@ -192,8 +192,8 @@ body {
     --editor-line-number-active: #94a3b8;
     --editor-selection: #0369a1;
     --editor-selection-inactive: #0f172a;
-    --editor-indent-guide: #1e293b; 
-    --editor-indent-guide-active: #334155; 
+    --editor-indent-guide: #1e293b;
+    --editor-indent-guide-active: #334155;
     --editor-cursor: #38bdf8;
     --editor-whitespace: #1e293b;
     --editor-widget-bg: #020617;
@@ -220,18 +220,18 @@ body {
     --accent: 0 50% 15%;
     --accent-foreground: 30 100% 80%;
     --editor-base: vs-dark;
-    --editor-bg: #2a0a0a; 
-    --editor-fg: #fcd34d; 
+    --editor-bg: #2a0a0a;
+    --editor-fg: #fcd34d;
     --editor-line-highlight: #450a0a;
-    --editor-line-number: #7f1d1d; 
-    --editor-line-number-active: #f87171; 
-    --editor-selection: #991b1b; 
+    --editor-line-number: #7f1d1d;
+    --editor-line-number-active: #f87171;
+    --editor-selection: #991b1b;
     --editor-selection-inactive: #2a0a0a;
-    --editor-indent-guide: #450a0a; 
-    --editor-indent-guide-active: #7f1d1d; 
+    --editor-indent-guide: #450a0a;
+    --editor-indent-guide-active: #7f1d1d;
     --editor-cursor: #fb923c;
     --editor-whitespace: #450a0a;
-    --editor-widget-bg: #1a0505; 
+    --editor-widget-bg: #1a0505;
     --editor-widget-border: #450a0a;
     --editor-suggest-selected: #2a0a0a;
   }
@@ -366,6 +366,16 @@ body {
     @apply bg-background text-foreground font-sans antialiased;
   }
 
+  /* Prevent layout shift when modal opens */
+  html {
+    overflow-y: scroll;
+  }
+
+  body[data-scroll-locked] {
+    overflow-y: scroll !important;
+    padding-right: 0 !important;
+  }
+
   /* Custom scrollbar for dark theme */
   ::-webkit-scrollbar {
     width: 8px;
@@ -385,3 +395,26 @@ body {
     background: hsl(var(--muted));
   }
 }
+
+@layer utilities {
+  .grid-bg {
+    background-size: 40px 40px;
+    background-image: 
+      linear-gradient(to right, hsl(var(--border) / 0.5) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.5) 1px, transparent 1px);
+  }
+
+
+  .dot-bg {
+    background-size: 20px 20px;
+    background-image: radial-gradient(circle, hsl(var(--border) / 0.3) 1px, transparent 1px);
+  }
+
+  .mask-grid {
+    mask-image: radial-gradient(ellipse 60% 50% at 50% 10%, #000 70%, transparent 100%);
+  }
+  
+  .mask-faded {
+    mask-image: linear-gradient(to bottom, #000 50%, transparent 100%);
+  }
+}

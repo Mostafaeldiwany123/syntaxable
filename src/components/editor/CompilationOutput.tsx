@@ -70,8 +70,9 @@ const CompilationOutput: React.FC<CompilationOutputProps> = ({
 
   // Auto-scroll to bottom of terminal
   useEffect(() => {
-    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [terminalLines, isWaitingForInput]);
+
 
   // Focus input when waiting
   useEffect(() => {
