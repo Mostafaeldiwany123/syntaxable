@@ -235,6 +235,111 @@ body {
     --editor-widget-border: #450a0a;
     --editor-suggest-selected: #2a0a0a;
   }
+
+  :root[data-theme='midnight'] {
+    --background: 270 50% 3%;
+    --foreground: 270 100% 90%;
+    --card: 270 50% 5%;
+    --card-foreground: 270 100% 90%;
+    --popover: 270 50% 5%;
+    --popover-foreground: 270 100% 90%;
+    --primary: 270 100% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 270 50% 10%;
+    --secondary-foreground: 270 100% 80%;
+    --muted: 270 30% 20%;
+    --muted-foreground: 270 40% 60%;
+    --border: 270 50% 25%;
+    --input: 270 40% 20%;
+    --ring: 270 100% 65%;
+    --accent: 270 50% 10%;
+    --accent-foreground: 270 100% 80%;
+    --editor-base: vs-dark;
+    --editor-bg: #11051a;
+    --editor-fg: #d1b3ff;
+    --editor-line-highlight: #1e092e;
+    --editor-line-number: #4a1c73;
+    --editor-line-number-active: #d1b3ff;
+    --editor-selection: #581c87;
+    --editor-selection-inactive: #11051a;
+    --editor-indent-guide: #1e092e;
+    --editor-indent-guide-active: #4a1c73;
+    --editor-cursor: #d1b3ff;
+    --editor-whitespace: #1e092e;
+    --editor-widget-bg: #0d0414;
+    --editor-widget-border: #1e092e;
+    --editor-suggest-selected: #11051a;
+  }
+
+  :root[data-theme='solar'] {
+    --background: 45 30% 3%;
+    --foreground: 45 100% 90%;
+    --card: 45 30% 5%;
+    --card-foreground: 45 100% 90%;
+    --popover: 45 30% 5%;
+    --popover-foreground: 45 100% 90%;
+    --primary: 45 100% 50%;
+    --primary-foreground: 0 0% 5%;
+    --secondary: 45 30% 10%;
+    --secondary-foreground: 45 100% 80%;
+    --muted: 45 20% 20%;
+    --muted-foreground: 45 40% 60%;
+    --border: 45 40% 20%;
+    --input: 45 40% 15%;
+    --ring: 45 100% 50%;
+    --accent: 45 30% 10%;
+    --accent-foreground: 45 100% 80%;
+    --editor-base: vs-dark;
+    --editor-bg: #121008;
+    --editor-fg: #fde68a;
+    --editor-line-highlight: #1c190a;
+    --editor-line-number: #78350f;
+    --editor-line-number-active: #fbbf24;
+    --editor-selection: #451a03;
+    --editor-selection-inactive: #121008;
+    --editor-indent-guide: #1c190a;
+    --editor-indent-guide-active: #78350f;
+    --editor-cursor: #fbbf24;
+    --editor-whitespace: #1c190a;
+    --editor-widget-bg: #0b0a04;
+    --editor-widget-border: #1c190a;
+    --editor-suggest-selected: #121008;
+  }
+
+  :root[data-theme='frost'] {
+    --background: 210 50% 3%;
+    --foreground: 190 100% 90%;
+    --card: 210 50% 5%;
+    --card-foreground: 190 100% 90%;
+    --popover: 210 50% 5%;
+    --popover-foreground: 190 100% 90%;
+    --primary: 190 100% 55%;
+    --primary-foreground: 210 100% 5%;
+    --secondary: 210 50% 10%;
+    --secondary-foreground: 190 100% 80%;
+    --muted: 210 30% 20%;
+    --muted-foreground: 190 40% 60%;
+    --border: 210 40% 20%;
+    --input: 210 40% 15%;
+    --ring: 190 100% 55%;
+    --accent: 210 50% 10%;
+    --accent-foreground: 190 100% 80%;
+    --editor-base: vs-dark;
+    --editor-bg: #050b14;
+    --editor-fg: #a5f3fc;
+    --editor-line-highlight: #0a1629;
+    --editor-line-number: #0e7490;
+    --editor-line-number-active: #22d3ee;
+    --editor-selection: #155e75;
+    --editor-selection-inactive: #050b14;
+    --editor-indent-guide: #0a1629;
+    --editor-indent-guide-active: #0e7490;
+    --editor-cursor: #22d3ee;
+    --editor-whitespace: #0a1629;
+    --editor-widget-bg: #03070d;
+    --editor-widget-border: #0a1629;
+    --editor-suggest-selected: #050b14;
+  }
 }
 
 @layer base {

@@ -31,7 +31,7 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
   const [currentTheme, setCurrentTheme] = useState(() => document.documentElement.getAttribute('data-theme') || 'dark');
 
   const isPro = profile?.tier === 'pro' || profile?.tier === 'admin';
-  const proThemes = ['neon', 'ocean', 'sunset'];
+  const proThemes = ['neon', 'ocean', 'sunset', 'midnight', 'solar', 'frost'];
 
   useEffect(() => {
     if (profileLoading) return;
@@ -232,6 +232,27 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
                         </div>
                         {currentTheme === 'sunset' && <span>✓</span>}
                       </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleThemeChange('midnight')} className="flex justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <span>Midnight Purple</span>
+                          {!isPro && <Lock className="h-3 w-3 text-muted-foreground/50" />}
+                        </div>
+                        {currentTheme === 'midnight' && <span>✓</span>}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleThemeChange('solar')} className="flex justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <span>Solar Gold</span>
+                          {!isPro && <Lock className="h-3 w-3 text-muted-foreground/50" />}
+                        </div>
+                        {currentTheme === 'solar' && <span>✓</span>}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleThemeChange('frost')} className="flex justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <span>Frost Blue</span>
+                          {!isPro && <Lock className="h-3 w-3 text-muted-foreground/50" />}
+                        </div>
+                        {currentTheme === 'frost' && <span>✓</span>}
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
 
@@ -303,6 +324,27 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
                           {!isPro && <Lock className="h-3 w-3 text-muted-foreground/50" />}
                         </div>
                         {currentTheme === 'sunset' && <span>✓</span>}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleThemeChange('midnight')} className="flex justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <span>Midnight Purple</span>
+                          {!isPro && <Lock className="h-3 w-3 text-muted-foreground/50" />}
+                        </div>
+                        {currentTheme === 'midnight' && <span>✓</span>}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleThemeChange('solar')} className="flex justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <span>Solar Gold</span>
+                          {!isPro && <Lock className="h-3 w-3 text-muted-foreground/50" />}
+                        </div>
+                        {currentTheme === 'solar' && <span>✓</span>}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleThemeChange('frost')} className="flex justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <span>Frost Blue</span>
+                          {!isPro && <Lock className="h-3 w-3 text-muted-foreground/50" />}
+                        </div>
+                        {currentTheme === 'frost' && <span>✓</span>}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
