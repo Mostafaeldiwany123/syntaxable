@@ -7,8 +7,10 @@ import {
   EducationSection, 
   CTASection, 
   PricingSection,
+  PracticeSection,
   Footer 
 } from "@/components/landing-page";
+
 
 import { useAuthModal } from "@/context/AuthModalContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -44,8 +46,10 @@ export const AuthPage = () => {
           <HeroSection onSignIn={handleSignIn} onSignUp={handleSignUp} />
           <FeaturesSection />
           <AISection />
+          <PracticeSection />
           <EducationSection />
           <PricingSection />
+
           <CTASection onSignUp={handleSignUp} />
 
         </main>

@@ -8,3 +8,4 @@ export { Footer } from './Footer';
 export { DemoEditor } from './DemoEditor';
 export { DemoAIAgentPanel } from './DemoAIAgentPanel';
 export { PricingSection } from './PricingSection';
+export { PracticeSection } from './PracticeSection';
