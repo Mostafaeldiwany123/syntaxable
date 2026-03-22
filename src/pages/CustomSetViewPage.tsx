@@ -167,6 +167,7 @@ const CustomSetViewPage = () => {
           if (index !== -1) setSelectedProblemIndex(index);
         }}
         savedSolutionCode={currentProblemWithSolution?.solution_code}
+        aiEnabled={customSet?.ai_enabled ?? true}
       />
     );
   }
@@ -194,12 +195,14 @@ const CustomSetViewPage = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
-            <Users className="h-4 w-4" />
-            <span>
-              {completedProblems.size}/{convertedProblems.length} completed
-            </span>
-          </div>
+          {!customSet.is_owner && (
+            <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
+              <Users className="h-4 w-4" />
+              <span>
+                {completedProblems.size}/{convertedProblems.length} completed
+              </span>
+            </div>
+          )}
 
           {customSet.is_owner && (
             <>
@@ -255,10 +258,12 @@ const CustomSetViewPage = () => {
                   <span className="text-xs font-medium text-muted-foreground w-5 shrink-0">
                     {problemNumber}.
                   </span>
-                  {isCompleted ? (
-                    <CheckCircle2 size={14} className="text-green-500 shrink-0" />
-                  ) : (
-                    <Circle size={14} className="text-muted-foreground/40 shrink-0" />
+                  {!customSet.is_owner && (
+                    isCompleted ? (
+                      <CheckCircle2 size={14} className="text-green-500 shrink-0" />
+                    ) : (
+                      <Circle size={14} className="text-muted-foreground/40 shrink-0" />
+                    )
                   )}
                   <span className="text-xs truncate flex-1">{problem.title}</span>
                 </button>
@@ -303,7 +308,7 @@ const CustomSetViewPage = () => {
                         </div>
                         <span className="text-sm font-bold text-muted-foreground">#{problemNumber}</span>
                       </div>
-                      {isDone && (
+                      {!customSet.is_owner && isDone && (
                         <div className="flex items-center gap-1 text-green-600">
                           <CheckCircle2 className="h-4 w-4" />
                           <span className="text-xs font-medium">Done</span>

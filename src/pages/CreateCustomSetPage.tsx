@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, Trash2, ChevronDown, ChevronUp, GripVertical, Globe, Lock } from "lucide-react";
+import { Loader2, Plus, Trash2, ChevronDown, ChevronUp, GripVertical, Globe, EyeOff, Bot } from "lucide-react";
 import { useCreateCustomSet } from "@/hooks/customSets";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
@@ -66,6 +66,7 @@ const CreateCustomSetPage = () => {
   const [description, setDescription] = useState('');
   const [language, setLanguage] = useState<Language>('python');
   const [isPublic, setIsPublic] = useState(false);
+  const [aiEnabled, setAiEnabled] = useState(true);
   const [problems, setProblems] = useState<Problem[]>([{ ...emptyProblem }]);
   const [expandedProblems, setExpandedProblems] = useState<number[]>([0]);
 
@@ -166,6 +167,7 @@ const CreateCustomSetPage = () => {
         id: `custom-${Date.now()}-${index}`,
       })),
       isPublic,
+      aiEnabled,
     }, {
       onSuccess: (setId) => {
         navigate(`/practice/custom/${setId}/share`);
@@ -241,30 +243,55 @@ const CreateCustomSetPage = () => {
               </RadioGroup>
             </div>
 
-            {/* Visibility Toggle */}
-            <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-secondary/30">
-              <div className="flex items-center gap-3">
-                {isPublic ? (
-                  <Globe className="h-5 w-5 text-primary" />
-                ) : (
-                  <Lock className="h-5 w-5 text-muted-foreground" />
-                )}
-                <div>
-                  <Label htmlFor="public-toggle" className="font-medium cursor-pointer">
-                    {isPublic ? 'Public Set' : 'Private Set'}
-                  </Label>
-                  <p className="text-xs text-muted-foreground">
-                    {isPublic 
-                      ? 'Anyone with the link can view and practice this set'
-                      : 'Only you and people you share with can access this set'}
-                  </p>
+            {/* Settings Toggles */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Visibility Toggle */}
+              <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-secondary/30">
+                <div className="flex items-center gap-3">
+                  {isPublic ? (
+                    <Globe className="h-5 w-5 text-primary" />
+                  ) : (
+                    <EyeOff className="h-5 w-5 text-muted-foreground" />
+                  )}
+                  <div>
+                    <Label htmlFor="public-toggle" className="font-medium cursor-pointer">
+                      {isPublic ? 'Public Set' : 'Unlisted Set'}
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      {isPublic
+                        ? 'Appears in public listings.'
+                        : 'Only accessible via link or code.'}
+                    </p>
+                  </div>
                 </div>
+                <Switch
+                  id="public-toggle"
+                  checked={isPublic}
+                  onCheckedChange={setIsPublic}
+                />
               </div>
-              <Switch
-                id="public-toggle"
-                checked={isPublic}
-                onCheckedChange={setIsPublic}
-              />
+
+              {/* AI Toggle */}
+              <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-secondary/30">
+                <div className="flex items-center gap-3">
+                  <Bot className={`h-5 w-5 ${aiEnabled ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <div>
+                    <Label htmlFor="ai-toggle" className="font-medium cursor-pointer">
+                      AI Assistant {aiEnabled ? 'On' : 'Off'}
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      {aiEnabled
+                        ? 'AI help is enabled.'
+                        : 'AI assistant is disabled.'}
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  id="ai-toggle"
+                  checked={aiEnabled}
+                  onCheckedChange={setAiEnabled}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>

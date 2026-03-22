@@ -122,19 +122,21 @@ const CustomSetsPage = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <div className="flex flex-col items-end gap-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-foreground/80">
-                          {set.completed_count}/{set.problem_count}
-                        </span>
-                        {set.completed_count === set.problem_count && set.problem_count > 0 ? (
-                          <CheckCircle2 className="h-4 w-4 text-green-500" />
-                        ) : (
-                          <Circle className="h-4 w-4 text-muted-foreground/20" />
-                        )}
-                      </div>
+                      {!set.is_owner && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-foreground/80">
+                            {set.completed_count}/{set.problem_count}
+                          </span>
+                          {set.completed_count === set.problem_count && set.problem_count > 0 ? (
+                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <Circle className="h-4 w-4 text-muted-foreground/20" />
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {set.is_owner && (

@@ -11,6 +11,7 @@ import CompilationOutput from '@/components/editor/CompilationOutput';
 import PracticePanel from './PracticePanel';
 import ProblemsSidebar from './ProblemsSidebar';
 import { AIAgentPanel } from '@/components/ai-agent';
+import { toast } from 'sonner';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -43,6 +44,7 @@ interface ProblemSolvingViewProps {
   hasPrev: boolean;
   onSelectProblem: (problem: Problem) => void;
   savedSolutionCode?: string | null;
+  aiEnabled?: boolean;
 }
 
 export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
@@ -57,6 +59,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
   hasPrev,
   onSelectProblem,
   savedSolutionCode,
+  aiEnabled = true,
 }) => {
   const { user } = useAuth();
   const { data: progress } = usePracticeProgress();
@@ -129,6 +132,17 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
     setPracticeCode(value);
     localStorage.setItem(`practice-code-${currentProblem.id}`, value);
   }, [currentProblem.id]);
+
+  // Handle AI agent toggle
+  const handleAIAgentToggle = useCallback(() => {
+    if (!aiEnabled) {
+      toast.error('AI Assistant is disabled for this custom practice set', {
+        description: 'The creator of this set has disabled the AI assistant feature.',
+      });
+      return;
+    }
+    setIsAIAgentOpen(!isAIAgentOpen);
+  }, [aiEnabled, isAIAgentOpen]);
 
   return (
     <div className="h-full flex flex-col">
@@ -216,7 +230,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
                   onTabClick={() => { }}
                   onTabClose={() => { }}
                   isReadOnly={false}
-                  onAIAgentClick={() => setIsAIAgentOpen(!isAIAgentOpen)}
+                  onAIAgentClick={handleAIAgentToggle}
                 />
               </div>
               <CompilationOutput
@@ -245,7 +259,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
             </ResizablePanel>
 
             {/* AI Agent Panel */}
-            {isAIAgentOpen && (
+            {isAIAgentOpen && aiEnabled && (
               <>
                 <ResizableHandle className="bg-border w-[1px] hover:bg-primary transition-all" />
                 <ResizablePanel defaultSize={30} minSize={20} maxSize={50}>

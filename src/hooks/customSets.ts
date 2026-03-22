@@ -67,6 +67,7 @@ export interface CustomSetDetail {
   created_at: string;
   is_owner: boolean;
   is_public: boolean;
+  ai_enabled: boolean;
 }
 
 // Fetch all custom sets for the current user
@@ -146,6 +147,7 @@ export const useCreateCustomSet = () => {
       language,
       problems,
       isPublic = false,
+      aiEnabled = true,
     }: {
       title: string;
       description: string;
@@ -166,6 +168,7 @@ export const useCreateCustomSet = () => {
         topics?: string[];
       }>;
       isPublic?: boolean;
+      aiEnabled?: boolean;
     }) => {
       // Generate IDs for problems
       const problemsWithIds = problems.map((p, index) => ({
@@ -182,12 +185,18 @@ export const useCreateCustomSet = () => {
 
       if (error) throw error;
 
-      // Update is_public if needed
-      if (isPublic && data) {
-        await supabase
-          .from('custom_sets')
-          .update({ is_public: true })
-          .eq('id', data);
+      // Update is_public and ai_enabled if needed
+      if (data) {
+        const updates: { is_public?: boolean; ai_enabled?: boolean } = {};
+        if (isPublic) updates.is_public = true;
+        if (!aiEnabled) updates.ai_enabled = false;
+
+        if (Object.keys(updates).length > 0) {
+          await supabase
+            .from('custom_sets')
+            .update(updates)
+            .eq('id', data);
+        }
       }
 
       return data;
@@ -297,13 +306,38 @@ export const useUpdateCustomSetVisibility = () => {
       return { isPublic };
     },
     onSuccess: ({ isPublic }) => {
-      toast.success(isPublic ? 'Set is now public!' : 'Set is now private');
+      toast.success(isPublic ? 'Set is now public!' : 'Set is now unlisted');
       queryClient.invalidateQueries({ queryKey: ['customSets'] });
       queryClient.invalidateQueries({ queryKey: ['publicCustomSets'] });
       queryClient.invalidateQueries({ queryKey: ['customSet'] });
     },
     onError: (error: any) => {
       toast.error(error.message || 'Failed to update visibility');
+    },
+  });
+};
+
+// Update custom set AI enabled status
+export const useUpdateCustomSetAIEnabled = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ setId, aiEnabled }: { setId: string; aiEnabled: boolean }) => {
+      const { error } = await supabase
+        .from('custom_sets')
+        .update({ ai_enabled: aiEnabled })
+        .eq('id', setId);
+
+      if (error) throw error;
+      return { aiEnabled };
+    },
+    onSuccess: ({ aiEnabled }) => {
+      toast.success(aiEnabled ? 'AI Assistant enabled!' : 'AI Assistant disabled');
+      queryClient.invalidateQueries({ queryKey: ['customSets'] });
+      queryClient.invalidateQueries({ queryKey: ['customSet'] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to update AI settings');
     },
   });
 };
