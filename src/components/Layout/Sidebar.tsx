@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FolderKanban, LogOut, Users, Mail, UserCheck, Dumbbell, ChevronLeft, ChevronRight, CreditCard, Paintbrush } from "lucide-react";
+import { LayoutDashboard, FolderKanban, LogOut, Users, Mail, UserCheck, Dumbbell, ChevronLeft, ChevronRight, CreditCard, Paintbrush, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,6 +11,7 @@ import { useInbox } from "@/hooks/inbox";
 import { InboxSheet } from "../inbox/InboxSheet";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 interface SidebarProps {
   onNavigate?: () => void;
@@ -29,7 +30,35 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
   const [isInboxOpen, setIsInboxOpen] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(() => document.documentElement.getAttribute('data-theme') || 'dark');
 
+  const isPro = profile?.tier === 'pro' || profile?.tier === 'admin';
+  const proThemes = ['neon', 'ocean', 'sunset'];
+
+  useEffect(() => {
+    if (profileLoading) return;
+
+    const savedTheme = localStorage.getItem('app-theme') || 'dark';
+    if (proThemes.includes(savedTheme) && !isPro) {
+      setCurrentTheme('dark');
+      localStorage.setItem('app-theme', 'dark');
+      document.documentElement.removeAttribute('data-theme');
+      setTimeout(() => {
+        window.dispatchEvent(new Event('themeChanged'));
+      }, 10);
+    }
+  }, [profile, profileLoading, isPro]);
+
   const handleThemeChange = (theme: string) => {
+    if (proThemes.includes(theme) && !isPro) {
+      toast.error("Upgrade to Professional", {
+        description: "Premium themes are available only for professional members.",
+        action: {
+          label: "View Plans",
+          onClick: () => navigate("/pricing")
+        }
+      });
+      return;
+    }
+
     setCurrentTheme(theme);
     localStorage.setItem('app-theme', theme);
     if (theme === 'dark') {
@@ -183,13 +212,25 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
                         <span>Light</span> {currentTheme === 'light' && <span>✓</span>}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleThemeChange('neon')} className="flex justify-between w-full">
-                        <span>Hacker Green</span> {currentTheme === 'neon' && <span>✓</span>}
+                        <div className="flex items-center gap-2">
+                          <span>Hacker Green</span>
+                          {!isPro && <Lock className="h-3 w-3 text-muted-foreground/50" />}
+                        </div>
+                        {currentTheme === 'neon' && <span>✓</span>}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleThemeChange('ocean')} className="flex justify-between w-full">
-                        <span>Ocean Deep</span> {currentTheme === 'ocean' && <span>✓</span>}
+                        <div className="flex items-center gap-2">
+                          <span>Ocean Deep</span>
+                          {!isPro && <Lock className="h-3 w-3 text-muted-foreground/50" />}
+                        </div>
+                        {currentTheme === 'ocean' && <span>✓</span>}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleThemeChange('sunset')} className="flex justify-between w-full">
-                        <span>Sunset Orange</span> {currentTheme === 'sunset' && <span>✓</span>}
+                        <div className="flex items-center gap-2">
+                          <span>Sunset Orange</span>
+                          {!isPro && <Lock className="h-3 w-3 text-muted-foreground/50" />}
+                        </div>
+                        {currentTheme === 'sunset' && <span>✓</span>}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -243,13 +284,25 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
                         <span>Light</span> {currentTheme === 'light' && <span>✓</span>}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleThemeChange('neon')} className="flex justify-between w-full">
-                        <span>Hacker Green</span> {currentTheme === 'neon' && <span>✓</span>}
+                        <div className="flex items-center gap-2">
+                          <span>Hacker Green</span>
+                          {!isPro && <Lock className="h-3 w-3 text-muted-foreground/50" />}
+                        </div>
+                        {currentTheme === 'neon' && <span>✓</span>}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleThemeChange('ocean')} className="flex justify-between w-full">
-                        <span>Ocean Deep</span> {currentTheme === 'ocean' && <span>✓</span>}
+                        <div className="flex items-center gap-2">
+                          <span>Ocean Deep</span>
+                          {!isPro && <Lock className="h-3 w-3 text-muted-foreground/50" />}
+                        </div>
+                        {currentTheme === 'ocean' && <span>✓</span>}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleThemeChange('sunset')} className="flex justify-between w-full">
-                        <span>Sunset Orange</span> {currentTheme === 'sunset' && <span>✓</span>}
+                        <div className="flex items-center gap-2">
+                          <span>Sunset Orange</span>
+                          {!isPro && <Lock className="h-3 w-3 text-muted-foreground/50" />}
+                        </div>
+                        {currentTheme === 'sunset' && <span>✓</span>}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

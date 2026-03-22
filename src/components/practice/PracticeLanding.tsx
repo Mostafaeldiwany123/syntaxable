@@ -57,7 +57,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
         description: "Creating custom practice sets is only available for Pro members. Upgrade your account to create your own sets!",
         action: {
           label: "Upgrade",
-          onClick: () => console.log("Upgrade clicked")
+          onClick: () => navigate("/pricing")
         },
       });
     }
@@ -71,7 +71,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
         description: "Managing custom practice sets is only available for Pro members.",
         action: {
           label: "Upgrade",
-          onClick: () => console.log("Upgrade clicked")
+          onClick: () => navigate("/pricing")
         },
       });
     }
