@@ -50,6 +50,7 @@ const AIAgentPanel: React.FC<AIAgentPanelProps> = ({
 }) => {
   const { user } = useAuth();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomAnchorRef = useRef<HTMLDivElement>(null);
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
   const [currentSessionId, setCurrentSessionId] = React.useState<string | null>(cachedSessionId);
   const [view, setView] = useState<View>(cachedView);
@@ -101,18 +102,74 @@ const AIAgentPanel: React.FC<AIAgentPanelProps> = ({
 
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
+  const isAutoScrolling = useRef(false);
+
   const handleScroll = useCallback(() => {
-    if (!scrollRef.current) return;
+    if (!scrollRef.current || isAutoScrolling.current) return;
+
     const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-    // Consider it at the bottom if within 100px
-    const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 100;
-    setShouldAutoScroll(isAtBottom);
+    // Lower threshold for more sensitive detection (10px)
+    const distanceFromBottom = scrollHeight - clientHeight - scrollTop;
+    const isAtBottom = distanceFromBottom < 10;
+    
+    if (shouldAutoScroll !== isAtBottom) {
+      setShouldAutoScroll(isAtBottom);
+    }
+  }, [shouldAutoScroll]);
+
+  // Handle manual scroll intent (wheel/touch) to immediately stop auto-scroll
+  useEffect(() => {
+    const node = scrollRef.current;
+    if (!node) return;
+
+    let touchStartY = 0;
+
+    const handleWheel = (e: WheelEvent) => {
+      // If user scrolls up, stop auto-scrolling immediately
+      if (e.deltaY < 0) {
+        setShouldAutoScroll(false);
+      }
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const touchY = e.touches[0].clientY;
+      // If moving finger down (scrolling up to older messages), stop auto-scrolling
+      if (touchY > touchStartY + 10) {
+        setShouldAutoScroll(false);
+      }
+    };
+
+    node.addEventListener('wheel', handleWheel, { passive: true });
+    node.addEventListener('touchstart', handleTouchStart, { passive: true });
+    node.addEventListener('touchmove', handleTouchMove, { passive: true });
+
+    return () => {
+      node.removeEventListener('wheel', handleWheel);
+      node.removeEventListener('touchstart', handleTouchStart);
+      node.removeEventListener('touchmove', handleTouchMove);
+    };
   }, []);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (scrollRef.current && view === 'chat' && shouldAutoScroll) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      isAutoScrolling.current = true;
+      
+      // scrollTo bottom directly or using the anchor
+      if (bottomAnchorRef.current) {
+        bottomAnchorRef.current.scrollIntoView({ behavior: 'auto', block: 'end' });
+      } else {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+      
+      const reset = () => { isAutoScrolling.current = false; };
+      requestAnimationFrame(() => {
+        requestAnimationFrame(reset);
+      });
     }
   }, [messages, view, shouldAutoScroll]);
 
@@ -344,7 +401,7 @@ const AIAgentPanel: React.FC<AIAgentPanelProps> = ({
         ) : (
           <>
             {/* Messages or Initial State */}
-            <div className="flex-1 overflow-y-auto" ref={scrollRef} onScroll={handleScroll}>
+            <div className="flex-1 overflow-y-auto relative scroll-smooth-none" ref={scrollRef} onScroll={handleScroll}>
               <div className="p-4">
                 {!hasMessages ? (
                   <EmptyState />
@@ -360,6 +417,8 @@ const AIAgentPanel: React.FC<AIAgentPanelProps> = ({
                         copiedId={copiedId}
                       />
                     ))}
+                    {/* Bottom anchor for scrolling */}
+                    <div ref={bottomAnchorRef} className="h-0 w-0" />
                   </div>
                 )}
               </div>
