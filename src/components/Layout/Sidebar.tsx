@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FolderKanban, LogOut, Users, Mail, UserCheck, Dumbbell, ChevronLeft, ChevronRight, CreditCard, Paintbrush, Lock } from "lucide-react";
+import { LayoutDashboard, FolderKanban, LogOut, Users, Mail, UserCheck, Dumbbell, ChevronLeft, ChevronRight, CreditCard, Paintbrush, Lock, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -71,6 +71,7 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
     { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/projects", icon: FolderKanban, label: "Projects" },
     { to: "/practice", icon: Dumbbell, label: "Practice" },
+    { to: "/leaderboard", icon: Trophy, label: "Leaderboard" },
     { to: "/community", icon: Users, label: "Community" },
     { to: "/friends", icon: UserCheck, label: "Friends" },
   ];
@@ -84,14 +85,13 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
 
   return (
     <>
-      <aside 
-        className={`flex flex-col bg-card h-full overflow-hidden transition-all duration-300 ease-in-out ${
-          isMobile 
-            ? 'w-60 border-r-0' 
-            : isCollapsed 
-              ? 'w-16 border-r border-border' 
+      <aside
+        className={`flex flex-col bg-card h-full overflow-hidden transition-all duration-300 ease-in-out ${isMobile
+            ? 'w-60 border-r-0'
+            : isCollapsed
+              ? 'w-16 border-r border-border'
               : 'w-60 border-r border-border'
-        }`}
+          }`}
       >
         {/* Logo */}
         <div className={`border-b border-border flex items-center shrink-0 ${isCollapsed && !isMobile ? 'justify-center p-3' : 'px-5 py-5 gap-3'}`}>
@@ -112,16 +112,15 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
               end={item.to === "/dashboard"}
               onClick={handleNavClick}
               className={({ isActive }) =>
-                `flex items-center text-sm font-medium transition-all duration-200 rounded-lg ${
-                  isCollapsed && !isMobile
-                    ? `justify-center p-2.5 ${isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                      }`
-                    : `px-3 py-2 ${isActive
-                      ? "bg-primary/10 text-primary border-l-2 border-primary -ml-[2px] px-[calc(0.75rem+2px)]"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                    }`
+                `flex items-center text-sm font-medium transition-all duration-200 rounded-lg ${isCollapsed && !isMobile
+                  ? `justify-center p-2.5 ${isActive
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`
+                  : `px-3 py-2 ${isActive
+                    ? "bg-primary/10 text-primary border-l-2 border-primary -ml-[2px] px-[calc(0.75rem+2px)]"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`
                 }`
               }
               title={isCollapsed && !isMobile ? item.label : undefined}
@@ -150,9 +149,8 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
                   navigate(`/profile/${user.id}`);
                   handleNavClick();
                 }}
-                className={`flex items-center gap-2.5 hover:bg-secondary/50 transition-colors w-full rounded-lg ${
-                  isCollapsed && !isMobile ? 'justify-center p-2.5' : 'px-2 py-1.5'
-                }`}
+                className={`flex items-center gap-2.5 hover:bg-secondary/50 transition-colors w-full rounded-lg ${isCollapsed && !isMobile ? 'justify-center p-2.5' : 'px-2 py-1.5'
+                  }`}
               >
                 <Avatar className="h-8 w-8 border border-border shrink-0">
                   <AvatarImage src={profile?.avatar_url} alt={profile?.username} />
@@ -168,7 +166,7 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
                   </div>
                 )}
               </button>
-              
+
               {(!isCollapsed || isMobile) && (
                 <div className="border-t border-border pt-2 mt-1">
                   <button

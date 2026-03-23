@@ -59,6 +59,8 @@ export const useMarkProblemComplete = () => {
       queryClient.invalidateQueries({ queryKey: ['practiceProgress'] });
       // Also invalidate profile queries to update the solved count on the profile page
       queryClient.invalidateQueries({ queryKey: ['userPracticeProgress'] });
+      // Invalidate leaderboard to refresh streaks
+      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
     },
     onError: (error: any) => {
       toast.error(error.message || 'Failed to save progress');
