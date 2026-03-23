@@ -111,6 +111,14 @@ const MainLayout = (props: MainLayoutProps) => {
         setIsAIAgentOpen(!isAIAgentOpen);
     };
 
+    const getChatContext = useCallback(() => ({
+        type: 'project' as const,
+        code: activeFile ? fileContents[activeFile] : undefined,
+        language: activeFile ? getLanguageFromFile(activeFile) : undefined,
+        fileName: activeFile || undefined,
+        files: Object.entries(fileContents).map(([name, content]) => ({ name, content })),
+    }), [activeFile, fileContents]);
+
     const getLanguageFromFile = (fileName: string): string => {
         const ext = fileName.split('.').pop()?.toLowerCase();
         const langMap: Record<string, string> = {
@@ -303,13 +311,7 @@ const MainLayout = (props: MainLayoutProps) => {
                                 <AIAgentPanel
                                     isOpen={true}
                                     onClose={() => setIsAIAgentOpen(false)}
-                                    getChatContext={() => ({
-                                        type: 'project',
-                                        code: activeFile ? fileContents[activeFile] : undefined,
-                                        language: activeFile ? getLanguageFromFile(activeFile) : undefined,
-                                        fileName: activeFile || undefined,
-                                        files: Object.entries(fileContents).map(([name, content]) => ({ name, content })),
-                                    })}
+                                    getChatContext={getChatContext}
                                 />
                             </ResizablePanel>
                         </>

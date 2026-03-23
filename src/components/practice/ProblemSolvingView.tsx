@@ -143,6 +143,21 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
     setIsAIAgentOpen(!isAIAgentOpen);
   }, [aiEnabled, isAIAgentOpen]);
 
+  const getChatContext = useCallback(() => ({
+    type: 'practice' as const,
+    problemTitle: currentProblem.title,
+    problemDescription: currentProblem.description,
+    code: practiceCode,
+    language: course.language,
+    fileName: fileName,
+    // Include additional problem details
+    inputFormat: currentProblem.inputFormat,
+    outputFormat: currentProblem.outputFormat,
+    constraints: currentProblem.constraints,
+    sampleInput: currentProblem.sampleInput,
+    sampleOutput: currentProblem.sampleOutput,
+  }), [practiceCode, currentProblem, course.language, fileName]);
+
   return (
     <div className="h-full flex flex-col">
       {/* Header with Navigation */}
@@ -265,20 +280,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
                   <AIAgentPanel
                     isOpen={true}
                     onClose={() => setIsAIAgentOpen(false)}
-                    getChatContext={() => ({
-                      type: 'practice',
-                      problemTitle: currentProblem.title,
-                      problemDescription: currentProblem.description,
-                      code: practiceCode,
-                      language: course.language,
-                      fileName: fileName,
-                      // Include additional problem details
-                      inputFormat: currentProblem.inputFormat,
-                      outputFormat: currentProblem.outputFormat,
-                      constraints: currentProblem.constraints,
-                      sampleInput: currentProblem.sampleInput,
-                      sampleOutput: currentProblem.sampleOutput,
-                    })}
+                    getChatContext={getChatContext}
                   />
                 </ResizablePanel>
               </>

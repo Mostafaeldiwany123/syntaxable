@@ -98,6 +98,7 @@ const PracticePanel: React.FC<PracticePanelProps> = ({
     // Check if all passed
     const allPassed = results.every(r => r.passed);
     if (allPassed) {
+      toast.success("Problem completed! Well done! 🎉");
       onProblemComplete(problem.id, code, language);
     }
   }, [problem, code, onProblemComplete, language]);

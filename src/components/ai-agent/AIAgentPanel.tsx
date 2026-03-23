@@ -43,7 +43,7 @@ type View = 'chat' | 'history';
 let cachedSessionId: string | null = null;
 let cachedView: View = 'chat';
 
-const AIAgentPanel: React.FC<AIAgentPanelProps> = React.memo(({
+const AIAgentPanel: React.FC<AIAgentPanelProps> = ({
   isOpen,
   onClose,
   getChatContext,
@@ -53,6 +53,10 @@ const AIAgentPanel: React.FC<AIAgentPanelProps> = React.memo(({
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
   const [currentSessionId, setCurrentSessionId] = React.useState<string | null>(cachedSessionId);
   const [view, setView] = useState<View>(cachedView);
+
+  // Use a ref for getChatContext to ensure handleSend always has the latest version
+  const getChatContextRef = useRef(getChatContext);
+  getChatContextRef.current = getChatContext;
 
   useEffect(() => {
     cachedSessionId = currentSessionId;
@@ -156,7 +160,7 @@ const AIAgentPanel: React.FC<AIAgentPanelProps> = React.memo(({
     if (!input.trim() || !user) return;
 
     setShouldAutoScroll(true);
-    const context = getChatContext ? getChatContext() : undefined;
+    const context = getChatContextRef.current ? getChatContextRef.current() : undefined;
 
     // Create a new session if this is the first message
     let sessionId = currentSessionId;
@@ -391,8 +395,6 @@ const AIAgentPanel: React.FC<AIAgentPanelProps> = React.memo(({
       </AlertDialog>
     </>
   );
-});
+};
 
-export default React.memo(AIAgentPanel, (prev, next) => {
-  return prev.isOpen === next.isOpen;
-});
+export default React.memo(AIAgentPanel);
