@@ -101,16 +101,17 @@ const CompilationOutput: React.FC<CompilationOutputProps> = ({
 
     const newCollectedInputs = [...collectedInputs, currentInputValue];
     setCollectedInputs(newCollectedInputs);
+    // Show the user's input in terminal
     setTerminalLines(prev => [...prev, { type: 'input', content: currentInputValue }]);
     setCurrentInputValue('');
 
     const nextIndex = currentInputIndex + 1;
 
     if (nextIndex < inputAnalysis.inputs.length) {
-      // More inputs needed
+      // More inputs needed - show the actual prompt from code
       setCurrentInputIndex(nextIndex);
       setTerminalLines(prev => [...prev, {
-        type: 'system',
+        type: 'output',
         content: inputAnalysis.inputs[nextIndex].promptText
       }]);
     } else {
@@ -131,6 +132,9 @@ const CompilationOutput: React.FC<CompilationOutputProps> = ({
 
     const stdin = inputs.join('\n');
 
+    // Get prompt texts to strip from output
+    const promptTexts = inputAnalysis?.inputs.map(i => i.promptText).filter(p => !p.startsWith('Input required')) || [];
+
     try {
       const result: CompilerResult = await compiler.compileWithStdin(
         [{ name: fileName, content: code }],
@@ -141,7 +145,16 @@ const CompilationOutput: React.FC<CompilationOutputProps> = ({
       if (result.success) {
         if (result.output) {
           result.output.split('\n').forEach(line => {
-            addLine(line, 'output');
+            // Strip prompt text from the beginning of lines
+            let processedLine = line;
+            for (const prompt of promptTexts) {
+              if (processedLine.startsWith(prompt)) {
+                processedLine = processedLine.substring(prompt.length);
+              }
+            }
+            if (processedLine.trim() !== '') {
+              addLine(processedLine, 'output');
+            }
           });
         }
         addLine('Execution completed successfully.', 'success');
@@ -153,7 +166,15 @@ const CompilationOutput: React.FC<CompilationOutputProps> = ({
         }
         if (result.output) {
           result.output.split('\n').forEach(line => {
-            addLine(line, 'output');
+            let processedLine = line;
+            for (const prompt of promptTexts) {
+              if (processedLine.startsWith(prompt)) {
+                processedLine = processedLine.substring(prompt.length);
+              }
+            }
+            if (processedLine.trim() !== '') {
+              addLine(processedLine, 'output');
+            }
           });
         }
       }
@@ -178,8 +199,8 @@ const CompilationOutput: React.FC<CompilationOutputProps> = ({
     setCollectedInputs([]);
     setCurrentInputIndex(0);
 
-    // Check if code has interactive inputs (C/C++/C#/Java)
-    if (compiler.analyzeCode && (language === 'cpp' || language === 'c' || language === 'csharp' || language === 'java')) {
+    // Check if code has interactive inputs (C/C++/C#/Java/Python)
+    if (compiler.analyzeCode && (language === 'cpp' || language === 'c' || language === 'csharp' || language === 'java' || language === 'python')) {
       const analysis = compiler.analyzeCode(code);
 
       if (analysis.totalInputs > 0) {
@@ -189,7 +210,7 @@ const CompilationOutput: React.FC<CompilationOutputProps> = ({
         setTerminalLines(prev => [
           ...prev,
           { type: 'system', content: `Interactive mode: ${analysis.totalInputs} input(s) required.` },
-          { type: 'system', content: analysis.inputs[0].promptText }
+          { type: 'output', content: analysis.inputs[0].promptText }
         ]);
         return; // Wait for inputs
       }
@@ -295,10 +316,10 @@ const CompilationOutput: React.FC<CompilationOutputProps> = ({
       >
         {terminalLines.map((line, idx) => (
           <div key={idx} className={`leading-6 ${line.type === 'error' ? 'text-destructive' :
-              line.type === 'system' ? 'text-primary' :
-                line.type === 'success' ? 'text-green-500' :
-                  line.type === 'input' ? 'text-green-400 font-bold' :
-                    'text-foreground'
+            line.type === 'system' ? 'text-primary' :
+              line.type === 'success' ? 'text-green-500' :
+                line.type === 'input' ? 'text-green-400 font-bold' :
+                  'text-foreground'
             } whitespace-pre-wrap break-words`}>
             {line.content}
           </div>

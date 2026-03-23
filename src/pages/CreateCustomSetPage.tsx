@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,13 +6,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, Trash2, ChevronDown, ChevronUp, GripVertical, Globe, EyeOff, Bot } from "lucide-react";
+import { Loader2, Plus, Trash2, ChevronDown, ChevronUp, GripVertical, Globe, EyeOff, Bot, Code2 } from "lucide-react";
 import { useCreateCustomSet } from "@/hooks/customSets";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { getFileIconUrl } from "@/lib/project-utils";
 import { Switch } from "@/components/ui/switch";
+import Editor, { useMonaco } from "@monaco-editor/react";
+import { getDynamicTheme } from "@/lib/editor-theme";
+import { useEffect } from "react";
 
 type Language = 'cpp' | 'csharp' | 'python' | 'java';
 
@@ -59,24 +62,89 @@ const languageOptions: { value: Language; label: string; extension: string }[] =
   { value: 'java', label: 'Java', extension: '.java' },
 ];
 
+// Default starter code templates for each language
+const defaultStarterCode: Record<Language, string> = {
+  python: `def main():
+    # Your code here
+    pass
+
+if __name__ == "__main__":
+    main()`,
+  cpp: `#include <iostream>
+using namespace std;
+
+int main() {
+    // Your code here
+    return 0;
+}`,
+  csharp: `using System;
+
+class Program {
+    static void Main(string[] args) {
+        // Your code here
+    }
+}`,
+  java: `import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        // Your code here
+    }
+}`,
+};
+
+// Helper to get Monaco language ID
+const getMonacoLanguage = (lang: Language): string => {
+  const langMap: Record<Language, string> = {
+    python: 'python',
+    cpp: 'cpp',
+    csharp: 'csharp',
+    java: 'java',
+  };
+  return langMap[lang];
+};
+
+// Helper to get file extension for language
+const getFileName = (lang: Language): string => {
+  const extMap: Record<Language, string> = {
+    python: 'main.py',
+    cpp: 'main.cpp',
+    csharp: 'Program.cs',
+    java: 'Main.java',
+  };
+  return extMap[lang];
+};
+
 const CreateCustomSetPage = () => {
   const navigate = useNavigate();
   const { mutate: createSet, isPending } = useCreateCustomSet();
-  
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [language, setLanguage] = useState<Language>('python');
+  const [language, setLanguage] = useState<Language>('cpp');
   const [isPublic, setIsPublic] = useState(false);
   const [aiEnabled, setAiEnabled] = useState(true);
-  const [problems, setProblems] = useState<Problem[]>([{ ...emptyProblem }]);
+  const [problems, setProblems] = useState<Problem[]>([{ ...emptyProblem, starterCode: defaultStarterCode.cpp }]);
   const [expandedProblems, setExpandedProblems] = useState<number[]>([0]);
+
+  // Update starter code when language changes for empty problems
+  const handleLanguageChange = (newLang: Language) => {
+    setLanguage(newLang);
+    // Update starter code for problems that haven't been customized
+    setProblems(problems.map(p => ({
+      ...p,
+      starterCode: p.starterCode === defaultStarterCode[language] || !p.starterCode
+        ? defaultStarterCode[newLang]
+        : p.starterCode
+    })));
+  };
 
   const addProblem = () => {
     if (problems.length >= 10) {
       toast.error('Maximum 10 problems allowed');
       return;
     }
-    setProblems([...problems, { ...emptyProblem }]);
+    setProblems([...problems, { ...emptyProblem, starterCode: defaultStarterCode[language] }]);
     setExpandedProblems([...expandedProblems, problems.length]);
   };
 
@@ -143,6 +211,10 @@ const CreateCustomSetPage = () => {
     }
   };
 
+  const handleEditorChange = useCallback((problemIndex: number) => (value: string | undefined) => {
+    updateProblem(problemIndex, 'starterCode', value || '');
+  }, []);
+
   const handleSubmit = () => {
     if (!title.trim()) {
       toast.error('Please enter a title');
@@ -177,7 +249,7 @@ const CreateCustomSetPage = () => {
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-8 max-w-5xl mx-auto">
       <Button variant="ghost" size="sm" onClick={() => navigate('/practice')} className="mb-4">
         <ChevronDown className="h-4 w-4 mr-1 rotate-90" />
         Back to Practice
@@ -222,22 +294,22 @@ const CreateCustomSetPage = () => {
               <Label>Language</Label>
               <RadioGroup
                 value={language}
-                onValueChange={(val) => setLanguage(val as Language)}
-                className="grid grid-cols-3 gap-2"
+                onValueChange={(val) => handleLanguageChange(val as Language)}
+                className="grid grid-cols-4 gap-3"
               >
                 {languageOptions.map((type) => (
                   <div key={type.value}>
                     <RadioGroupItem value={type.value} id={type.value} className="peer sr-only" />
                     <Label
                       htmlFor={type.value}
-                      className="flex flex-col items-center justify-between border border-border bg-card p-4 transition-colors hover:bg-secondary/50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 rounded-lg cursor-pointer h-full"
+                      className="flex flex-col items-center justify-between border border-border bg-card p-4 transition-all hover:bg-secondary/50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-data-[state=checked]:shadow-sm rounded-lg cursor-pointer h-full"
                     >
                       <img
                         src={getFileIconUrl(`file${type.extension}`)}
                         alt=""
-                        className="w-6 h-6 mb-1"
+                        className="w-8 h-8 mb-2"
                       />
-                      <span className="text-xs font-medium">{type.label}</span>
+                      <span className="text-sm font-medium">{type.label}</span>
                     </Label>
                   </div>
                 ))}
@@ -345,7 +417,7 @@ const CreateCustomSetPage = () => {
                       <Input
                         value={problem.title}
                         onChange={(e) => updateProblem(index, 'title', e.target.value)}
-                        placeholder="Problem title"
+                        placeholder="e.g., Two Sum, Reverse String..."
                       />
                     </div>
                     <div className="space-y-2">
@@ -367,7 +439,7 @@ const CreateCustomSetPage = () => {
                     <Textarea
                       value={problem.description}
                       onChange={(e) => updateProblem(index, 'description', e.target.value)}
-                      placeholder="Describe the problem..."
+                      placeholder="Describe the problem, what the user needs to do, and any important details..."
                       rows={4}
                     />
                   </div>
@@ -378,7 +450,7 @@ const CreateCustomSetPage = () => {
                       <Textarea
                         value={problem.inputFormat}
                         onChange={(e) => updateProblem(index, 'inputFormat', e.target.value)}
-                        placeholder="Describe the input format..."
+                        placeholder="Describe how input is given (e.g., 'First line contains N, second line contains N space-separated integers')"
                         rows={2}
                       />
                     </div>
@@ -387,7 +459,7 @@ const CreateCustomSetPage = () => {
                       <Textarea
                         value={problem.outputFormat}
                         onChange={(e) => updateProblem(index, 'outputFormat', e.target.value)}
-                        placeholder="Describe the output format..."
+                        placeholder="Describe what to output (e.g., 'Print the sum of all integers')"
                         rows={2}
                       />
                     </div>
@@ -398,7 +470,7 @@ const CreateCustomSetPage = () => {
                     <Textarea
                       value={problem.constraints}
                       onChange={(e) => updateProblem(index, 'constraints', e.target.value)}
-                      placeholder="e.g., 1 ≤ N ≤ 1000"
+                      placeholder="Input limits (e.g., 1 ≤ N ≤ 10^5, 1 ≤ arr[i] ≤ 1000). Leave empty if no constraints."
                       rows={2}
                     />
                   </div>
@@ -409,7 +481,7 @@ const CreateCustomSetPage = () => {
                       <Textarea
                         value={problem.sampleInput}
                         onChange={(e) => updateProblem(index, 'sampleInput', e.target.value)}
-                        placeholder="5"
+                        placeholder="Example input shown to user (e.g., '1 2 3 4 5'). Leave empty if no input needed."
                         rows={2}
                         className="font-mono text-sm"
                       />
@@ -419,7 +491,7 @@ const CreateCustomSetPage = () => {
                       <Textarea
                         value={problem.sampleOutput}
                         onChange={(e) => updateProblem(index, 'sampleOutput', e.target.value)}
-                        placeholder="10"
+                        placeholder="Expected output for the sample input (e.g., '15')"
                         rows={2}
                         className="font-mono text-sm"
                       />
@@ -431,20 +503,44 @@ const CreateCustomSetPage = () => {
                     <Textarea
                       value={problem.explanation}
                       onChange={(e) => updateProblem(index, 'explanation', e.target.value)}
-                      placeholder="Explain the solution approach..."
+                      placeholder="Explain the sample input/output (e.g., 'Sum of 1+2+3+4+5 = 15')"
                       rows={2}
                     />
                   </div>
 
+                  {/* Starter Code with Monaco Editor */}
                   <div className="space-y-2">
-                    <Label>Starter Code</Label>
-                    <Textarea
-                      value={problem.starterCode}
-                      onChange={(e) => updateProblem(index, 'starterCode', e.target.value)}
-                      placeholder="def main():&#10;    # Your code here&#10;    pass"
-                      rows={6}
-                      className="font-mono text-sm"
-                    />
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Code2 className="h-4 w-4 text-muted-foreground" />
+                        <Label className="mb-0">Starter Code</Label>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => updateProblem(index, 'starterCode', defaultStarterCode[language])}
+                        className="text-xs h-7"
+                      >
+                        Reset to Default
+                      </Button>
+                    </div>
+                    <div className="border rounded-md overflow-hidden">
+                      <div className="bg-muted/50 px-3 py-1.5 border-b flex items-center gap-2">
+                        <img
+                          src={getFileIconUrl(getFileName(language))}
+                          alt=""
+                          className="w-4 h-4"
+                        />
+                        <span className="text-xs text-muted-foreground">{getFileName(language)}</span>
+                      </div>
+                      <div className="h-[250px]">
+                        <StarterCodeEditor
+                          language={language}
+                          value={problem.starterCode || defaultStarterCode[language]}
+                          onChange={handleEditorChange(index)}
+                        />
+                      </div>
+                    </div>
                   </div>
 
                   {/* Test Cases */}
@@ -489,14 +585,14 @@ const CreateCustomSetPage = () => {
                           <Textarea
                             value={tc.input}
                             onChange={(e) => updateTestCase(index, tcIndex, 'input', e.target.value)}
-                            placeholder="Input"
+                            placeholder="Actual test input (e.g.,'1 2 3 4 5'). Leave empty if no input."
                             rows={2}
                             className="font-mono text-sm"
                           />
                           <Textarea
                             value={tc.expectedOutput}
                             onChange={(e) => updateTestCase(index, tcIndex, 'expectedOutput', e.target.value)}
-                            placeholder="Expected Output"
+                            placeholder="Expected output for this test (e.g., '15')"
                             rows={2}
                             className="font-mono text-sm"
                           />
@@ -523,7 +619,7 @@ const CreateCustomSetPage = () => {
                         <Input
                           value={hint}
                           onChange={(e) => updateHint(index, hintIndex, e.target.value)}
-                          placeholder={`Hint ${hintIndex + 1}`}
+                          placeholder={`Hint ${hintIndex + 1} (e.g., 'Use a hash map for O(n) solution')`}
                           className="flex-1"
                         />
                         <Button
@@ -567,6 +663,68 @@ const CreateCustomSetPage = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// Separate component for the Monaco editor to handle theme changes
+const StarterCodeEditor = ({
+  language,
+  value,
+  onChange
+}: {
+  language: Language;
+  value: string;
+  onChange: (value: string | undefined) => void;
+}) => {
+  const monaco = useMonaco();
+
+  // Handle theme changes
+  useEffect(() => {
+    const handleThemeChange = () => {
+      if (monaco) {
+        monaco.editor.defineTheme('custom-dynamic', getDynamicTheme());
+        monaco.editor.setTheme('custom-dynamic');
+      }
+    };
+    window.addEventListener('themeChanged', handleThemeChange);
+    return () => {
+      window.removeEventListener('themeChanged', handleThemeChange);
+    };
+  }, [monaco]);
+
+  return (
+    <Editor
+      height="100%"
+      language={getMonacoLanguage(language)}
+      value={value}
+      onChange={onChange}
+      beforeMount={(monaco) => {
+        monaco.editor.defineTheme('custom-dynamic', getDynamicTheme());
+      }}
+      onMount={(editor, monaco) => {
+        monaco.editor.setTheme('custom-dynamic');
+      }}
+      theme="custom-dynamic"
+      options={{
+        minimap: { enabled: false },
+        fontSize: 13,
+        fontFamily: "'Inconsolata', 'Consolas', 'Monaco', 'Courier New', monospace",
+        fontLigatures: true,
+        lineHeight: 20,
+        padding: { top: 8, bottom: 8 },
+        scrollBeyondLastLine: false,
+        smoothScrolling: true,
+        cursorBlinking: "smooth",
+        cursorSmoothCaretAnimation: "on",
+        tabSize: 4,
+        insertSpaces: true,
+        wordWrap: "on",
+        renderLineHighlight: "all",
+        renderWhitespace: "none",
+        bracketPairColorization: { enabled: true },
+        automaticLayout: true,
+      }}
+    />
   );
 };
 

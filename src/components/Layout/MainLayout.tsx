@@ -345,9 +345,6 @@ function useTerminalForProject(files: FileData[]): boolean {
     const hasHtml = files.some(f => f.name.endsWith('.html') || f.name.endsWith('.htm'));
     if (hasHtml) return false;
 
-    const hasPython = files.some(f => f.name.endsWith('.py'));
-    if (hasPython) return false;
-
     return true;
 }
 
