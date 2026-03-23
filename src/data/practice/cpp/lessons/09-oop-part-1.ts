@@ -101,7 +101,7 @@ Create an account, perform deposits and withdrawals, and print the final balance
         { input: '100.00\n3\nD 50.00\nW 30.00\nD 20.00', expectedOutput: '140.00' },
         { input: '0.00\n2\nD 100.00\nW 50.00', expectedOutput: '50.00' },
         { input: '500.00\n2\nW 200.00\nW 100.00', expectedOutput: '200.00' },
-        { input: '100.00\n2\nW 150.00\nD 50.00', expectedOutput: '100.00' },
+        { input: '100.00\n2\nW 150.00\nD 50.00', expectedOutput: '150.00' },
       ],
       starterCode: `#include <iostream>
 #include <iomanip>
