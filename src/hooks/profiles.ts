@@ -10,12 +10,13 @@ export interface UserProfile {
     created_at: string;
     tier: 'free' | 'pro' | 'admin';
     credits: number;
+    credit_limit_bonus: number;
 }
 
 const fetchProfile = async (userId: string): Promise<UserProfile | null> => {
     const { data, error } = await supabase
         .from("profiles")
-        .select("username, avatar_url, status, description, created_at, tier, credits")
+        .select("username, avatar_url, status, description, created_at, tier, credits, credit_limit_bonus")
         .eq("id", userId)
         .single();
 
@@ -47,7 +48,7 @@ export const useUpdateProfile = () => {
                 .from('profiles')
                 .update(updateData)
                 .eq('id', id);
-            
+
             if (error) throw error;
         },
         onSuccess: (_, variables) => {

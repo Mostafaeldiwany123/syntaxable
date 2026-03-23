@@ -21,7 +21,9 @@ export function useAICredits(): CreditUsage {
 
   const tier = profile?.tier || 'free';
   const currentCredits = profile?.credits || 0;
-  const limit = tier === 'admin' ? Infinity : AI_CREDIT_LIMITS[tier as keyof typeof AI_CREDIT_LIMITS] || AI_CREDIT_LIMITS.free;
+  const bonus = profile?.credit_limit_bonus || 0;
+  const baseLimit = tier === 'admin' ? Infinity : AI_CREDIT_LIMITS[tier as keyof typeof AI_CREDIT_LIMITS] || AI_CREDIT_LIMITS.free;
+  const limit = tier === 'admin' ? Infinity : baseLimit + bonus;
   const canUse = currentCredits < limit;
   const remaining = Math.max(0, limit - currentCredits);
 

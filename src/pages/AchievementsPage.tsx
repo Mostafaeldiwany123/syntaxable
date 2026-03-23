@@ -1,15 +1,55 @@
-import { Trophy } from "lucide-react";
+import { Trophy, Gift, CheckCircle2, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { ACHIEVEMENTS } from "@/components/achievements/AchievementIcons";
 import { useAchievementProgress } from "@/hooks/achievements";
+import { useRewardStatus, useClaimReward } from "@/hooks/useAchievementRewards";
 import { useAuth } from "@/hooks/useAuth";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 const AchievementsPage = () => {
     const { user } = useAuth();
     const { data: achievements, isLoading } = useAchievementProgress(user?.id);
+    const { data: rewardStatus, isLoading: rewardLoading, refetch: refetchRewards } = useRewardStatus(user?.id);
+    const claimReward = useClaimReward();
+
+    const [isClaimingFive, setIsClaimingFive] = useState(false);
+    const [isClaimingAll, setIsClaimingAll] = useState(false);
+    const [claimSuccess, setClaimSuccess] = useState<{ amount: number; type: string } | null>(null);
 
     const unlockedCount = achievements?.filter(a => a.unlocked).length || 0;
+
+    const handleClaimFiveReward = async () => {
+        setIsClaimingFive(true);
+        try {
+            const result = await claimReward.mutateAsync('five');
+            if (result.success) {
+                setClaimSuccess({ amount: result.reward_amount!, type: 'five' });
+                refetchRewards();
+            }
+        } finally {
+            setIsClaimingFive(false);
+        }
+    };
+
+    const handleClaimAllReward = async () => {
+        setIsClaimingAll(true);
+        try {
+            const result = await claimReward.mutateAsync('all');
+            if (result.success) {
+                setClaimSuccess({ amount: result.reward_amount!, type: 'all' });
+                refetchRewards();
+            }
+        } finally {
+            setIsClaimingAll(false);
+        }
+    };
+
+    const closeSuccessModal = () => {
+        setClaimSuccess(null);
+    };
 
     return (
         <div className="min-h-full">
@@ -38,6 +78,7 @@ const AchievementsPage = () => {
 
             {/* Content */}
             <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
+                {/* Achievements Grid */}
                 {isLoading ? (
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
                         {ACHIEVEMENTS.map((_, i) => (
@@ -64,15 +105,15 @@ const AchievementsPage = () => {
                                 <Card
                                     key={achievement.id}
                                     className={`relative flex flex-col items-center p-4 sm:p-6 transition-all duration-300 h-full ${isUnlocked
-                                            ? 'bg-card border-primary/30 hover:border-primary/50 hover:shadow-lg'
-                                            : 'bg-card/50 border-border/50 opacity-75'
+                                        ? 'bg-card border-primary/30 hover:border-primary/50 hover:shadow-lg'
+                                        : 'bg-card/50 border-border/50 opacity-75'
                                         }`}
                                 >
                                     {/* Circular Badge Container */}
                                     <div className={`relative mb-3 sm:mb-4`}>
                                         <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center transition-all duration-300 ${isUnlocked
-                                                ? 'bg-primary/10 ring-2 ring-primary/30'
-                                                : 'bg-secondary/50 ring-1 ring-border/50'
+                                            ? 'bg-primary/10 ring-2 ring-primary/30'
+                                            : 'bg-secondary/50 ring-1 ring-border/50'
                                             }`}>
                                             <IconComponent
                                                 className="h-8 w-8 sm:h-10 sm:w-10"
@@ -128,17 +169,103 @@ const AchievementsPage = () => {
                     </div>
                 )}
 
-                {/* Info Section */}
-                <div className="mt-8 p-6 bg-secondary/30 rounded-lg border border-border/50">
-                    <h3 className="font-semibold mb-2 flex items-center gap-2">
-                        <Trophy className="h-4 w-4 text-primary" />
-                        About Achievements
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                        Achievements are earned by completing various activities on Syntaxable.
-                        Complete practice problems, maintain coding streaks, and build projects to unlock badges.
-                        Your achievements are displayed on your profile and community card for others to see.
-                    </p>
+                {/* Success Modal */}
+                {claimSuccess && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                        <Card className="p-6 max-w-sm mx-4 text-center">
+                            <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-4">
+                                <CheckCircle2 className="w-8 h-8 text-green-500" />
+                            </div>
+                            <h2 className="text-xl font-bold mb-2">Credits Added!</h2>
+                            <p className="text-muted-foreground mb-4">
+                                <span className="text-2xl font-bold text-primary">{claimSuccess.amount}</span> AI credits have been added to your account.
+                            </p>
+                            <Button onClick={closeSuccessModal}>
+                                Continue
+                            </Button>
+                        </Card>
+                    </div>
+                )}
+
+                {/* Reward System Section - Compact Cards Below Achievements */}
+                <div className="mt-8 pt-6 border-t border-border">
+                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <Gift className="h-5 w-5 text-primary" />
+                        Rewards
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {/* 5 Achievement Reward */}
+                        <div className={`flex items-center gap-3 p-3 rounded-lg border ${rewardStatus?.fiveAchievementRewardClaimed ? 'bg-green-500/5 border-green-500/30' : rewardStatus?.canClaimFiveReward ? 'bg-blue-500/5 border-blue-500/30' : 'bg-secondary/30 border-border'}`}>
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${rewardStatus?.fiveAchievementRewardClaimed ? 'bg-green-500/20' : rewardStatus?.canClaimFiveReward ? 'bg-blue-500/20' : 'bg-muted'}`}>
+                                {rewardStatus?.fiveAchievementRewardClaimed ? (
+                                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                                ) : (
+                                    <Gift className={`h-5 w-5 ${rewardStatus?.canClaimFiveReward ? 'text-blue-500' : 'text-muted-foreground'}`} />
+                                )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-2">
+                                    <span className="font-medium text-sm truncate">5 Achievements</span>
+                                    <span className="font-bold text-primary text-sm">+20 Credits</span>
+                                </div>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <div className="flex-1 h-1.5 bg-secondary rounded-full overflow-hidden">
+                                        <div
+                                            className={`h-full transition-all ${rewardStatus?.fiveAchievementRewardClaimed ? 'bg-green-500' : 'bg-blue-500'}`}
+                                            style={{ width: `${Math.min(100, (unlockedCount / 5) * 100)}%` }}
+                                        />
+                                    </div>
+                                    <span className="text-xs text-muted-foreground">{Math.min(unlockedCount, 5)}/5</span>
+                                </div>
+                            </div>
+                            {rewardStatus?.canClaimFiveReward && !rewardStatus.fiveAchievementRewardClaimed && (
+                                <Button
+                                    size="sm"
+                                    className="flex-shrink-0 bg-primary hover:bg-primary/90"
+                                    onClick={handleClaimFiveReward}
+                                    disabled={isClaimingFive}
+                                >
+                                    {isClaimingFive ? <Loader2 className="w-4 h-4 animate-spin" /> : "Claim"}
+                                </Button>
+                            )}
+                        </div>
+
+                        {/* All Achievement Reward */}
+                        <div className={`flex items-center gap-3 p-3 rounded-lg border ${rewardStatus?.allAchievementRewardClaimed ? 'bg-green-500/5 border-green-500/30' : rewardStatus?.canClaimAllReward ? 'bg-yellow-500/5 border-yellow-500/30' : 'bg-secondary/30 border-border'}`}>
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${rewardStatus?.allAchievementRewardClaimed ? 'bg-green-500/20' : rewardStatus?.canClaimAllReward ? 'bg-yellow-500/20' : 'bg-muted'}`}>
+                                {rewardStatus?.allAchievementRewardClaimed ? (
+                                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                                ) : (
+                                    <Trophy className={`h-5 w-5 ${rewardStatus?.canClaimAllReward ? 'text-yellow-500' : 'text-muted-foreground'}`} />
+                                )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-2">
+                                    <span className="font-medium text-sm truncate">All Achievements</span>
+                                    <span className="font-bold text-primary text-sm">+100 Credits</span>
+                                </div>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <div className="flex-1 h-1.5 bg-secondary rounded-full overflow-hidden">
+                                        <div
+                                            className={`h-full transition-all ${rewardStatus?.allAchievementRewardClaimed ? 'bg-green-500' : 'bg-yellow-500'}`}
+                                            style={{ width: `${Math.min(100, (unlockedCount / ACHIEVEMENTS.length) * 100)}%` }}
+                                        />
+                                    </div>
+                                    <span className="text-xs text-muted-foreground">{unlockedCount}/{ACHIEVEMENTS.length}</span>
+                                </div>
+                            </div>
+                            {rewardStatus?.canClaimAllReward && !rewardStatus.allAchievementRewardClaimed && (
+                                <Button
+                                    size="sm"
+                                    className="flex-shrink-0 bg-amber-600 hover:bg-amber-700 text-white border-none"
+                                    onClick={handleClaimAllReward}
+                                    disabled={isClaimingAll}
+                                >
+                                    {isClaimingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : "Claim"}
+                                </Button>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

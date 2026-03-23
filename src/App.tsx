@@ -32,6 +32,7 @@ import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import TermsOfServicePage from "./pages/TermsOfServicePage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import AchievementsPage from "./pages/AchievementsPage";
+import { RewardPopup } from "./components/achievements/RewardPopup";
 import { cppCourse, csharpCourse, pythonCourse, javaCourse } from './data/practiceProblems';
 
 const PracticeRoutes = () => {
@@ -62,6 +63,7 @@ const AppRoutes = () => {
   return (
     <>
       <AuthModal />
+      {user && <RewardPopup />}
       <Routes>
         <Route path="/" element={!user ? <AuthPage /> : <Navigate to="/dashboard" replace />} />
 

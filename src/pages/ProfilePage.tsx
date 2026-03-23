@@ -211,9 +211,9 @@ const ProfilePage = () => {
                           <MessageSquare className="h-4 w-4" />
                           <span className="text-sm font-medium">AI Credits</span>
                         </div>
-                        <span className={`text-sm font-bold ${isPro ? 'text-pro-light' : ''}`}>{profile?.credits || 0} / {profile?.tier === 'admin' ? '∞' : profile?.tier === 'pro' ? 300 : 20}</span>
+                        <span className={`text-sm font-bold ${isPro ? 'text-pro-light' : ''}`}>{profile?.credits || 0} / {profile?.tier === 'admin' ? '∞' : (profile?.tier === 'pro' ? 300 : 20) + (profile?.credit_limit_bonus || 0)}</span>
                       </div>
-                      <Progress value={Math.min(100, ((profile?.credits || 0) / (profile?.tier === 'pro' ? 300 : 20)) * 100)} className={`h-1.5 ${isPro ? 'bg-yellow-900/30' : ''}`} />
+                      <Progress value={Math.min(100, ((profile?.credits || 0) / ((profile?.tier === 'pro' ? 300 : 20) + (profile?.credit_limit_bonus || 0))) * 100)} className={`h-1.5 ${isPro ? 'bg-yellow-900/30' : ''}`} />
                     </div>
                   </>
                 )}
