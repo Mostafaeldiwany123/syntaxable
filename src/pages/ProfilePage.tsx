@@ -21,13 +21,16 @@ import {
   Trophy,
   ChevronRight,
   MessageSquare,
-  Crown
+  Crown,
+  Award
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { getFileIconUrl } from "@/lib/project-utils";
 import { ProfileSheet } from "@/components/profile/ProfileSheet";
 import { useRealtimeProfile } from "@/hooks/useRealtimeProfile";
 import { Progress } from "@/components/ui/progress";
+import { AchievementBadges } from "@/components/achievements/AchievementBadges";
+import { useAchievementIds } from "@/hooks/achievements";
 
 interface CommitHistory {
   id: string;
@@ -76,6 +79,8 @@ const ProfilePage = () => {
     },
     enabled: !!userId,
   });
+
+  const { data: achievementIds } = useAchievementIds(userId);
 
   const getInitials = () => {
     if (profile?.username) return profile.username.charAt(0).toUpperCase();
@@ -228,6 +233,35 @@ const ProfilePage = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Achievements Section */}
+            <Card className={`bg-card border-border ${isPro ? 'bg-pro-bg border-yellow-600/30' : ''}`}>
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className={`text-xs font-bold uppercase tracking-wider ${isPro ? 'text-yellow-600/70' : 'text-muted-foreground'}`}>
+                    <Award className="h-3.5 w-3.5 inline mr-1.5" />
+                    Achievements
+                  </h3>
+                  <Link
+                    to="/achievements"
+                    className={`text-xs font-medium hover:underline ${isPro ? 'text-yellow-600/80' : 'text-primary'}`}
+                  >
+                    View all
+                  </Link>
+                </div>
+                {achievementIds && achievementIds.length > 0 ? (
+                  <AchievementBadges
+                    achievementIds={achievementIds}
+                    maxVisible={3}
+                    size="md"
+                  />
+                ) : (
+                  <p className={`text-sm ${isPro ? 'text-yellow-600/50' : 'text-muted-foreground'}`}>
+                    No achievements yet
+                  </p>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Right Content */}
@@ -253,8 +287,8 @@ const ProfilePage = () => {
                       key={repo.id}
                       to={`/editor/${repo.room_id}`}
                       className={`flex items-center justify-between p-4 rounded-xl border transition-all group ${isPro
-                          ? 'border-yellow-600/20 bg-pro-bg hover:bg-pro-grad1 hover:border-yellow-600/40'
-                          : 'border-border bg-card hover:bg-secondary/50 hover:border-primary/30'
+                        ? 'border-yellow-600/20 bg-pro-bg hover:bg-pro-grad1 hover:border-yellow-600/40'
+                        : 'border-border bg-card hover:bg-secondary/50 hover:border-primary/30'
                         }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
@@ -306,8 +340,8 @@ const ProfilePage = () => {
                     <div
                       key={commit.id}
                       className={`flex items-start gap-3 p-4 rounded-xl border transition-colors ${isPro
-                          ? 'border-yellow-600/10 bg-pro-bg'
-                          : 'border-border bg-card/50'
+                        ? 'border-yellow-600/10 bg-pro-bg'
+                        : 'border-border bg-card/50'
                         }`}
                     >
                       <div className={`mt-1.5 h-1.5 w-1.5 rounded-full flex-shrink-0 ${isPro ? 'bg-pro' : 'bg-primary'}`} />

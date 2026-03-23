@@ -31,6 +31,7 @@ import PricingPage from "./pages/PricingPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import TermsOfServicePage from "./pages/TermsOfServicePage";
 import LeaderboardPage from "./pages/LeaderboardPage";
+import AchievementsPage from "./pages/AchievementsPage";
 import { cppCourse, csharpCourse, pythonCourse, javaCourse } from './data/practiceProblems';
 
 const PracticeRoutes = () => {
@@ -98,6 +99,7 @@ const AppRoutes = () => {
           <Route path="/community" element={user ? <CommunityPage /> : <Navigate to="/" replace />} />
           <Route path="/friends" element={user ? <FriendsPage /> : <Navigate to="/" replace />} />
           <Route path="/leaderboard" element={user ? <LeaderboardPage /> : <Navigate to="/" replace />} />
+          <Route path="/achievements" element={user ? <AchievementsPage /> : <Navigate to="/" replace />} />
           <Route path="/room/:roomId" element={user ? <RoomPage /> : <Navigate to="/" replace />} />
           <Route path="/profile/:userId" element={user ? <ProfilePage /> : <Navigate to="/" replace />} />
           <Route path="/pricing" element={user ? <PricingPage /> : <Navigate to="/" replace />} />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FolderKanban, LogOut, Users, Mail, UserCheck, Dumbbell, ChevronLeft, ChevronRight, CreditCard, Paintbrush, Lock, Trophy } from "lucide-react";
+import { LayoutDashboard, FolderKanban, LogOut, Users, Mail, UserCheck, Dumbbell, ChevronLeft, ChevronRight, CreditCard, Paintbrush, Lock, Trophy, Award, Github, Instagram, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -71,7 +71,11 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
     { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/projects", icon: FolderKanban, label: "Projects" },
     { to: "/practice", icon: Dumbbell, label: "Practice" },
+  ];
+
+  const socialItems = [
     { to: "/leaderboard", icon: Trophy, label: "Leaderboard" },
+    { to: "/achievements", icon: Award, label: "Achievements" },
     { to: "/community", icon: Users, label: "Community" },
     { to: "/friends", icon: UserCheck, label: "Friends" },
   ];
@@ -87,10 +91,10 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
     <>
       <aside
         className={`flex flex-col bg-card h-full overflow-hidden transition-all duration-300 ease-in-out ${isMobile
-            ? 'w-60 border-r-0'
-            : isCollapsed
-              ? 'w-16 border-r border-border'
-              : 'w-60 border-r border-border'
+          ? 'w-60 border-r-0'
+          : isCollapsed
+            ? 'w-16 border-r border-border'
+            : 'w-60 border-r border-border'
           }`}
       >
         {/* Logo */}
@@ -105,11 +109,62 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
 
         {/* Navigation */}
         <nav className={`flex-grow px-2 py-4 ${(!isCollapsed || isMobile) ? 'space-y-0.5' : 'space-y-1'}`}>
+          {/* Platform Section */}
+          {(!isCollapsed || isMobile) && (
+            <p className="px-3 text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider mb-2">
+              Platform
+            </p>
+          )}
+
           {navItems.map(item => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.to === "/dashboard"}
+              onClick={handleNavClick}
+              className={({ isActive }) =>
+                `flex items-center text-sm font-medium transition-all duration-200 rounded-lg ${isCollapsed && !isMobile
+                  ? `justify-center p-2.5 ${isActive
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`
+                  : `px-3 py-2 ${isActive
+                    ? "bg-primary/10 text-primary border-l-2 border-primary -ml-[2px] px-[calc(0.75rem+2px)]"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`
+                }`
+              }
+              title={isCollapsed && !isMobile ? item.label : undefined}
+            >
+              <item.icon className={`${isCollapsed && !isMobile ? '' : 'mr-3'} h-4 w-4 shrink-0`} />
+              {(!isCollapsed || isMobile) && <span className="whitespace-nowrap">{item.label}</span>}
+            </NavLink>
+          ))}
+
+          {/* Social Section Spacer */}
+          {(!isCollapsed || isMobile) && (
+            <div className="px-3">
+              <div className="border-t border-border/50 my-2" />
+            </div>
+          )}
+
+          {/* Social Section */}
+          {(!isCollapsed || isMobile) && (
+            <p className="px-3 text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider mb-2">
+              Social
+            </p>
+          )}
+
+          {isCollapsed && !isMobile && (
+            <div className="px-3">
+              <div className="border-t border-border/50 my-4" />
+            </div>
+          )}
+
+          {socialItems.map(item => (
+            <NavLink
+              key={item.to}
+              to={item.to}
               onClick={handleNavClick}
               className={({ isActive }) =>
                 `flex items-center text-sm font-medium transition-all duration-200 rounded-lg ${isCollapsed && !isMobile
@@ -371,24 +426,48 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
           )}
         </div>
 
-        {/* Collapse Toggle - Only show on desktop */}
-        {showCollapseButton && (
-          <div className="px-2 py-2 border-t border-border shrink-0">
+        {/* Footer: Social Links & Collapse Toggle */}
+        <div className={`px-2 py-2 border-t border-border shrink-0 flex items-center ${isCollapsed && !isMobile ? 'flex-col gap-1' : 'justify-between px-3'}`}>
+          <div className={`flex items-center gap-1.5 ${isCollapsed && !isMobile ? 'flex-col' : ''}`}>
+            <a
+              href="https://github.com/Mostafaeldiwany123/syntaxable"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary/80 rounded-md transition-all"
+              title="GitHub"
+            >
+              <Github className="h-4 w-4" />
+            </a>
+            <a
+              href="https://www.instagram.com/mostafa_eldiwany123/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary/80 rounded-md transition-all"
+              title="Instagram"
+            >
+              <Instagram className="h-4 w-4" />
+            </a>
+            <a
+              href="https://www.linkedin.com/in/mostafa-eldiwany-91b9a9319/?skipRedirect=true"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary/80 rounded-md transition-all"
+              title="LinkedIn"
+            >
+              <Linkedin className="h-4 w-4" />
+            </a>
+          </div>
+
+          {showCollapseButton && (
             <button
               onClick={onToggleCollapse}
-              className={`w-full flex items-center justify-center gap-2 p-2 text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors rounded-lg text-xs`}
+              className={`p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary/80 rounded-md transition-all`}
+              title={isCollapsed ? "Expand" : "Collapse"}
             >
-              {isCollapsed ? (
-                <ChevronRight className="h-4 w-4" />
-              ) : (
-                <>
-                  <ChevronLeft className="h-4 w-4" />
-                  <span>Collapse</span>
-                </>
-              )}
+              {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </aside>
       {user && <InboxSheet isOpen={isInboxOpen} onOpenChange={setIsInboxOpen} />}
     </>
