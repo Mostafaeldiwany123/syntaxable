@@ -49,12 +49,12 @@ export const HeroSection = ({ onSignUp, onSignIn }: HeroSectionProps) => {
           </p>
 
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" onClick={onSignUp} className="px-8 h-12 text-base">
-              Start Coding Free
+          <div className="flex flex-row items-center justify-center gap-3">
+            <Button size="lg" onClick={onSignUp} className="px-5 md:px-8 h-12 text-sm md:text-base">
+              Start Coding
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
-            <Button size="lg" variant="outline" onClick={onSignIn} className="px-8 h-12 text-base">
+            <Button size="lg" variant="outline" onClick={onSignIn} className="px-5 md:px-8 h-12 text-sm md:text-base">
               Sign In
             </Button>
           </div>

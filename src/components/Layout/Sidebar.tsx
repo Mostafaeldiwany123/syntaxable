@@ -427,36 +427,38 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
         </div>
 
         {/* Footer: Social Links & Collapse Toggle */}
-        <div className={`px-2 py-2 border-t border-border shrink-0 flex items-center ${isCollapsed && !isMobile ? 'flex-col gap-1' : 'justify-between px-3'}`}>
-          <div className={`flex items-center gap-1.5 ${isCollapsed && !isMobile ? 'flex-col' : ''}`}>
-            <a
-              href="https://github.com/Mostafaeldiwany123/syntaxable"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary/80 rounded-md transition-all"
-              title="GitHub"
-            >
-              <Github className="h-4 w-4" />
-            </a>
-            <a
-              href="https://www.instagram.com/mostafa_eldiwany123/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary/80 rounded-md transition-all"
-              title="Instagram"
-            >
-              <Instagram className="h-4 w-4" />
-            </a>
-            <a
-              href="https://www.linkedin.com/in/mostafa-eldiwany-91b9a9319/?skipRedirect=true"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary/80 rounded-md transition-all"
-              title="LinkedIn"
-            >
-              <Linkedin className="h-4 w-4" />
-            </a>
-          </div>
+        <div className={`px-2 py-2 border-t border-border shrink-0 flex items-center ${isCollapsed && !isMobile ? 'justify-center' : 'justify-between px-3'}`}>
+          {(!isCollapsed || isMobile) && (
+            <div className="flex items-center gap-1.5">
+              <a
+                href="https://github.com/Mostafaeldiwany123/syntaxable"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary/80 rounded-md transition-all"
+                title="GitHub"
+              >
+                <Github className="h-4 w-4" />
+              </a>
+              <a
+                href="https://www.instagram.com/mostafa_eldiwany123/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary/80 rounded-md transition-all"
+                title="Instagram"
+              >
+                <Instagram className="h-4 w-4" />
+              </a>
+              <a
+                href="https://www.linkedin.com/in/mostafa-eldiwany-91b9a9319/?skipRedirect=true"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary/80 rounded-md transition-all"
+                title="LinkedIn"
+              >
+                <Linkedin className="h-4 w-4" />
+              </a>
+            </div>
+          )}
 
           {showCollapseButton && (
             <button
