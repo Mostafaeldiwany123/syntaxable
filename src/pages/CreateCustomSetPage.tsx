@@ -327,9 +327,9 @@ const CreateCustomSetPage = () => {
   const currentProblem = problems[activeProblemIndex];
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="h-screen flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+      <div className="border-b bg-card sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -364,7 +364,7 @@ const CreateCustomSetPage = () => {
 
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Problem List */}
-        <div className="w-80 border-r bg-card/50 backdrop-blur-sm flex flex-col">
+        <div className="w-80 border-r bg-card flex flex-col">
           {/* Set Info */}
           <div className="p-4 border-b space-y-3">
             <div className="flex items-center justify-between">
@@ -446,7 +446,7 @@ const CreateCustomSetPage = () => {
           </div>
 
           {/* Quick Settings */}
-          <div className="p-4 border-t space-y-4 bg-muted/30">
+          <div className="p-4 border-t space-y-4">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-0.5">
@@ -477,7 +477,7 @@ const CreateCustomSetPage = () => {
         {/* Main Content - Problem Editor */}
         <div className="flex-1 overflow-hidden flex flex-col">
           {/* Language Selector */}
-          <div className="border-b bg-card/50 backdrop-blur-sm px-6 py-3">
+          <div className="border-b bg-card px-6 py-3">
             <div className="flex items-center gap-4">
               <Label className="text-sm font-medium">Language:</Label>
               <RadioGroup
@@ -503,7 +503,7 @@ const CreateCustomSetPage = () => {
 
           {/* Problem Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-            <div className="border-b bg-card/50 backdrop-blur-sm px-6 flex justify-center">
+            <div className="border-b bg-card px-6 flex justify-center">
               <TabsList className="h-11 bg-transparent p-0 gap-12">
                 <TabsTrigger value="description" className="px-1 py-4 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-medium">
                   Description
@@ -517,7 +517,7 @@ const CreateCustomSetPage = () => {
               </TabsList>
             </div>
 
-            <ScrollArea className="flex-1">
+            <ScrollArea className="flex-1 bg-card/20">
               <div className="p-6 max-w-4xl mx-auto">
                 <TabsContent value="description" className="mt-0 space-y-5">
                   <div className="grid grid-cols-2 gap-4">
