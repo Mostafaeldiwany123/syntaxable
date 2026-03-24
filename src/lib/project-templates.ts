@@ -10,40 +10,41 @@ export const getProjectTemplate = (projectType: ProjectType): TemplateInfo => {
     case 'cpp':
       return {
         filename: 'main.cpp',
-        content: '#include <iostream>\n#include <string>\n\nusing namespace std;\n\nint main() {\n    string name;\n    cout << "Welcome to Syntaxable!" << endl;\n    cout << "Enter your name: ";\n    getline(cin, name);\n    cout << "Hello, " << name << "!" << endl;\n    return 0;\n}',
+        content: '#include <iostream>\n\nusing namespace std;\n\nint main() {\n    cout << "Hello from Syntaxable!" << endl;\n    return 0;\n}',
       };
     case 'csharp':
       return {
         filename: 'Program.cs',
-        content: 'using System;\n\nclass Program {\n    static void Main(string[] args) {\n        Console.WriteLine("Welcome to Syntaxable!");\n        Console.Write("Enter your name: ");\n        string name = Console.ReadLine();\n        Console.WriteLine($"Hello, {name}!");\n    }\n}',
+        content: 'using System;\n\nclass Program {\n    static void Main(string[] args) {\n        Console.WriteLine("Hello from Syntaxable!");\n    }\n}',
       };
     case 'python':
       return {
         filename: 'main.py',
-        content: 'def greet(name):\n    return f"Hello, {name}! Welcome to Syntaxable."\n\nif __name__ == "__main__":\n    user_name = input("Enter your name: ")\n    print(greet(user_name))',
+        content: 'def main():\n    print("Hello from Syntaxable!")\n\nif __name__ == "__main__":\n    main()',
       };
     case 'java':
       return {
         filename: 'Main.java',
-        content: 'import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        System.out.println("Welcome to Syntaxable!");\n        System.out.print("Enter your name: ");\n        String name = scanner.nextLine();\n        System.out.println("Hello, " + name + "!");\n    }\n}',
+        content: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello from Syntaxable!");\n    }\n}',
       };
     case 'html':
       return {
         filename: 'index.html',
-        content: '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Syntaxable Project</title>\n  <style>\n    body {\n      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;\n      display: flex;\n      justify-content: center;\n      align-items: center;\n      height: 100vh;\n      margin: 0;\n      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n      color: white;\n    }\n    .container {\n      text-align: center;\n    }\n    h1 {\n      font-size: 3rem;\n      margin-bottom: 0.5rem;\n    }\n    p {\n      font-size: 1.2rem;\n      opacity: 0.9;\n    }\n  </style>\n</head>\n<body>\n  <div class="container">\n    <h1>Welcome to Syntaxable!</h1>\n    <p>Start building your project here.</p>\n  </div>\n</body>\n</html>',
+        content: '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Syntaxable Project</title>\n  <style>\n    body {\n      font-family: system-ui, -apple-system, sans-serif;\n      display: flex;\n      justify-content: center;\n      align-items: center;\n      height: 100vh;\n      margin: 0;\n      background: #0f172a;\n      color: white;\n    }\n    .container {\n      text-align: center;\n      padding: 2rem;\n      border-radius: 1rem;\n      background: #1e293b;\n      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);\n    }\n    h1 {\n      font-size: 2.5rem;\n      margin-bottom: 0.5rem;\n      background: linear-gradient(to right, #38bdf8, #818cf8);\n      -webkit-background-clip: text;\n      -webkit-text-fill-color: transparent;\n    }\n  </style>\n</head>\n<body>\n  <div class="container">\n    <h1>Welcome to Syntaxable</h1>\n    <p>Start building something amazing!</p>\n  </div>\n</body>\n</html>',
       };
     case 'react':
       return {
         filename: 'App.tsx',
-        content: 'import React, { useState } from "react";\n\nexport default function App() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div style={{ \n      textAlign: "center", \n      padding: "50px",\n      fontFamily: "sans-serif"\n    }}>\n      <h1>Welcome to Syntaxable!</h1>\n      <p>React project ready for development.</p>\n      <button \n        onClick={() => setCount(count + 1)}\n        style={{\n          padding: "10px 20px",\n          fontSize: "16px",\n          cursor: "pointer",\n          backgroundColor: "#667eea",\n          color: "white",\n          border: "none",\n          borderRadius: "5px"\n        }}\n      >\n        Count: {count}\n      </button>\n    </div>\n  );\n}',
+        content: 'import React, { useState } from "react";\n\nexport default function App() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div style={{ \n      textAlign: "center", \n      padding: "50px",\n      fontFamily: "sans-serif",\n      color: "#f8fafc",\n      backgroundColor: "#0f172a",\n      minHeight: "100vh"\n    }}>\n      <h1 style={{ color: "#38bdf8" }}>Welcome to Syntaxable</h1>\n      <p>React project ready for development.</p>\n      <button \n        onClick={() => setCount(count + 1)}\n        style={{\n          padding: "10px 20px",\n          fontSize: "16px",\n          cursor: "pointer",\n          backgroundColor: "#38bdf8",\n          color: "#0f172a",\n          border: "none",\n          borderRadius: "8px",\n          fontWeight: "bold"\n        }}\n      >\n        Count: {count}\n      </button>\n    </div>\n  );\n}',
       };
     default:
       return {
         filename: 'main.cpp',
-        content: '#include <iostream>\n#include <string>\n\nusing namespace std;\n\nint main() {\n    string name;\n    cout << "Welcome to Syntaxable!" << endl;\n    cout << "Enter your name: ";\n    getline(cin, name);\n    cout << "Hello, " << name << "!" << endl;\n    return 0;\n}',
+        content: '#include <iostream>\n\nusing namespace std;\n\nint main() {\n    cout << "Hello from Syntaxable!" << endl;\n    return 0;\n}',
       };
   }
 };
+
 export const getFileTemplate = (fileName: string): string => {
   const ext = fileName.split('.').pop()?.toLowerCase();
   
@@ -55,14 +56,14 @@ export const getFileTemplate = (fileName: string): string => {
       return 'import React from "react";\n\nexport default function Component() {\n  return (\n    <div>\n      <h1>New Component</h1>\n    </div>\n  );\n}';
     case 'ts':
     case 'js':
-      return '// Your JavaScript/TypeScript code here\n';
+      return '// Your code here\n';
     case 'css':
       return '/* Styles */\nbody {\n  margin: 0;\n}';
     case 'py':
       return 'def main():\n    print("Hello from Syntaxable!")\n\nif __name__ == "__main__":\n    main()';
     case 'cpp':
     case 'h':
-      return '#include <iostream>\n\nint main() {\n    std::cout << "Hello from Syntaxable!" << std::endl;\n    return 0;\n}';
+      return '#include <iostream>\n\nusing namespace std;\n\nint main() {\n    cout << "Hello from Syntaxable!" << endl;\n    return 0;\n}';
     case 'cs':
       return 'using System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello from Syntaxable!");\n    }\n}';
     case 'java':

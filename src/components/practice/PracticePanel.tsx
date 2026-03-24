@@ -12,6 +12,7 @@ interface TestResult {
   expectedOutput: string;
   actualOutput: string;
   isHidden: boolean;
+  error?: string;
 }
 
 interface PracticePanelProps {
@@ -297,13 +298,34 @@ ${problem.explanation ? `**Explanation:**\n${problem.explanation}` : ''}`;
                     </div>
                   </div>
                 ) : (
-                  <div className="p-3 rounded-lg border bg-destructive/10 border-destructive/30">
-                    <div className="flex items-center gap-2">
-                      <XCircle size={16} className="text-destructive" />
-                      <span className="text-sm font-semibold text-destructive">
-                        {passedCount}/{totalCount} tests passed
-                      </span>
-                    </div>
+                  <div className="space-y-3">
+                    {/* Compilation Error Alert */}
+                    {testResults.length > 0 && testResults.every(r => !r.passed && r.error) && (
+                      <div className="p-4 rounded-lg border bg-destructive/10 border-destructive/20 shadow-sm animate-in fade-in slide-in-from-top-1 duration-300">
+                        <div className="flex items-start gap-3">
+                          <XCircle size={18} className="text-red-400 mt-0.5 shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <span className="text-sm font-medium text-red-300 block mb-1.5 tracking-tight">
+                              Compilation or Runtime Error
+                            </span>
+                            <pre className="text-xs text-red-100/90 bg-destructive/20 p-3 rounded-md border border-destructive/20 overflow-x-auto whitespace-pre-wrap break-words font-mono leading-relaxed">
+                              {testResults[0].error}
+                            </pre>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {!testResults.every(r => !r.passed && r.error) && (
+                      <div className="p-3 rounded-lg border bg-destructive/5 border-destructive/10">
+                        <div className="flex items-center gap-2">
+                          <XCircle size={16} className="text-destructive" />
+                          <span className="text-sm font-semibold text-destructive">
+                            {passedCount}/{totalCount} tests passed
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -311,7 +333,7 @@ ${problem.explanation ? `**Explanation:**\n${problem.explanation}` : ''}`;
                 {testResults.some(r => r.isHidden) && (
                   <button
                     onClick={() => setShowHiddenTests(!showHiddenTests)}
-                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mt-2"
                   >
                     {showHiddenTests ? <EyeOff size={12} /> : <Eye size={12} />}
                     {showHiddenTests ? 'Hide hidden test cases' : 'Show hidden test cases'}
@@ -319,50 +341,57 @@ ${problem.explanation ? `**Explanation:**\n${problem.explanation}` : ''}`;
                 )}
 
                 {/* Test Results */}
-                {visibleTestResults.map((result, index) => (
-                  <div
-                    key={index}
-                    className={`p-3 rounded-lg border ${result.passed
-                        ? 'bg-accent-green/5 border-accent-green/20'
-                        : 'bg-destructive/5 border-destructive/20'
-                      }`}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      {result.passed ? (
-                        <CheckCircle2 size={14} className="text-accent-green" />
-                      ) : (
-                        <XCircle size={14} className="text-destructive" />
-                      )}
-                      <span className="text-xs font-semibold text-foreground">
-                        Test Case {index + 1}
-                        {result.isHidden && ' (Hidden)'}
-                      </span>
-                    </div>
-
-                    <div className="space-y-2 text-xs">
-                      <div>
-                        <span className="text-muted-foreground">Input:</span>
-                        <pre className="bg-secondary p-1.5 rounded mt-0.5 overflow-x-auto text-foreground">
-                          {result.input}
-                        </pre>
+                {visibleTestResults.map((result, index) => {
+                  const isGlobalError = testResults.every(r => !r.passed && r.error);
+                  return (
+                    <div
+                      key={index}
+                      className={`p-3 rounded-lg border mt-2 ${result.passed
+                          ? 'bg-accent-green/5 border-accent-green/10'
+                          : 'bg-destructive/5 border-destructive/10'
+                        }`}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        {result.passed ? (
+                          <CheckCircle2 size={14} className="text-accent-green" />
+                        ) : (
+                          <XCircle size={14} className="text-destructive" />
+                        )}
+                        <span className="text-xs font-semibold text-foreground">
+                          Test Case {index + 1}
+                          {result.isHidden && ' (Hidden)'}
+                        </span>
                       </div>
-                      <div>
-                        <span className="text-muted-foreground">Expected:</span>
-                        <pre className="bg-secondary p-1.5 rounded mt-0.5 overflow-x-auto text-foreground">
-                          {result.expectedOutput}
-                        </pre>
-                      </div>
-                      {!result.passed && (
+  
+                      <div className="space-y-2 text-xs">
                         <div>
-                          <span className="text-muted-foreground">Your Output:</span>
-                          <pre className="bg-secondary p-1.5 rounded border border-destructive/30 mt-0.5 overflow-x-auto text-destructive">
-                            {result.actualOutput}
+                          <span className="text-muted-foreground font-medium">Input:</span>
+                          <pre className="bg-secondary/50 p-2 rounded mt-1 overflow-x-auto text-foreground whitespace-pre-wrap break-words font-mono">
+                            {result.input || '(empty)'}
                           </pre>
                         </div>
-                      )}
+                        <div>
+                          <span className="text-muted-foreground font-medium">Expected:</span>
+                          <pre className="bg-secondary/50 p-2 rounded mt-1 overflow-x-auto text-foreground whitespace-pre-wrap break-words font-mono">
+                            {result.expectedOutput}
+                          </pre>
+                        </div>
+                        {!result.passed && (
+                          <div>
+                            <span className="text-muted-foreground font-medium">{result.error ? 'Error Details:' : 'Your Output:'}</span>
+                            <pre className={`bg-secondary/50 p-2 rounded border border-destructive/20 mt-1 overflow-x-auto whitespace-pre-wrap break-words font-mono ${result.error ? 'text-red-300' : 'text-destructive'}`}>
+                              {/* Only show error if it's NOT a global/compilation error (which is shown at the top) or if it's the very first case */}
+                              {isGlobalError 
+                                ? 'Compilation Failed (See error at top)' 
+                                : (result.error || result.actualOutput || '(no output)')
+                              }
+                            </pre>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center">

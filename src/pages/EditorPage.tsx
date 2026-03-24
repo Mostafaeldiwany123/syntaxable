@@ -490,10 +490,25 @@ const EditorPage = () => {
     if (currentUser && currentUserProfile) {
       broadcastTyping(activeFile, { id: currentUser.id, ...currentUserProfile });
     }
+
+    // Immediately save to localStorage for persistence across reloads
+    if (roomId && activeFile && isDirty) {
+      const localKey = getLocalStorageKey(roomId, activeFile);
+      localStorage.setItem(localKey, newCode);
+      
+      // Also ensure it's marked as uncommitted so it's loaded back on refresh
+      setUncommittedFiles(prev => {
+        if (prev.has(activeFile)) return prev;
+        const next = new Set(prev);
+        next.add(activeFile);
+        uncommittedFilesRef.current = next;
+        return next;
+      });
+    }
   };
 
   // Save locally to localStorage (clears dirty, only adds to uncommitted if different from DB)
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback((options: { silent?: boolean } = {}) => {
     if (dirtyFiles.size === 0 || isSaving) return;
     if (!roomId) return;
 
@@ -546,9 +561,22 @@ const EditorPage = () => {
       return next;
     });
 
-    toast.success("Saved locally");
+    if (!options.silent) {
+      toast.success("Saved locally");
+    }
     setIsSaving(false);
   }, [dirtyFiles, fileData, roomId, isSaving, dbFileData]);
+
+  // Auto-save effect (debounced)
+  useEffect(() => {
+    if (dirtyFiles.size === 0 || isReadOnly) return;
+
+    const timeoutId = setTimeout(() => {
+      handleSave({ silent: true });
+    }, 2000);
+
+    return () => clearTimeout(timeoutId);
+  }, [dirtyFiles, handleSave, isReadOnly]);
 
   // Keyboard Shortcuts - Ctrl+S saves locally
   useEffect(() => {
