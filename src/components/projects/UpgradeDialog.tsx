@@ -43,7 +43,7 @@ export function UpgradeDialog({ open, onOpenChange, currentCount, limit, title, 
               navigate("/pricing");
             }}
           >
-            Upgrade to Pro
+            Beta Trial
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/profiles";
+import { useState } from "react";
+import { BetaTrialDialog } from "@/components/pricing/BetaTrialDialog";
 
 const PricingPage = () => {
   const { user } = useAuth();
@@ -10,11 +12,14 @@ const PricingPage = () => {
 
   const isPro = profile?.tier === 'pro' || profile?.tier === 'admin';
 
+  const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(false);
+
   const plans = [
     {
       name: "Starter",
       price: "0",
       currency: "EGP",
+      priceUSD: "$0",
       description: "Essential features for individuals and small side projects.",
       features: [
         "Up to 3 active projects",
@@ -31,6 +36,7 @@ const PricingPage = () => {
       name: "Professional",
       price: "100",
       currency: "EGP",
+      priceUSD: "$2",
       description: "Advanced tools for power users and serious learners.",
       features: [
         "Up to 20 active projects",
@@ -40,7 +46,7 @@ const PricingPage = () => {
         "Create custom practice sets",
         "Professional profile badge",
       ],
-      cta: "Upgrade to Pro",
+      cta: "Beta Trial",
       popular: true,
       tier: "pro"
     },
@@ -123,11 +129,14 @@ const PricingPage = () => {
                           <span className="text-3xl font-bold text-foreground tracking-tight">
                             {plan.price}
                           </span>
-                          <span className="text-muted-foreground ml-1.5 font-medium">
+                          <span className="text-muted-foreground ml-1.5 font-medium uppercase tracking-wider text-xs">
                             {plan.currency}
                           </span>
+                          {plan.priceUSD && (
+                            <span className="text-primary mx-1.5 font-bold">/ {plan.priceUSD}</span>
+                          )}
                           {plan.name !== 'Starter' && (
-                            <span className="text-muted-foreground text-sm ml-1">/mo</span>
+                            <span className="text-muted-foreground text-sm border-l border-border pl-1.5 h-6 flex items-center ml-1">/mo</span>
                           )}
                         </>
                       )}
@@ -154,6 +163,11 @@ const PricingPage = () => {
                     variant={plan.popular ? 'default' : 'outline'}
                     className="w-full"
                     disabled={isCurrentPlan}
+                    onClick={() => {
+                      if (plan.tier === 'pro') {
+                        setIsBetaDialogOpen(true);
+                      }
+                    }}
                   >
                     {isCurrentPlan ? 'Active Plan' : plan.cta}
                   </Button>
@@ -162,6 +176,8 @@ const PricingPage = () => {
             );
           })}
         </div>
+
+        <BetaTrialDialog open={isBetaDialogOpen} onOpenChange={setIsBetaDialogOpen} />
 
         {/* Footer Info */}
         <div className="mt-16 border-t border-border pt-10">
