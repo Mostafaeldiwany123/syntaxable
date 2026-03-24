@@ -21,35 +21,62 @@ export interface BatchTestResult {
   error?: string;
 }
 
+// Number of lines in the C++ test harness before the user code
+// This is used to adjust line numbers in compilation error messages
+const CPP_HARNESS_LINE_OFFSET = 9;
+
+/**
+ * Adjust line numbers in C++ error messages to account for the test harness prefix
+ * Handles two formats:
+ * 1. "main.cpp:25:5: error" -> "main.cpp:16:5: error"
+ * 2. "   28 |     int x;" -> "   19 |     int x;"
+ */
+function adjustCppErrorLines(error: string, offset: number): string {
+  // First, adjust the header line numbers: main.cpp:25:5: -> main.cpp:16:5:
+  let adjusted = error.replace(/(main\.cpp:)(\d+)(:\d+:)/g, (match, prefix, lineNum, suffix) => {
+    const adjustedLine = Math.max(1, parseInt(lineNum) - offset);
+    return `${prefix}${adjustedLine}${suffix}`;
+  });
+
+  // Second, adjust the snippet line numbers: "   28 |" -> "   19 |"
+  // GCC shows source lines with format: "   28 |     code here"
+  adjusted = adjusted.replace(/^(\s*)(\d+)(\s*\|)/gm, (match, spaces, lineNum, suffix) => {
+    const adjustedLine = Math.max(1, parseInt(lineNum) - offset);
+    return `${spaces}${adjustedLine}${suffix}`;
+  });
+
+  return adjusted;
+}
+
 /**
  * Extract all values (numbers, words, lines) from output
  * This is more robust than trying to filter prompts
  */
 function extractValues(output: string): string[] {
   if (!output) return [];
-  
+
   const values: string[] = [];
-  
+
   // Split by newlines
   const lines = output.split('\n');
-  
+
   for (const line of lines) {
     const trimmed = line.trim();
     if (!trimmed) continue;
-    
+
     // Try to extract values from the line
     // Pattern 1: Lines that are just a number
     if (/^-?\d+\.?\d*$/.test(trimmed)) {
       values.push(trimmed);
       continue;
     }
-    
+
     // Pattern 2: Lines that are just a word (no spaces, no special chars except letters)
     if (/^[A-Za-z]+$/.test(trimmed)) {
       values.push(trimmed);
       continue;
     }
-    
+
     // Pattern 3: Extract values after common separators (: = ->)
     // "Value: 42" -> extract "42"
     // "Result = 100" -> extract "100"
@@ -58,7 +85,7 @@ function extractValues(output: string): string[] {
       values.push(separatorMatch[1]);
       continue;
     }
-    
+
     // Pattern 4: Extract all numbers from the line
     const numbers = trimmed.match(/-?\d+\.?\d*/g);
     if (numbers && numbers.length > 0) {
@@ -66,7 +93,7 @@ function extractValues(output: string): string[] {
       values.push(...numbers);
     }
   }
-  
+
   return values;
 }
 
@@ -77,16 +104,16 @@ function compareOutputs(actual: string, expected: string): { passed: boolean; re
   // Normalize both
   const actualNorm = actual.trim().replace(/\r\n/g, '\n');
   const expectedNorm = expected.trim().replace(/\r\n/g, '\n');
-  
+
   // Exact match - best case
   if (actualNorm === expectedNorm) {
     return { passed: true, reason: 'Exact match' };
   }
-  
+
   // Extract values from both
   const actualValues = extractValues(actual);
   const expectedValues = extractValues(expected);
-  
+
   // Compare extracted values
   if (actualValues.length === expectedValues.length) {
     let allMatch = true;
@@ -100,11 +127,11 @@ function compareOutputs(actual: string, expected: string): { passed: boolean; re
       return { passed: true, reason: 'Values match' };
     }
   }
-  
+
   // Try line-by-line comparison with value extraction
   const actualLines = actualNorm.split('\n').map(l => l.trim()).filter(l => l);
   const expectedLines = expectedNorm.split('\n').map(l => l.trim()).filter(l => l);
-  
+
   // If expected has fewer lines, try to match values in order
   if (actualLines.length >= expectedLines.length) {
     const expectedVals = expectedLines.flatMap(l => {
@@ -112,13 +139,13 @@ function compareOutputs(actual: string, expected: string): { passed: boolean; re
       const words = l.match(/\b[A-Za-z]+\b/g) || [];
       return [...nums, ...words];
     });
-    
+
     const actualVals = actualLines.flatMap(l => {
       const nums = l.match(/-?\d+\.?\d*/g) || [];
       const words = l.match(/\b[A-Za-z]+\b/g) || [];
       return [...nums, ...words];
     });
-    
+
     // Check if expected values appear in order in actual values
     let valIndex = 0;
     for (const ev of expectedVals) {
@@ -135,10 +162,10 @@ function compareOutputs(actual: string, expected: string): { passed: boolean; re
         return { passed: false, reason: 'Value mismatch' };
       }
     }
-    
+
     return { passed: true, reason: 'Values found in output' };
   }
-  
+
   return { passed: false, reason: 'Output mismatch' };
 }
 
@@ -297,40 +324,42 @@ async function runCppBatchTests(
 
     if (result.error) {
       // Compilation error - all tests fail
+      // Adjust line numbers in error message to show correct user code lines
+      const adjustedError = adjustCppErrorLines(result.error, CPP_HARNESS_LINE_OFFSET);
       return testCases.map(tc => ({
         passed: false,
         input: tc.input || '(empty)',
         expectedOutput: tc.expectedOutput.trim(),
         actualOutput: '',
         isHidden: tc.isHidden || false,
-        error: result.error
+        error: adjustedError
       }));
     }
 
     // Parse outputs and errors from the result
     const output = result.output || '';
     const results: BatchTestResult[] = [];
-    
+
     // Parse each test case block
     const testBlockRegex = /===OUTPUT_START===\n([\s\S]*?)(?:===ERROR_START===\n([\s\S]*?)\n===ERROR_END===)?\n===OUTPUT_END===/g;
     let match;
     let testIndex = 0;
-    
+
     while ((match = testBlockRegex.exec(output)) !== null && testIndex < testCases.length) {
       const tc = testCases[testIndex];
       let actualOutput = match[1] || '';
       const errorOutput = match[2] || '';
-      
+
       // Normalize whitespace
       actualOutput = actualOutput.replace(/\r\n/g, '\n').trim();
       const expectedOutput = tc.expectedOutput.trim();
-      
+
       // Use smart comparison
       const comparison = compareOutputs(actualOutput, expectedOutput);
-      
+
       // If there's an error, the test failed regardless of output
       const passed = !errorOutput && comparison.passed;
-      
+
       results.push({
         passed,
         input: tc.input || '(empty)',
@@ -339,7 +368,7 @@ async function runCppBatchTests(
         isHidden: tc.isHidden || false,
         error: errorOutput || undefined
       });
-      
+
       testIndex++;
     }
 
