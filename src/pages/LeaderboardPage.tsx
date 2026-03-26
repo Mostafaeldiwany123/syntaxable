@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const LeaderboardPage = () => {
     const { user } = useAuth();
     const { data: leaderboardUsers, isLoading } = useLeaderboard();
-    const [sortBy, setSortBy] = useState('current_streak');
+    const [sortBy, setSortBy] = useState('problems_solved');
     const [searchTerm, setSearchTerm] = useState("");
 
     const filteredAndSortedUsers = useMemo(() => {
@@ -65,7 +65,7 @@ const LeaderboardPage = () => {
                         <div>
                             <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">Leaderboard</h1>
                             <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-                                See who's on fire with the longest coding streaks.
+                                See who's leading the way with the most problems solved.
                             </p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">

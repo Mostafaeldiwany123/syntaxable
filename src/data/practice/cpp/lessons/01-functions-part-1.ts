@@ -326,6 +326,262 @@ int main() {
 }`,
       hints: ['Start with result = 1.', 'Multiply result by base, exp times.', 'Use a for loop.', 'Any number to the power of 0 is 1.'],
       topics: ['Loops in Functions', 'Mathematical Functions']
-    }
+    },
+    {
+      id: 'gcd-function',
+      title: 'GCD Function',
+      difficulty: 'medium',
+      description: `Write a function called \`gcd(int a, int b)\` that returns the greatest common divisor of a and b using the Euclidean algorithm.
+
+The GCD of two numbers is the largest number that divides both of them.`,
+      inputFormat: 'Two space-separated integers A and B (1 ≤ A, B ≤ 10⁹).',
+      outputFormat: 'Print the GCD of A and B.',
+      constraints: '1 ≤ A, B ≤ 10⁹',
+      sampleInput: '48 18',
+      sampleOutput: '6',
+      testCases: [
+        { input: '48 18', expectedOutput: '6' },
+        { input: '17 23', expectedOutput: '1' },
+        { input: '100 25', expectedOutput: '25' },
+        { input: '12 18', expectedOutput: '6' },
+        { input: '7 7', expectedOutput: '7', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your gcd() function here
+// Use the Euclidean algorithm: gcd(a, b) = gcd(b, a % b)
+
+int main() {
+    int a, b;
+    cin >> a >> b;
+    
+    // Call your function and print the result
+    
+    return 0;
+}`,
+      hints: ['Use while (b != 0) { int temp = b; b = a % b; a = temp; }', 'Return a when b becomes 0.', 'The Euclidean algorithm is efficient for large numbers.'],
+      topics: ['Euclidean Algorithm', 'Mathematical Functions']
+    },
+    {
+      id: 'is-prime-function',
+      title: 'Is Prime Function',
+      difficulty: 'medium',
+      description: `Write a function called \`isPrime(int n)\` that returns true if n is a prime number, and false otherwise.
+
+A prime number is only divisible by 1 and itself. Handle edge cases: 0 and 1 are not prime.`,
+      inputFormat: 'A single integer N (0 ≤ N ≤ 10⁶).',
+      outputFormat: "Print 'Prime' if N is prime, 'Not Prime' otherwise.",
+      constraints: '0 ≤ N ≤ 10⁶',
+      sampleInput: '17',
+      sampleOutput: 'Prime',
+      testCases: [
+        { input: '17', expectedOutput: 'Prime' },
+        { input: '15', expectedOutput: 'Not Prime' },
+        { input: '2', expectedOutput: 'Prime' },
+        { input: '1', expectedOutput: 'Not Prime' },
+        { input: '0', expectedOutput: 'Not Prime' },
+        { input: '997', expectedOutput: 'Prime', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your isPrime() function that returns bool
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Call your function and print "Prime" or "Not Prime"
+    
+    return 0;
+}`,
+      hints: ['Return false for n < 2.', 'Check divisibility from 2 to sqrt(n).', 'If any number divides n, return false.', 'Return true if no divisor found.'],
+      topics: ['Prime Numbers', 'Boolean Functions']
+    },
+    {
+      id: 'digit-sum-function',
+      title: 'Digit Sum Function',
+      difficulty: 'medium',
+      description: `Write a function called \`digitSum(int n)\` that returns the sum of all digits of n.
+
+This demonstrates extracting digits using modulo and division.`,
+      inputFormat: 'A single integer N (0 ≤ N ≤ 10⁹).',
+      outputFormat: 'Print the sum of digits of N.',
+      constraints: '0 ≤ N ≤ 10⁹',
+      sampleInput: '12345',
+      sampleOutput: '15',
+      testCases: [
+        { input: '12345', expectedOutput: '15' },
+        { input: '0', expectedOutput: '0' },
+        { input: '999', expectedOutput: '27' },
+        { input: '100', expectedOutput: '1' },
+        { input: '123456789', expectedOutput: '45', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your digitSum() function here
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Call your function and print the result
+    
+    return 0;
+}`,
+      hints: ['Use while (n > 0) { sum += n % 10; n /= 10; }', 'n % 10 extracts the last digit.', 'n /= 10 removes the last digit.', 'Handle n = 0 as a special case.'],
+      topics: ['Digit Extraction', 'Loop in Function']
+    },
+    {
+      id: 'reverse-number-function',
+      title: 'Reverse Number Function',
+      difficulty: 'medium',
+      description: `Write a function called \`reverseNumber(int n)\` that returns the reverse of n.
+
+For example, reverseNumber(12345) returns 54321.`,
+      inputFormat: 'A single integer N (0 ≤ N ≤ 10⁹).',
+      outputFormat: 'Print the reverse of N.',
+      constraints: '0 ≤ N ≤ 10⁹',
+      sampleInput: '12345',
+      sampleOutput: '54321',
+      testCases: [
+        { input: '12345', expectedOutput: '54321' },
+        { input: '100', expectedOutput: '1' },
+        { input: '0', expectedOutput: '0' },
+        { input: '1230', expectedOutput: '321' },
+        { input: '999', expectedOutput: '999', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your reverseNumber() function here
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Call your function and print the result
+    
+    return 0;
+}`,
+      hints: ['Use while (n > 0) { reversed = reversed * 10 + n % 10; n /= 10; }', 'Build the reversed number digit by digit.', 'Handle n = 0 as a special case.'],
+      topics: ['Number Reversal', 'Digit Manipulation']
+    },
+    {
+      id: 'count-digits-function',
+      title: 'Count Digits Function',
+      difficulty: 'medium',
+      description: `Write a function called \`countDigits(int n)\` that returns the number of digits in n.
+
+For example, countDigits(12345) returns 5.`,
+      inputFormat: 'A single integer N (0 ≤ N ≤ 10⁹).',
+      outputFormat: 'Print the number of digits in N.',
+      constraints: '0 ≤ N ≤ 10⁹',
+      sampleInput: '12345',
+      sampleOutput: '5',
+      testCases: [
+        { input: '12345', expectedOutput: '5' },
+        { input: '0', expectedOutput: '1' },
+        { input: '100', expectedOutput: '3' },
+        { input: '9', expectedOutput: '1' },
+        { input: '123456789', expectedOutput: '9', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your countDigits() function here
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Call your function and print the result
+    
+    return 0;
+}`,
+      hints: ['Use while (n > 0) { count++; n /= 10; }', 'Handle n = 0 as a special case (1 digit).', 'Or use log10(n) + 1 for n > 0.'],
+      topics: ['Digit Counting', 'Loop in Function']
+    },
+    {
+      id: 'is-armstrong-function',
+      title: 'Is Armstrong Number Function',
+      difficulty: 'hard',
+      description: `Write a function called \`isArmstrong(int n)\` that returns true if n is an Armstrong number.
+
+An Armstrong number is a number that equals the sum of its digits each raised to the power of the number of digits.
+Example: 153 = 1³ + 5³ + 3³ = 1 + 125 + 27 = 153 (3 digits, so each digit cubed)`,
+      inputFormat: 'A single integer N (0 ≤ N ≤ 10⁹).',
+      outputFormat: "Print 'Armstrong' if N is an Armstrong number, 'Not Armstrong' otherwise.",
+      constraints: '0 ≤ N ≤ 10⁹',
+      sampleInput: '153',
+      sampleOutput: 'Armstrong',
+      testCases: [
+        { input: '153', expectedOutput: 'Armstrong' },
+        { input: '370', expectedOutput: 'Armstrong' },
+        { input: '371', expectedOutput: 'Armstrong' },
+        { input: '9474', expectedOutput: 'Armstrong' },
+        { input: '123', expectedOutput: 'Not Armstrong' },
+        { input: '10', expectedOutput: 'Not Armstrong' },
+        { input: '1', expectedOutput: 'Armstrong', isHidden: true },
+        { input: '1634', expectedOutput: 'Armstrong', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+#include <cmath>
+using namespace std;
+
+// Write your isArmstrong() function that returns bool
+// You may need helper functions for digit count and power
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Call your function and print "Armstrong" or "Not Armstrong"
+    
+    return 0;
+}`,
+      hints: ['First count the number of digits.', 'Extract each digit and raise it to the power of digit count.', 'Sum all the results and compare with original.', 'Use pow(digit, numDigits) for power.'],
+      topics: ['Armstrong Numbers', 'Helper Functions', 'Complex Logic']
+    },
+    {
+      id: 'perfect-number-function',
+      title: 'Is Perfect Number Function',
+      difficulty: 'hard',
+      description: `Write a function called \`isPerfect(int n)\` that returns true if n is a perfect number.
+
+A perfect number equals the sum of its proper divisors (excluding itself).
+Example: 6 = 1 + 2 + 3, 28 = 1 + 2 + 4 + 7 + 14`,
+      inputFormat: 'A single integer N (1 ≤ N ≤ 10⁶).',
+      outputFormat: "Print 'Perfect' if N is a perfect number, 'Not Perfect' otherwise.",
+      constraints: '1 ≤ N ≤ 10⁶',
+      sampleInput: '6',
+      sampleOutput: 'Perfect',
+      testCases: [
+        { input: '6', expectedOutput: 'Perfect' },
+        { input: '28', expectedOutput: 'Perfect' },
+        { input: '12', expectedOutput: 'Not Perfect' },
+        { input: '496', expectedOutput: 'Perfect' },
+        { input: '100', expectedOutput: 'Not Perfect' },
+        { input: '8128', expectedOutput: 'Perfect', isHidden: true },
+        { input: '1', expectedOutput: 'Not Perfect', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your isPerfect() function that returns bool
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Call your function and print "Perfect" or "Not Perfect"
+    
+    return 0;
+}`,
+      hints: ['Find all divisors from 1 to n/2.', 'Sum all divisors that divide n evenly.', 'Compare sum with n.', 'Optimize by only checking up to sqrt(n).'],
+      topics: ['Perfect Numbers', 'Divisor Sum', 'Optimization']
+    },
   ]
 };

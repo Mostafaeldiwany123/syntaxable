@@ -177,7 +177,6 @@ Compare year first, then month, then day.`,
         { input: '20 3 2020\n15 3 2020', expectedOutput: 'Later' },
         { input: '1 1 2020\n1 1 2021', expectedOutput: 'Earlier' },
         { input: '31 12 2020\n1 1 2021', expectedOutput: 'Earlier' },
-        { input: '15 3 2020\n15 3 2020', expectedOutput: 'Later', isHidden: true },
       ],
       starterCode: `#include <iostream>
 using namespace std;
@@ -216,7 +215,7 @@ This demonstrates sorting arrays of structs.`,
         { input: '3\nAlice 25\nBob 20\nCharlie 30', expectedOutput: 'Bob\nAlice\nCharlie' },
         { input: '2\nJohn 40\nJane 25', expectedOutput: 'Jane\nJohn' },
         { input: '1\nEve 18', expectedOutput: 'Eve' },
-        { input: '4\nA 10\nB 20\nC 30\nD 40', expectedOutput: 'A\nB\nC\nD', isHidden: true },
+        { input: '4\nA 10\nB 20\nC 30\nD 40', expectedOutput: 'A\nB\nC\nD' },
       ],
       starterCode: `#include <iostream>
 #include <string>
@@ -281,6 +280,225 @@ int main() {
 }`,
       hints: ['Use Book* books = new Book[n];', 'Track maxPrice and maxIndex while reading.', 'Use delete[] books; at the end.'],
       topics: ['Dynamic Arrays', 'Struct Arrays', 'Memory Management']
+    },
+    {
+      id: 'struct-nested',
+      title: 'Nested Structs',
+      difficulty: 'medium',
+      description: `Define a struct called \`Address\` with:
+- street (string)
+- city (string)
+- zipCode (string)
+
+Define a struct called \`Employee\` with:
+- name (string)
+- id (int)
+- address (Address)
+
+Read an employee's data and print it.`,
+      inputFormat: 'First line: name. Second line: id. Third line: street. Fourth line: city. Fifth line: zipCode.',
+      outputFormat: 'Print employee info with address.',
+      constraints: 'Strings max 50 characters, id between 1 and 10000',
+      sampleInput: 'John Doe\n1234\n123 Main St\nSpringfield\n12345',
+      sampleOutput: 'Employee: John Doe (ID: 1234)\nAddress: 123 Main St, Springfield, 12345',
+      testCases: [
+        { input: 'John Doe\n1234\n123 Main St\nSpringfield\n12345', expectedOutput: 'Employee: John Doe (ID: 1234)\nAddress: 123 Main St, Springfield, 12345' },
+        { input: 'Jane Smith\n5678\n456 Oak Ave\nBoston\n02101', expectedOutput: 'Employee: Jane Smith (ID: 5678)\nAddress: 456 Oak Ave, Boston, 02101' },
+      ],
+      starterCode: `#include <iostream>
+#include <string>
+using namespace std;
+
+// Define Address struct
+// Define Employee struct with Address member
+
+int main() {
+    // Create Employee
+    // Read all data
+    // Print formatted output
+    
+    return 0;
+}`,
+      hints: ['Access nested members: employee.address.city', 'Define Address first, then use it in Employee.', 'Use getline() for strings with spaces.'],
+      topics: ['Nested Structs', 'Complex Data Types']
+    },
+    {
+      id: 'struct-array-statistics',
+      title: 'Struct Array Statistics',
+      difficulty: 'medium',
+      description: `Define a struct called \`TestScore\` with:
+- studentName (string)
+- score (int)
+
+Read N test scores and calculate:
+- Average score
+- Highest score and student name
+- Lowest score and student name`,
+      inputFormat: 'First line: N. Next N lines: name and score.',
+      outputFormat: 'Print average (2 decimals), highest with name, lowest with name.',
+      constraints: '1 ≤ N ≤ 100, 0 ≤ score ≤ 100',
+      sampleInput: '3\nAlice 85\nBob 92\nCharlie 78',
+      sampleOutput: 'Average: 85.00\nHighest: Bob (92)\nLowest: Charlie (78)',
+      testCases: [
+        { input: '3\nAlice 85\nBob 92\nCharlie 78', expectedOutput: 'Average: 85.00\nHighest: Bob (92)\nLowest: Charlie (78)' },
+        { input: '2\nJohn 100\nJane 100', expectedOutput: 'Average: 100.00\nHighest: John (100)\nLowest: John (100)' },
+        { input: '1\nEve 50', expectedOutput: 'Average: 50.00\nHighest: Eve (50)\nLowest: Eve (50)' },
+      ],
+      starterCode: `#include <iostream>
+#include <string>
+#include <iomanip>
+using namespace std;
+
+// Define TestScore struct
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Create array of TestScore
+    // Read data
+    // Calculate statistics
+    // Print results
+    
+    return 0;
+}`,
+      hints: ['Track sum, max, and min while iterating.', 'Store names for max and min students.', 'Use double for average calculation.'],
+      topics: ['Struct Arrays', 'Statistics', 'Data Processing']
+    },
+    {
+      id: 'struct-pointer-array',
+      title: 'Array of Struct Pointers',
+      difficulty: 'hard',
+      description: `Define a struct called \`Car\` with:
+- make (string)
+- model (string)
+- year (int)
+- price (double)
+
+Create an array of pointers to Car structs. Dynamically allocate each Car, then sort by price and print.`,
+      inputFormat: 'First line: N. For each car: make, model, year, price on separate lines.',
+      outputFormat: 'Print cars sorted by price (lowest to highest).',
+      constraints: '1 ≤ N ≤ 50, 1900 ≤ year ≤ 2024, price > 0',
+      sampleInput: '2\nToyota\nCamry\n2020\n25000\nHonda\nCivic\n2019\n22000',
+      sampleOutput: 'Honda Civic (2019): $22000\nToyota Camry (2020): $25000',
+      testCases: [
+        { input: '2\nToyota\nCamry\n2020\n25000\nHonda\nCivic\n2019\n22000', expectedOutput: 'Honda Civic (2019): $22000\nToyota Camry (2020): $25000' },
+        { input: '1\nFord\nMustang\n2021\n35000', expectedOutput: 'Ford Mustang (2021): $35000' },
+        { input: '3\nA\nA\n2020\n10000\nB\nB\n2020\n20000\nC\nC\n2020\n15000', expectedOutput: 'A A (2020): $10000\nC C (2020): $15000\nB B (2020): $20000' },
+      ],
+      starterCode: `#include <iostream>
+#include <string>
+using namespace std;
+
+// Define Car struct
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Create array of Car pointers
+    // Allocate each Car dynamically
+    // Read data
+    // Sort by price
+    // Print sorted cars
+    // Deallocate all Cars
+    
+    return 0;
+}`,
+      hints: ['Use Car* cars[50];', 'Allocate: cars[i] = new Car;', 'Access: cars[i]->price', 'Delete each: delete cars[i];'],
+      topics: ['Struct Pointers', 'Dynamic Allocation', 'Sorting']
+    },
+    {
+      id: 'struct-inventory-system',
+      title: 'Inventory Management System',
+      difficulty: 'hard',
+      description: `Define a struct called \`Item\` with:
+- id (int)
+- name (string)
+- quantity (int)
+- price (double)
+
+Create a simple inventory system that:
+1. Reads N items
+2. Allows searching by id
+3. Updates quantity for a found item
+4. Prints all items with total value`,
+      inputFormat: 'First line: N. For each item: id, name, quantity, price. Then: searchId, updateQuantity.',
+      outputFormat: 'Print search result, then all items with total inventory value.',
+      constraints: '1 ≤ N ≤ 50, quantity ≥ 0, price > 0',
+      sampleInput: '2\n1\nApple\n100\n1.50\n2\nBanana\n200\n0.75\n1\n50',
+      sampleOutput: 'Found: Apple (Qty: 100)\nUpdated Apple quantity to 150\nInventory:\n1. Apple (150) - $1.50\n2. Banana (200) - $0.75\nTotal Value: $375.00',
+      testCases: [
+        { input: '2\n1\nApple\n100\n1.50\n2\nBanana\n200\n0.75\n1\n50', expectedOutput: 'Found: Apple (Qty: 100)\nUpdated Apple quantity to 150\nInventory:\n1. Apple (150) - $1.50\n2. Banana (200) - $0.75\nTotal Value: $375.00' },
+        { input: '1\n1\nOrange\n50\n2.00\n1\n10', expectedOutput: 'Found: Orange (Qty: 50)\nUpdated Orange quantity to 60\nInventory:\n1. Orange (60) - $2.00\nTotal Value: $120.00' },
+      ],
+      starterCode: `#include <iostream>
+#include <string>
+#include <iomanip>
+using namespace std;
+
+// Define Item struct
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Create array of Items
+    // Read items
+    // Read searchId and updateQuantity
+    // Search and update
+    // Print inventory and total value
+    
+    return 0;
+}`,
+      hints: ['Search by iterating through array.', 'Update quantity when id matches.', 'Total value = sum of (quantity * price).'],
+      topics: ['Struct Arrays', 'Search and Update', 'Inventory System']
+    },
+    {
+      id: 'struct-student-grades',
+      title: 'Student Grade Calculator',
+      difficulty: 'hard',
+      description: `Define a struct called \`Student\` with:
+- name (string)
+- id (int)
+- grades[5] (array of 5 doubles)
+- average (double)
+
+Read N students with 5 grades each. Calculate each student's average, then:
+1. Print each student with their average
+2. Find and print the student with highest average
+3. Print class average`,
+      inputFormat: 'First line: N. For each student: name, id, then 5 grades.',
+      outputFormat: 'Print all students with averages, then top student, then class average.',
+      constraints: '1 ≤ N ≤ 50, 0 ≤ grades ≤ 100',
+      sampleInput: '2\nAlice\n1001\n85 90 78 92 88\nBob\n1002\n75 80 85 70 90',
+      sampleOutput: 'Alice (1001): 86.60\nBob (1002): 80.00\nTop Student: Alice (86.60)\nClass Average: 83.30',
+      testCases: [
+        { input: '2\nAlice\n1001\n85 90 78 92 88\nBob\n1002\n75 80 85 70 90', expectedOutput: 'Alice (1001): 86.60\nBob (1002): 80.00\nTop Student: Alice (86.60)\nClass Average: 83.30' },
+        { input: '1\nEve\n1003\n100 100 100 100 100', expectedOutput: 'Eve (1003): 100.00\nTop Student: Eve (100.00)\nClass Average: 100.00' },
+      ],
+      starterCode: `#include <iostream>
+#include <string>
+#include <iomanip>
+using namespace std;
+
+// Define Student struct with grades array
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Create array of Students
+    // Read each student with grades
+    // Calculate averages
+    // Find top student
+    // Calculate class average
+    // Print all results
+    
+    return 0;
+}`,
+      hints: ['Calculate average: sum of 5 grades / 5.', 'Track topStudent index while iterating.', 'Class average = sum of all averages / N.'],
+      topics: ['Struct Arrays', 'Nested Arrays', 'Grade Calculation']
     },
   ]
 };

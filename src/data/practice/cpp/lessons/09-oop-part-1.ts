@@ -428,6 +428,131 @@ int main() {
 }`,
       hints: ['Separate declaration from definition', 'Use scope resolution: double MathOperations::add(double a, double b) { ... }', 'Initialize lastResult in constructor', 'Store result in lastResult before returning'],
       topics: ['Class Declaration', 'Class Implementation', 'Separate Interface', 'Scope Resolution']
-    }
+    },
+    {
+      id: 'class-validation',
+      title: 'Class with Input Validation',
+      difficulty: 'medium',
+      description: `Define a class called \`Temperature\` with:
+- Private member: celsius (double)
+- Constructor that validates temperature is above absolute zero (-273.15)
+- Setter that validates input
+- Getter that returns celsius
+- Function to convert to Fahrenheit: F = C * 9/5 + 32
+
+If invalid temperature is provided, set to -273.15 (absolute zero).`,
+      inputFormat: 'A single double representing temperature in Celsius.',
+      outputFormat: 'Print Celsius and Fahrenheit values, each on a new line.',
+      constraints: '-300 ≤ input ≤ 1000',
+      sampleInput: '25',
+      sampleOutput: '25.00\n77.00',
+      testCases: [
+        { input: '25', expectedOutput: '25.00\n77.00' },
+        { input: '0', expectedOutput: '0.00\n32.00' },
+        { input: '-300', expectedOutput: '-273.15\n-459.67' },
+        { input: '100', expectedOutput: '100.00\n212.00' },
+      ],
+      starterCode: `#include <iostream>
+#include <iomanip>
+using namespace std;
+
+// Define your Temperature class with validation
+
+int main() {
+    double temp;
+    cin >> temp;
+    
+    // Create Temperature object
+    // Print Celsius and Fahrenheit
+    
+    return 0;
+}`,
+      hints: ['Validate in constructor and setter.', 'If invalid, set to -273.15.', 'Fahrenheit formula: C * 9.0/5.0 + 32'],
+      topics: ['Input Validation', 'Encapsulation', 'Data Integrity']
+    },
+    {
+      id: 'class-copy-constructor',
+      title: 'Copy Constructor Practice',
+      difficulty: 'hard',
+      description: `Define a class called \`StringBuffer\` with:
+- Private member: char* buffer (dynamically allocated)
+- Constructor that allocates and copies a string
+- Copy constructor that creates a deep copy
+- Destructor that frees memory
+- Display function
+
+This demonstrates proper memory management with copy constructors.`,
+      inputFormat: 'A single string (max 100 characters).',
+      outputFormat: 'Print the original and copied string.',
+      constraints: 'String length ≤ 100',
+      sampleInput: 'Hello',
+      sampleOutput: 'Original: Hello\nCopied: Hello',
+      testCases: [
+        { input: 'Hello', expectedOutput: 'Original: Hello\nCopied: Hello' },
+        { input: 'World', expectedOutput: 'Original: World\nCopied: World' },
+        { input: 'C++ Programming', expectedOutput: 'Original: C++ Programming\nCopied: C++ Programming' },
+      ],
+      starterCode: `#include <iostream>
+#include <cstring>
+using namespace std;
+
+// Define your StringBuffer class with copy constructor
+
+int main() {
+    char input[100];
+    cin >> input;
+    
+    // Create original StringBuffer
+    // Create copy using copy constructor
+    // Display both
+    // Both will be automatically destroyed
+    
+    return 0;
+}`,
+      hints: ['Copy constructor: StringBuffer(const StringBuffer& other)', 'Allocate new memory: buffer = new char[strlen(other.buffer) + 1]', 'Copy content: strcpy(buffer, other.buffer)', 'Deep copy ensures independent memory.'],
+      topics: ['Copy Constructor', 'Deep Copy', 'Memory Management']
+    },
+    {
+      id: 'class-operator-overload',
+      title: 'Operator Overloading Introduction',
+      difficulty: 'hard',
+      description: `Define a class called \`Vector2D\` with:
+- Private members: x and y (both double)
+- Constructor with parameters
+- Overload + operator to add two vectors
+- Overload * operator to multiply by scalar
+- Display function
+
+Vector addition: (x1+x2, y1+y2)
+Scalar multiplication: (x*s, y*s)`,
+      inputFormat: 'First line: x1 y1. Second line: x2 y2. Third line: scalar.',
+      outputFormat: 'Print sum vector and scaled vector.',
+      constraints: '-1000 ≤ coordinates, scalar ≤ 1000',
+      sampleInput: '1 2\n3 4\n2',
+      sampleOutput: 'Sum: (4, 6)\nScaled: (2, 4)',
+      testCases: [
+        { input: '1 2\n3 4\n2', expectedOutput: 'Sum: (4, 6)\nScaled: (2, 4)' },
+        { input: '0 0\n0 0\n1', expectedOutput: 'Sum: (0, 0)\nScaled: (0, 0)' },
+        { input: '5 5\n5 5\n0.5', expectedOutput: 'Sum: (10, 10)\nScaled: (2.5, 2.5)' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Define your Vector2D class with operator overloading
+
+int main() {
+    double x1, y1, x2, y2, scalar;
+    cin >> x1 >> y1 >> x2 >> y2 >> scalar;
+    
+    // Create two Vector2D objects
+    // Add them
+    // Multiply first by scalar
+    // Print results
+    
+    return 0;
+}`,
+      hints: ['Operator +: Vector2D operator+(const Vector2D& other)', 'Operator *: Vector2D operator*(double scalar)', 'Return new Vector2D with computed values.'],
+      topics: ['Operator Overloading', 'Vector Operations', 'Class Design']
+    },
   ]
 };

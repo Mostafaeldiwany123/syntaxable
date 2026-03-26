@@ -348,5 +348,274 @@ int main() {
       hints: ['byValue: void byValue(int n) { n++; } - won\'t affect original', 'byReference: void byReference(int& n) { n++; } - affects original', 'byPointer: void byPointer(int* n) { (*n)++; } - affects original'],
       topics: ['Pass by Value', 'Pass by Reference', 'Pass by Pointer']
     },
+    {
+      id: 'quadratic-roots',
+      title: 'Quadratic Equation Roots',
+      difficulty: 'medium',
+      description: `Write a function called \`solveQuadratic(double a, double b, double c, double& root1, double& root2)\` that finds the roots of ax² + bx + c = 0.
+
+Use the quadratic formula: x = (-b ± √(b²-4ac)) / 2a
+Return true if real roots exist, false otherwise.`,
+      inputFormat: 'Three space-separated doubles: a, b, c.',
+      outputFormat: "If real roots exist, print 'Yes' followed by two roots (space-separated, smaller first). If no real roots, print 'No'.",
+      constraints: '-100 ≤ a, b, c ≤ 100, a ≠ 0',
+      sampleInput: '1 -5 6',
+      sampleOutput: 'Yes\n2 3',
+      testCases: [
+        { input: '1 -5 6', expectedOutput: 'Yes\n2 3' },
+        { input: '1 2 1', expectedOutput: 'Yes\n-1 -1' },
+        { input: '1 1 1', expectedOutput: 'No' },
+        { input: '1 -4 4', expectedOutput: 'Yes\n2 2' },
+        { input: '2 -6 4', expectedOutput: 'Yes\n1 2', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+
+// Write your solveQuadratic() function
+// Return true if real roots exist, false otherwise
+// Store roots in root1 and root2 (by reference)
+
+int main() {
+    double a, b, c;
+    cin >> a >> b >> c;
+    
+    double root1, root2;
+    
+    // Call your function and print result
+    
+    return 0;
+}`,
+      hints: ['Calculate discriminant = b*b - 4*a*c.', 'If discriminant < 0, no real roots.', 'Use sqrt() from <cmath>.', 'Store smaller root in root1.'],
+      topics: ['Quadratic Formula', 'Reference Parameters', 'Math Functions']
+    },
+    {
+      id: 'distance-function',
+      title: 'Distance Between Points',
+      difficulty: 'medium',
+      description: `Write a function called \`distance(double x1, double y1, double x2, double y2)\` that returns the Euclidean distance between two points.
+
+Distance = √((x2-x1)² + (y2-y1)²)`,
+      inputFormat: 'Four space-separated doubles: x1, y1, x2, y2.',
+      outputFormat: 'Print the distance with 2 decimal places.',
+      constraints: '-1000 ≤ coordinates ≤ 1000',
+      sampleInput: '0 0 3 4',
+      sampleOutput: '5.00',
+      testCases: [
+        { input: '0 0 3 4', expectedOutput: '5.00' },
+        { input: '0 0 0 0', expectedOutput: '0.00' },
+        { input: '1 1 4 5', expectedOutput: '5.00' },
+        { input: '-1 -1 2 3', expectedOutput: '5.00' },
+        { input: '0 0 1 1', expectedOutput: '1.41', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+
+// Write your distance() function here
+
+int main() {
+    double x1, y1, x2, y2;
+    cin >> x1 >> y1 >> x2 >> y2;
+    
+    // Call your function and print result with 2 decimal places
+    
+    return 0;
+}`,
+      hints: ['Use sqrt() from <cmath>.', 'Calculate dx = x2 - x1 and dy = y2 - y1.', 'Return sqrt(dx*dx + dy*dy).', 'Use fixed << setprecision(2) for output.'],
+      topics: ['Math Functions', 'Distance Formula']
+    },
+    {
+      id: 'circle-area-function',
+      title: 'Circle Area Function',
+      difficulty: 'medium',
+      description: `Write a function called \`circleArea(double radius)\` that returns the area of a circle. Also write \`circleCircumference(double radius)\` that returns the circumference.
+
+Area = π * r², Circumference = 2 * π * r`,
+      inputFormat: 'A single double representing the radius.',
+      outputFormat: 'Print the area and circumference, each on a new line, with 2 decimal places.',
+      constraints: '0 < radius ≤ 1000',
+      sampleInput: '5',
+      sampleOutput: '78.54\n31.42',
+      testCases: [
+        { input: '5', expectedOutput: '78.54\n31.42' },
+        { input: '1', expectedOutput: '3.14\n6.28' },
+        { input: '10', expectedOutput: '314.16\n62.83' },
+        { input: '2.5', expectedOutput: '19.63\n15.71' },
+        { input: '100', expectedOutput: '31415.93\n628.32', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+
+// Write circleArea() function
+// Write circleCircumference() function
+// Use PI = 3.14159
+
+int main() {
+    double radius;
+    cin >> radius;
+    
+    // Call your functions and print results
+    
+    return 0;
+}`,
+      hints: ['Use PI = 3.14159 or M_PI from <cmath>.', 'Area = PI * radius * radius.', 'Circumference = 2 * PI * radius.', 'Use fixed << setprecision(2) for output.'],
+      topics: ['Mathematical Functions', 'Geometry']
+    },
+    {
+      id: 'swap-three-values',
+      title: 'Swap Three Values',
+      difficulty: 'medium',
+      description: `Write a function called \`rotateThree(int &a, int &b, int &c)\` that rotates three values: a gets b's value, b gets c's value, c gets a's original value.
+
+This demonstrates using multiple reference parameters.`,
+      inputFormat: 'Three space-separated integers A, B, C.',
+      outputFormat: 'Print the values after rotation, space-separated.',
+      constraints: '-10⁶ ≤ A, B, C ≤ 10⁶',
+      sampleInput: '1 2 3',
+      sampleOutput: '2 3 1',
+      testCases: [
+        { input: '1 2 3', expectedOutput: '2 3 1' },
+        { input: '10 20 30', expectedOutput: '20 30 10' },
+        { input: '5 5 5', expectedOutput: '5 5 5' },
+        { input: '-1 0 1', expectedOutput: '0 1 -1' },
+        { input: '100 200 300', expectedOutput: '200 300 100', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your rotateThree() function here
+// Use pass by reference for all three parameters
+
+int main() {
+    int a, b, c;
+    cin >> a >> b >> c;
+    
+    // Call your function
+    
+    cout << a << " " << b << " " << c << endl;
+    return 0;
+}`,
+      hints: ['Store a\'s original value in a temporary variable.', 'Assign b to a, c to b, temp to c.', 'Use int &a, int &b, int &c as parameters.'],
+      topics: ['Multiple Reference Parameters', 'Value Rotation']
+    },
+    {
+      id: 'fibonacci-function',
+      title: 'Fibonacci Function',
+      difficulty: 'hard',
+      description: `Write a function called \`fibonacci(int n)\` that returns the nth Fibonacci number.
+
+Fibonacci sequence: 0, 1, 1, 2, 3, 5, 8, 13, ...
+F(0) = 0, F(1) = 1, F(n) = F(n-1) + F(n-2)
+
+Use an efficient iterative approach (not recursive) to handle large n.`,
+      inputFormat: 'A single integer N (0 ≤ N ≤ 50).',
+      outputFormat: 'Print the Nth Fibonacci number.',
+      constraints: '0 ≤ N ≤ 50',
+      sampleInput: '10',
+      sampleOutput: '55',
+      testCases: [
+        { input: '10', expectedOutput: '55' },
+        { input: '0', expectedOutput: '0' },
+        { input: '1', expectedOutput: '1' },
+        { input: '20', expectedOutput: '6765' },
+        { input: '30', expectedOutput: '832040' },
+        { input: '50', expectedOutput: '12586269025', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your fibonacci() function here
+// Use long long for large values
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Call your function and print the result
+    
+    return 0;
+}`,
+      hints: ['Use long long for the return type.', 'Use iterative approach: keep track of prev and curr.', 'Start with prev=0, curr=1.', 'For n=0, return 0; for n=1, return 1.'],
+      topics: ['Fibonacci Sequence', 'Iterative Approach', 'Long Long']
+    },
+    {
+      id: 'prime-factorization',
+      title: 'Prime Factorization Function',
+      difficulty: 'hard',
+      description: `Write a function called \`printPrimeFactors(int n)\` that prints all prime factors of n in ascending order.
+
+For example, prime factors of 12 are 2, 2, 3 (since 12 = 2 × 2 × 3).`,
+      inputFormat: 'A single integer N (2 ≤ N ≤ 10⁶).',
+      outputFormat: 'Print all prime factors, space-separated, in ascending order.',
+      constraints: '2 ≤ N ≤ 10⁶',
+      sampleInput: '12',
+      sampleOutput: '2 2 3',
+      testCases: [
+        { input: '12', expectedOutput: '2 2 3' },
+        { input: '17', expectedOutput: '17' },
+        { input: '100', expectedOutput: '2 2 5 5' },
+        { input: '2', expectedOutput: '2' },
+        { input: '60', expectedOutput: '2 2 3 5' },
+        { input: '1000', expectedOutput: '2 2 2 5 5 5', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your printPrimeFactors() function here
+// It should print all prime factors of n
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Call your function
+    
+    return 0;
+}`,
+      hints: ['Start with divisor = 2.', 'While n is divisible by divisor, print it and divide n.', 'Increment divisor and repeat.', 'Stop when divisor * divisor > n.'],
+      topics: ['Prime Factorization', 'Number Theory', 'Void Functions']
+    },
+    {
+      id: 'binary-to-decimal',
+      title: 'Binary to Decimal Function',
+      difficulty: 'hard',
+      description: `Write a function called \`binaryToDecimal(string binary)\` that converts a binary string to its decimal equivalent.
+
+For example, "1010" converts to 10.`,
+      inputFormat: 'A binary string (containing only 0s and 1s).',
+      outputFormat: 'Print the decimal equivalent.',
+      constraints: 'Binary string length ≤ 31',
+      sampleInput: '1010',
+      sampleOutput: '10',
+      testCases: [
+        { input: '1010', expectedOutput: '10' },
+        { input: '0', expectedOutput: '0' },
+        { input: '1', expectedOutput: '1' },
+        { input: '1111', expectedOutput: '15' },
+        { input: '100000', expectedOutput: '32' },
+        { input: '11111111', expectedOutput: '255', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+#include <string>
+using namespace std;
+
+// Write your binaryToDecimal() function here
+
+int main() {
+    string binary;
+    cin >> binary;
+    
+    // Call your function and print the result
+    
+    return 0;
+}`,
+      hints: ['Start from the rightmost digit.', 'Multiply each digit by 2^position.', 'Sum all the results.', 'Or use: result = result * 2 + digit.'],
+      topics: ['Binary Conversion', 'String Processing', 'Number Systems']
+    },
   ]
 };

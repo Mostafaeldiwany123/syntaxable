@@ -24,7 +24,6 @@ This demonstrates how passing pointers allows a function to modify the caller's 
         { input: '1 2', expectedOutput: '2 1' },
         { input: '-5 5', expectedOutput: '5 -5' },
         { input: '0 0', expectedOutput: '0 0' },
-        { input: '100 200', expectedOutput: '200 100', isHidden: true },
       ],
       starterCode: `#include <iostream>
 using namespace std;
@@ -95,7 +94,6 @@ This demonstrates how pointers can be used to "return" multiple values from a fu
         { input: '10 3', expectedOutput: '3 1' },
         { input: '20 4', expectedOutput: '5 0' },
         { input: '7 7', expectedOutput: '1 0' },
-        { input: '-17 5', expectedOutput: '-4 3', isHidden: true },
       ],
       starterCode: `#include <iostream>
 using namespace std;
@@ -132,7 +130,6 @@ Use pointer notation (*arr) instead of array notation (arr[i]).`,
         { input: '5\n10 20 30 40 50', expectedOutput: '20 40 60 80 100' },
         { input: '1\n5', expectedOutput: '10' },
         { input: '4\n-1 -2 -3 -4', expectedOutput: '-2 -4 -6 -8' },
-        { input: '2\n0 1', expectedOutput: '0 2', isHidden: true },
       ],
       starterCode: `#include <iostream>
 using namespace std;
@@ -150,6 +147,7 @@ int main() {
     
     // Call your function
     
+    // Print array
     for (int i = 0; i < n; i++) {
         cout << arr[i];
         if (i < n - 1) cout << " ";
@@ -184,9 +182,9 @@ Both should modify the original variable. Print the value after each call.`,
       starterCode: `#include <iostream>
 using namespace std;
 
-// Write doubleByPointer() using int*
+// Write DoubleByPointer() using int*
 
-// Write doubleByReference() using int&
+// Write DoubleByReference() using int&
 
 int main() {
     int n;
@@ -218,7 +216,6 @@ This demonstrates using pointer arithmetic instead of array indexing.`,
         { input: '3\n10 20 30', expectedOutput: '60' },
         { input: '1\n42', expectedOutput: '42' },
         { input: '4\n-1 2 -3 4', expectedOutput: '2' },
-        { input: '10\n1 1 1 1 1 1 1 1 1 1 1 1 1', expectedOutput: '10', isHidden: true },
       ],
       starterCode: `#include <iostream>
 using namespace std;
@@ -258,7 +255,6 @@ This demonstrates how strings are arrays of characters and how to traverse them 
         { input: 'a', expectedOutput: '1' },
         { input: 'programming', expectedOutput: '11' },
         { input: '', expectedOutput: '0' },
-        { input: 'C++', expectedOutput: '3', isHidden: true },
       ],
       starterCode: `#include <iostream>
 #include <string>
@@ -276,6 +272,278 @@ int main() {
 }`,
       hints: ['Use char* str = s.c_str();', 'Loop until *str == \'\\0\' (null terminator).', 'Increment pointer: str++; count++;'],
       topics: ['Pointer Arithmetic', 'String Processing', 'Null Terminator']
+    },
+    {
+      id: 'pointer-swap-three',
+      title: 'Swap Three Values Using Pointers',
+      difficulty: 'medium',
+      description: `Write a function called \`rotateThree(int* a, int* b, int* c)\` that rotates three values using pointers:
+- a gets b's value
+- b gets c's value
+- c gets a's original value`,
+      inputFormat: 'Three space-separated integers A, B, C.',
+      outputFormat: 'Print the values after rotation, space-separated.',
+      constraints: '-10⁶ ≤ A, B, C ≤ 10⁶',
+      sampleInput: '1 2 3',
+      sampleOutput: '2 3 1',
+      testCases: [
+        { input: '1 2 3', expectedOutput: '2 3 1' },
+        { input: '10 20 30', expectedOutput: '20 30 10' },
+        { input: '5 5 5', expectedOutput: '5 5 5' },
+        { input: '-1 0 1', expectedOutput: '0 1 -1' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your rotateThree() function using pointers
+
+int main() {
+    int a, b, c;
+    cin >> a >> b >> c;
+    
+    // Call your function with addresses
+    
+    cout << a << " " << b << " " << c << endl;
+    return 0;
+}`,
+      hints: ['Store *a\'s original value in a temporary variable.', 'Assign *b to *a, *c to *b, temp to *c.', 'Use int* a, int* b, int* c as parameters.'],
+      topics: ['Multiple Pointer Parameters', 'Value Rotation']
+    },
+    {
+      id: 'pointer-find-max-min',
+      title: 'Find Max and Min Using Pointers',
+      difficulty: 'medium',
+      description: `Write a function called \`findMaxMin(int* arr, int size, int* maxVal, int* minVal)\` that finds both maximum and minimum values in an array.
+
+Use pointer parameters to return multiple values.`,
+      inputFormat: 'First line: N (size). Second line: N space-separated integers.',
+      outputFormat: 'Print the maximum and minimum values, space-separated.',
+      constraints: '1 ≤ N ≤ 1000, -10⁶ ≤ each element ≤ 10⁶',
+      sampleInput: '5\n3 7 2 9 1',
+      sampleOutput: '9 1',
+      testCases: [
+        { input: '5\n3 7 2 9 1', expectedOutput: '9 1' },
+        { input: '3\n10 20 30', expectedOutput: '30 10' },
+        { input: '1\n42', expectedOutput: '42 42' },
+        { input: '4\n-5 -2 -10 -1', expectedOutput: '-1 -10' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your findMaxMin() function using pointers for max and min
+
+int main() {
+    int n;
+    cin >> n;
+    
+    int arr[1000];
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    
+    int maxVal, minVal;
+    // Call your function
+    
+    cout << maxVal << " " << minVal << endl;
+    return 0;
+}`,
+      hints: ['Use int* maxVal and int* minVal as output parameters.', 'Initialize *maxVal and *minVal to arr[0].', 'Update through pointers: *maxVal = arr[i];'],
+      topics: ['Pointer Parameters', 'Multiple Return Values']
+    },
+    {
+      id: 'reference-swap',
+      title: 'Swap Using References',
+      difficulty: 'easy',
+      description: `Write a function called \`swapRef(int& a, int& b)\` that swaps two integers using pass-by-reference.
+
+This is cleaner than pointer syntax but achieves the same result.`,
+      inputFormat: 'Two space-separated integers A and B.',
+      outputFormat: 'Print the values after swapping, space-separated.',
+      constraints: '-10⁶ ≤ A, B ≤ 10⁶',
+      sampleInput: '5 10',
+      sampleOutput: '10 5',
+      testCases: [
+        { input: '5 10', expectedOutput: '10 5' },
+        { input: '1 2', expectedOutput: '2 1' },
+        { input: '-5 5', expectedOutput: '5 -5' },
+        { input: '0 0', expectedOutput: '0 0' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your swapRef() function using references
+
+int main() {
+    int a, b;
+    cin >> a >> b;
+    
+    // Call swapRef (no & needed when calling)
+    
+    cout << a << " " << b << endl;
+    return 0;
+}`,
+      hints: ['Use int& a and int& b as parameters.', 'Use a temporary variable to swap.', 'Call with swapRef(a, b) - no & needed.'],
+      topics: ['Pass by Reference', 'Reference Parameters']
+    },
+    {
+      id: 'reference-sort-three',
+      title: 'Sort Three Values Using References',
+      difficulty: 'medium',
+      description: `Write a function called \`sortThree(int& a, int& b, int& c)\` that sorts three values in ascending order using pass-by-reference.`,
+      inputFormat: 'Three space-separated integers.',
+      outputFormat: 'Print the three values in ascending order.',
+      constraints: '-10⁶ ≤ values ≤ 10⁶',
+      sampleInput: '3 1 2',
+      sampleOutput: '1 2 3',
+      testCases: [
+        { input: '3 1 2', expectedOutput: '1 2 3' },
+        { input: '5 5 5', expectedOutput: '5 5 5' },
+        { input: '10 5 15', expectedOutput: '5 10 15' },
+        { input: '-1 0 -5', expectedOutput: '-5 -1 0' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your sortThree() function using references
+
+int main() {
+    int a, b, c;
+    cin >> a >> b >> c;
+    
+    // Call your function
+    
+    cout << a << " " << b << " " << c << endl;
+    return 0;
+}`,
+      hints: ['Compare and swap pairs to sort.', 'Use your swapRef function or inline swaps.', 'After sorting: a ≤ b ≤ c.'],
+      topics: ['Pass by Reference', 'Sorting']
+    },
+    {
+      id: 'pointer-array-search',
+      title: 'Search Array Using Pointers',
+      difficulty: 'medium',
+      description: `Write a function called \`searchArray(int* arr, int size, int target, int* foundIndex)\` that searches for a target value.
+
+Set *foundIndex to the index if found, or -1 if not found.`,
+      inputFormat: 'First line: N (size). Second line: N integers. Third line: target value.',
+      outputFormat: 'Print the index if found, -1 otherwise.',
+      constraints: '1 ≤ N ≤ 1000, -10⁶ ≤ elements ≤ 10⁶',
+      sampleInput: '5\n10 20 30 40 50\n30',
+      sampleOutput: '2',
+      testCases: [
+        { input: '5\n10 20 30 40 50\n30', expectedOutput: '2' },
+        { input: '5\n10 20 30 40 50\n25', expectedOutput: '-1' },
+        { input: '3\n5 5 5\n5', expectedOutput: '0' },
+        { input: '1\n42\n42', expectedOutput: '0' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your searchArray() function using pointer for foundIndex
+
+int main() {
+    int n;
+    cin >> n;
+    
+    int arr[1000];
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    
+    int target;
+    cin >> target;
+    
+    int foundIndex;
+    // Call your function
+    
+    cout << foundIndex << endl;
+    return 0;
+}`,
+      hints: ['Loop through array and compare each element.', 'Set *foundIndex = i when found.', 'Set *foundIndex = -1 if not found.'],
+      topics: ['Pointer Parameters', 'Array Search']
+    },
+    {
+      id: 'pointer-split-positive-negative',
+      title: 'Split Positive and Negative Numbers',
+      difficulty: 'hard',
+      description: `Write a function called \`splitPosNeg(int* arr, int size, int* posCount, int* negCount)\` that:
+1. Counts positive and negative numbers
+2. Stores counts in pointer parameters
+
+Then print all positive numbers followed by all negative numbers.`,
+      inputFormat: 'First line: N (size). Second line: N space-separated integers.',
+      outputFormat: 'First line: count of positives and negatives. Second line: all positives then all negatives.',
+      constraints: '1 ≤ N ≤ 100, -100 ≤ each element ≤ 100',
+      sampleInput: '6\n1 -2 3 -4 5 -6',
+      sampleOutput: '3 3\n1 3 5 -2 -4 -6',
+      testCases: [
+        { input: '6\n1 -2 3 -4 5 -6', expectedOutput: '3 3\n1 3 5 -2 -4 -6' },
+        { input: '5\n1 2 3 4 5', expectedOutput: '5 0\n1 2 3 4 5' },
+        { input: '4\n-1 -2 -3 -4', expectedOutput: '0 4\n-1 -2 -3 -4' },
+        { input: '3\n0 0 0', expectedOutput: '0 0\n' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your splitPosNeg() function
+
+int main() {
+    int n;
+    cin >> n;
+    
+    int arr[100];
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    
+    int posCount, negCount;
+    // Call your function
+    
+    // Print counts and then numbers
+    
+    return 0;
+}`,
+      hints: ['Count positives (>0) and negatives (<0) separately.', 'Use pointer parameters to return counts.', 'Print positives first, then negatives.'],
+      topics: ['Pointer Parameters', 'Array Processing']
+    },
+    {
+      id: 'reference-complex-operation',
+      title: 'Complex Operation Using References',
+      difficulty: 'hard',
+      description: `Write a function called \`calculate(int a, int b, int& sum, int& product, int& avg)\` that computes:
+- sum = a + b
+- product = a * b
+- avg = (a + b) / 2 (integer division)
+
+All results are returned through reference parameters.`,
+      inputFormat: 'Two space-separated integers A and B.',
+      outputFormat: 'Print sum, product, and avg, space-separated.',
+      constraints: '-10⁶ ≤ A, B ≤ 10⁶',
+      sampleInput: '10 5',
+      sampleOutput: '15 50 7',
+      testCases: [
+        { input: '10 5', expectedOutput: '15 50 7' },
+        { input: '3 3', expectedOutput: '6 9 3' },
+        { input: '0 10', expectedOutput: '10 0 5' },
+        { input: '-5 5', expectedOutput: '0 -25 0' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your calculate() function using references
+
+int main() {
+    int a, b;
+    cin >> a >> b;
+    
+    int sum, product, avg;
+    // Call your function
+    
+    cout << sum << " " << product << " " << avg << endl;
+    return 0;
+}`,
+      hints: ['Use int& for sum, product, and avg parameters.', 'Assign values through references.', 'Call with calculate(a, b, sum, product, avg);'],
+      topics: ['Reference Parameters', 'Multiple Return Values']
     },
   ]
 };

@@ -65,6 +65,16 @@ const LessonSection: React.FC<{
   const completedCount = lesson.problems.filter(p => completedProblems.has(p.id)).length;
   const totalCount = lesson.problems.length;
 
+  const sortedProblems = React.useMemo(() => {
+    const difficultyPriority = { easy: 1, medium: 2, hard: 3 };
+    return [...lesson.problems].sort((a, b) => {
+      const diffA = difficultyPriority[a.difficulty] || 0;
+      const diffB = difficultyPriority[b.difficulty] || 0;
+      if (diffA !== diffB) return diffA - diffB;
+      return a.title.localeCompare(b.title);
+    });
+  }, [lesson.problems]);
+
   return (
     <div className="border-b border-border/50 last:border-b-0">
       <button
@@ -82,7 +92,7 @@ const LessonSection: React.FC<{
 
       {expanded && (
         <div className="px-2 pb-1.5 space-y-0.5">
-          {lesson.problems.map(problem => (
+          {sortedProblems.map(problem => (
             <ProblemItem
               key={problem.id}
               problem={problem}

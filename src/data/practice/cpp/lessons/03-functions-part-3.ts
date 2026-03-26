@@ -353,5 +353,297 @@ int main() {
       hints: ['Loop through the array and check each element.', 'Return true if you find the target, false after the loop.', 'Use the boolean result in an if statement.'],
       topics: ['Array Searching', 'Boolean Functions']
     },
+    {
+      id: 'overload-max',
+      title: 'Overload Max Function',
+      difficulty: 'medium',
+      description: `Create three overloaded functions named \`maxValue\`:
+1. maxValue(int a, int b) - returns the larger of two integers
+2. maxValue(int a, int b, int c) - returns the largest of three integers
+3. maxValue(int arr[], int size) - returns the maximum in an array`,
+      inputFormat: "First line: '2' for two integers, '3' for three integers, or 'A' for array. Next line(s): the values.",
+      outputFormat: 'Print the maximum value.',
+      constraints: 'Values between -10⁶ and 10⁶, array size 1-100',
+      sampleInput: '3\n5 2 8',
+      sampleOutput: '8',
+      testCases: [
+        { input: '2\n5 10', expectedOutput: '10' },
+        { input: '3\n5 2 8', expectedOutput: '8' },
+        { input: 'A\n5\n3 7 2 9 1', expectedOutput: '9' },
+        { input: '2\n-5 -10', expectedOutput: '-5' },
+        { input: 'A\n3\n10 20 15', expectedOutput: '20', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write three overloaded maxValue() functions
+
+int main() {
+    char type;
+    cin >> type;
+    
+    if (type == '2') {
+        int a, b;
+        cin >> a >> b;
+        cout << maxValue(a, b) << endl;
+    } else if (type == '3') {
+        int a, b, c;
+        cin >> a >> b >> c;
+        cout << maxValue(a, b, c) << endl;
+    } else {
+        int n;
+        cin >> n;
+        int arr[100];
+        for (int i = 0; i < n; i++) {
+            cin >> arr[i];
+        }
+        cout << maxValue(arr, n) << endl;
+    }
+    
+    return 0;
+}`,
+      hints: ['int maxValue(int a, int b) { return (a > b) ? a : b; }', 'For three: return maxValue(maxValue(a, b), c);', 'For array: loop and track maximum.'],
+      topics: ['Function Overloading', 'Multiple Versions']
+    },
+    {
+      id: 'array-reverse-function',
+      title: 'Reverse Array Function',
+      difficulty: 'medium',
+      description: `Write a function called \`reverseArray(int arr[], int size)\` that reverses the array in place.
+
+This demonstrates modifying arrays through functions.`,
+      inputFormat: 'First line: N (size). Second line: N space-separated integers.',
+      outputFormat: 'Print the reversed array, space-separated.',
+      constraints: '1 ≤ N ≤ 100, -1000 ≤ each element ≤ 1000',
+      sampleInput: '5\n1 2 3 4 5',
+      sampleOutput: '5 4 3 2 1',
+      testCases: [
+        { input: '5\n1 2 3 4 5', expectedOutput: '5 4 3 2 1' },
+        { input: '3\n10 20 30', expectedOutput: '30 20 10' },
+        { input: '1\n42', expectedOutput: '42' },
+        { input: '4\n-1 -2 -3 -4', expectedOutput: '-4 -3 -2 -1' },
+        { input: '6\n1 2 3 4 5 6', expectedOutput: '6 5 4 3 2 1', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your reverseArray() function
+
+int main() {
+    int n;
+    cin >> n;
+    
+    int arr[100];
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    
+    // Call your function
+    reverseArray(arr, n);
+    
+    // Print the reversed array
+    for (int i = 0; i < n; i++) {
+        cout << arr[i];
+        if (i < n - 1) cout << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}`,
+      hints: ['Use two pointers: start (0) and end (n-1).', 'Swap arr[start] and arr[end], then move pointers toward center.', 'Continue while start < end.'],
+      topics: ['Array Reversal', 'In-place Modification']
+    },
+    {
+      id: 'count-occurrences-function',
+      title: 'Count Occurrences Function',
+      difficulty: 'medium',
+      description: `Write a function called \`countOccurrences(int arr[], int size, int target)\` that returns how many times target appears in the array.`,
+      inputFormat: 'First line: N (size). Second line: N space-separated integers. Third line: target value.',
+      outputFormat: 'Print the count of occurrences.',
+      constraints: '1 ≤ N ≤ 1000, -1000 ≤ each element ≤ 1000',
+      sampleInput: '7\n1 2 3 2 4 2 5\n2',
+      sampleOutput: '3',
+      testCases: [
+        { input: '7\n1 2 3 2 4 2 5\n2', expectedOutput: '3' },
+        { input: '5\n1 1 1 1 1\n1', expectedOutput: '5' },
+        { input: '3\n1 2 3\n4', expectedOutput: '0' },
+        { input: '1\n42\n42', expectedOutput: '1' },
+        { input: '10\n5 5 5 5 5 5 5 5 5 5\n5', expectedOutput: '10', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your countOccurrences() function
+
+int main() {
+    int n;
+    cin >> n;
+    
+    int arr[1000];
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    
+    int target;
+    cin >> target;
+    
+    // Call your function and print the result
+    
+    return 0;
+}`,
+      hints: ['Initialize count = 0.', 'Loop through array and increment count when arr[i] == target.', 'Return count.'],
+      topics: ['Array Counting', 'Searching']
+    },
+    {
+      id: 'array-sort-function',
+      title: 'Sort Array Function',
+      difficulty: 'hard',
+      description: `Write a function called \`sortArray(int arr[], int size)\` that sorts the array in ascending order using bubble sort or selection sort.
+
+This demonstrates implementing sorting algorithms as functions.`,
+      inputFormat: 'First line: N (size). Second line: N space-separated integers.',
+      outputFormat: 'Print the sorted array, space-separated.',
+      constraints: '1 ≤ N ≤ 100, -1000 ≤ each element ≤ 1000',
+      sampleInput: '5\n5 2 8 1 9',
+      sampleOutput: '1 2 5 8 9',
+      testCases: [
+        { input: '5\n5 2 8 1 9', expectedOutput: '1 2 5 8 9' },
+        { input: '3\n3 2 1', expectedOutput: '1 2 3' },
+        { input: '1\n42', expectedOutput: '42' },
+        { input: '4\n1 2 3 4', expectedOutput: '1 2 3 4' },
+        { input: '6\n6 5 4 3 2 1', expectedOutput: '1 2 3 4 5 6', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your sortArray() function
+// Use bubble sort or selection sort
+
+int main() {
+    int n;
+    cin >> n;
+    
+    int arr[100];
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    
+    // Call your function
+    sortArray(arr, n);
+    
+    // Print the sorted array
+    for (int i = 0; i < n; i++) {
+        cout << arr[i];
+        if (i < n - 1) cout << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}`,
+      hints: ['Bubble sort: compare adjacent elements and swap if needed.', 'Repeat n-1 passes.', 'Each pass moves the largest unsorted element to its position.'],
+      topics: ['Sorting Algorithms', 'Array Modification']
+    },
+    {
+      id: 'binary-search-function',
+      title: 'Binary Search Function',
+      difficulty: 'hard',
+      description: `Write a function called \`binarySearch(int arr[], int size, int target)\` that returns the index of target in a sorted array, or -1 if not found.
+
+The array is guaranteed to be sorted in ascending order.`,
+      inputFormat: 'First line: N (size). Second line: N sorted integers. Third line: target value.',
+      outputFormat: 'Print the index (0-based) if found, -1 otherwise.',
+      constraints: '1 ≤ N ≤ 1000, array is sorted in ascending order',
+      sampleInput: '5\n1 3 5 7 9\n5',
+      sampleOutput: '2',
+      testCases: [
+        { input: '5\n1 3 5 7 9\n5', expectedOutput: '2' },
+        { input: '5\n1 3 5 7 9\n6', expectedOutput: '-1' },
+        { input: '1\n42\n42', expectedOutput: '0' },
+        { input: '6\n10 20 30 40 50 60\n30', expectedOutput: '2' },
+        { input: '3\n1 2 3\n4', expectedOutput: '-1', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your binarySearch() function
+// Return index if found, -1 otherwise
+
+int main() {
+    int n;
+    cin >> n;
+    
+    int arr[1000];
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    
+    int target;
+    cin >> target;
+    
+    // Call your function and print the result
+    
+    return 0;
+}`,
+      hints: ['Use left = 0, right = n-1.', 'Calculate mid = left + (right - left) / 2.', 'If arr[mid] == target, return mid.', 'If target < arr[mid], search left half. Otherwise, search right half.'],
+      topics: ['Binary Search', 'Divide and Conquer', 'Searching']
+    },
+    {
+      id: 'merge-arrays-function',
+      title: 'Merge Two Sorted Arrays',
+      difficulty: 'hard',
+      description: `Write a function called \`mergeArrays(int arr1[], int size1, int arr2[], int size2, int result[])\` that merges two sorted arrays into one sorted array.
+
+Both input arrays are sorted in ascending order.`,
+      inputFormat: 'First line: N1 (size of first array). Second line: N1 sorted integers. Third line: N2 (size of second array). Fourth line: N2 sorted integers.',
+      outputFormat: 'Print the merged sorted array, space-separated.',
+      constraints: '1 ≤ N1, N2 ≤ 100, both arrays are sorted',
+      sampleInput: '3\n1 3 5\n3\n2 4 6',
+      sampleOutput: '1 2 3 4 5 6',
+      testCases: [
+        { input: '3\n1 3 5\n3\n2 4 6', expectedOutput: '1 2 3 4 5 6' },
+        { input: '2\n1 2\n2\n3 4', expectedOutput: '1 2 3 4' },
+        { input: '1\n5\n1\n3', expectedOutput: '3 5' },
+        { input: '3\n1 2 3\n0\n', expectedOutput: '1 2 3' },
+        { input: '2\n1 10\n2\n5 20', expectedOutput: '1 5 10 20', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your mergeArrays() function
+
+int main() {
+    int n1;
+    cin >> n1;
+    
+    int arr1[100];
+    for (int i = 0; i < n1; i++) {
+        cin >> arr1[i];
+    }
+    
+    int n2;
+    cin >> n2;
+    
+    int arr2[100];
+    for (int i = 0; i < n2; i++) {
+        cin >> arr2[i];
+    }
+    
+    int result[200];
+    
+    // Call your function
+    mergeArrays(arr1, n1, arr2, n2, result);
+    
+    // Print the merged array
+    for (int i = 0; i < n1 + n2; i++) {
+        cout << result[i];
+        if (i < n1 + n2 - 1) cout << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}`,
+      hints: ['Use three pointers: i for arr1, j for arr2, k for result.', 'Compare arr1[i] and arr2[j], add smaller to result.', 'After one array is exhausted, copy remaining elements from the other.'],
+      topics: ['Array Merging', 'Two Pointers', 'Sorted Arrays']
+    },
   ]
 };

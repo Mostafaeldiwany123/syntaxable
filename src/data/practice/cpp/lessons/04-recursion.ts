@@ -32,6 +32,7 @@ Recursive case: n! = n * (n-1)!`,
 using namespace std;
 
 // Write your recursive factorial() function
+// Remember: base case and recursive case
 
 int main() {
     int n;
@@ -284,6 +285,7 @@ Recursive case: search in the appropriate half.`,
 using namespace std;
 
 // Write your recursive binarySearch() function
+// Parameters: array, left index, right index, target
 
 int main() {
     int n;
@@ -297,12 +299,291 @@ int main() {
     int target;
     cin >> target;
     
-    // Call your function and print the result
+    // Call your function with appropriate parameters
     
     return 0;
 }`,
       hints: ['Calculate mid = left + (right - left) / 2;', 'If arr[mid] == target, return mid', 'If target < arr[mid], search left half, else search right half'],
       topics: ['Recursion', 'Binary Search', 'Divide and Conquer']
+    },
+    {
+      id: 'recursive-digit-sum',
+      title: 'Recursive Digit Sum',
+      difficulty: 'medium',
+      description: `Write a recursive function called \`digitSum(int n)\` that returns the sum of all digits of n.
+
+Base case: if n < 10, return n.
+Recursive case: return (n % 10) + digitSum(n / 10)`,
+      inputFormat: 'A single integer N (0 ≤ N ≤ 10⁹).',
+      outputFormat: 'Print the sum of digits.',
+      constraints: '0 ≤ N ≤ 10⁹',
+      sampleInput: '12345',
+      sampleOutput: '15',
+      testCases: [
+        { input: '12345', expectedOutput: '15' },
+        { input: '0', expectedOutput: '0' },
+        { input: '999', expectedOutput: '27' },
+        { input: '100', expectedOutput: '1' },
+        { input: '123456789', expectedOutput: '45', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your recursive digitSum() function
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Call your function and print the result
+    
+    return 0;
+}`,
+      hints: ['Base case: if n < 10, return n.', 'Recursive case: return (n % 10) + digitSum(n / 10).', 'n % 10 gives last digit, n / 10 removes it.'],
+      topics: ['Recursion', 'Digit Extraction']
+    },
+    {
+      id: 'recursive-palindrome',
+      title: 'Recursive Palindrome Check',
+      difficulty: 'medium',
+      description: `Write a recursive function called \`isPalindrome(string s)\` that returns true if the string is a palindrome.
+
+Base case: if string length is 0 or 1, return true.
+Recursive case: check if first and last chars match, then check the middle substring.`,
+      inputFormat: 'A single string (max 100 characters).',
+      outputFormat: "Print 'Palindrome' if the string is a palindrome, 'Not Palindrome' otherwise.",
+      constraints: 'String contains only lowercase letters',
+      sampleInput: 'racecar',
+      sampleOutput: 'Palindrome',
+      testCases: [
+        { input: 'racecar', expectedOutput: 'Palindrome' },
+        { input: 'hello', expectedOutput: 'Not Palindrome' },
+        { input: 'madam', expectedOutput: 'Palindrome' },
+        { input: 'a', expectedOutput: 'Palindrome' },
+        { input: 'ab', expectedOutput: 'Not Palindrome' },
+        { input: 'noon', expectedOutput: 'Palindrome', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+#include <string>
+using namespace std;
+
+// Write your recursive isPalindrome() function
+
+int main() {
+    string s;
+    cin >> s;
+    
+    // Call your function and print result
+    
+    return 0;
+}`,
+      hints: ['Base case: if length <= 1, return true.', 'Check if s[0] == s[last].', 'Recursively check substring from index 1 to length-2.'],
+      topics: ['Recursion', 'String Processing', 'Palindrome']
+    },
+    {
+      id: 'recursive-exponent-fast',
+      title: 'Fast Exponentiation',
+      difficulty: 'hard',
+      description: `Write a recursive function called \`fastPower(int base, int exp)\` that calculates base^exp using fast exponentiation.
+
+This is more efficient than simple recursion:
+- If exp is even: base^exp = (base^(exp/2))²
+- If exp is odd: base^exp = base * base^(exp-1)`,
+      inputFormat: 'Two space-separated integers: base and exp (0 ≤ exp ≤ 30).',
+      outputFormat: 'Print base^exp.',
+      constraints: '0 ≤ exp ≤ 30, -100 ≤ base ≤ 100',
+      sampleInput: '2 10',
+      sampleOutput: '1024',
+      testCases: [
+        { input: '2 10', expectedOutput: '1024' },
+        { input: '3 5', expectedOutput: '243' },
+        { input: '5 0', expectedOutput: '1' },
+        { input: '2 30', expectedOutput: '1073741824' },
+        { input: '-2 5', expectedOutput: '-32', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your recursive fastPower() function
+// Use the optimization for even/odd exponents
+
+int main() {
+    int base, exp;
+    cin >> base >> exp;
+    
+    // Call your function and print the result
+    
+    return 0;
+}`,
+      hints: ['If exp is even: calculate half = fastPower(base, exp/2), return half * half', 'If exp is odd: return base * fastPower(base, exp-1)', 'Base case: if exp == 0, return 1'],
+      topics: ['Recursion', 'Fast Exponentiation', 'Optimization']
+    },
+    {
+      id: 'recursive-tower-of-hanoi',
+      title: 'Tower of Hanoi Counter',
+      difficulty: 'hard',
+      description: `Write a recursive function called \`countHanoiMoves(int n)\` that returns the minimum number of moves needed to solve Tower of Hanoi with n disks.
+
+The recurrence relation is:
+- moves(1) = 1
+- moves(n) = 2 * moves(n-1) + 1
+
+This demonstrates how recursion can count operations without actually performing them.`,
+      inputFormat: 'A single integer N (1 ≤ N ≤ 20).',
+      outputFormat: 'Print the minimum number of moves.',
+      constraints: '1 ≤ N ≤ 20',
+      sampleInput: '3',
+      sampleOutput: '7',
+      testCases: [
+        { input: '1', expectedOutput: '1' },
+        { input: '2', expectedOutput: '3' },
+        { input: '3', expectedOutput: '7' },
+        { input: '4', expectedOutput: '15' },
+        { input: '5', expectedOutput: '31' },
+        { input: '10', expectedOutput: '1023', isHidden: true },
+        { input: '20', expectedOutput: '1048575', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your recursive countHanoiMoves() function
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Call your function and print the result
+    
+    return 0;
+}`,
+      hints: ['Base case: if n == 1, return 1.', 'Recursive case: return 2 * countHanoiMoves(n-1) + 1', 'The formula is 2^n - 1'],
+      topics: ['Recursion', 'Tower of Hanoi', 'Mathematical Recursion']
+    },
+    {
+      id: 'recursive-subset-sum',
+      title: 'Recursive Subset Sum',
+      difficulty: 'hard',
+      description: `Write a recursive function that determines if there exists a subset of an array that sums to a target value.
+
+Function signature: \`bool hasSubsetSum(int arr[], int n, int target)\`
+
+Base cases:
+- If target == 0, return true (empty subset)
+- If n == 0 and target != 0, return false
+
+Recursive case:
+- Either include the last element or exclude it`,
+      inputFormat: 'First line: N (size) and target. Second line: N space-separated integers.',
+      outputFormat: "Print 'Yes' if a subset exists, 'No' otherwise.",
+      constraints: '1 ≤ N ≤ 20, -100 ≤ each element ≤ 100, -2000 ≤ target ≤ 2000',
+      sampleInput: '5 10\n3 5 2 7 1',
+      sampleOutput: 'Yes',
+      testCases: [
+        { input: '5 10\n3 5 2 7 1', expectedOutput: 'Yes' },
+        { input: '3 5\n1 2 3', expectedOutput: 'Yes' },
+        { input: '3 10\n1 2 3', expectedOutput: 'No' },
+        { input: '4 8\n2 4 6 8', expectedOutput: 'Yes' },
+        { input: '1 5\n3', expectedOutput: 'No', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your recursive hasSubsetSum() function
+// Consider: include current element or exclude it
+
+int main() {
+    int n, target;
+    cin >> n >> target;
+    
+    int arr[20];
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    
+    // Call your function and print "Yes" or "No"
+    
+    return 0;
+}`,
+      hints: ['hasSubsetSum(arr, n, target) = hasSubsetSum(arr, n-1, target) OR hasSubsetSum(arr, n-1, target-arr[n-1])', 'Base case: target == 0 returns true', 'Base case: n == 0 and target != 0 returns false'],
+      topics: ['Recursion', 'Subset Sum', 'Backtracking']
+    },
+    {
+      id: 'recursive-permutations',
+      title: 'Count Permutations',
+      difficulty: 'hard',
+      description: `Write a recursive function called \`countPermutations(int n)\` that returns n! (the number of permutations of n distinct elements).
+
+This is similar to factorial but framed as a counting problem.
+
+Base case: countPermutations(0) = 1 (one way to arrange nothing)
+Recursive case: countPermutations(n) = n * countPermutations(n-1)`,
+      inputFormat: 'A single integer N (0 ≤ N ≤ 20).',
+      outputFormat: 'Print the number of permutations.',
+      constraints: '0 ≤ N ≤ 20',
+      sampleInput: '4',
+      sampleOutput: '24',
+      testCases: [
+        { input: '0', expectedOutput: '1' },
+        { input: '1', expectedOutput: '1' },
+        { input: '3', expectedOutput: '6' },
+        { input: '5', expectedOutput: '120' },
+        { input: '10', expectedOutput: '3628800' },
+        { input: '15', expectedOutput: '1307674368000', isHidden: true },
+        { input: '20', expectedOutput: '2432902008176640000', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your recursive countPermutations() function
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Call your function and print the result
+    
+    return 0;
+}`,
+      hints: ['Base case: if n == 0 or n == 1, return 1.', 'Recursive case: return n * countPermutations(n-1).', 'Use long long for the return type.'],
+      topics: ['Recursion', 'Permutations', 'Counting']
+    },
+    {
+      id: 'recursive-lcm',
+      title: 'Recursive LCM',
+      difficulty: 'hard',
+      description: `Write a recursive function to find the LCM (Least Common Multiple) of two numbers.
+
+LCM(a, b) = (a * b) / GCD(a, b)
+
+You can use your recursive GCD function to help.`,
+      inputFormat: 'Two space-separated integers A and B (1 ≤ A, B ≤ 10⁶).',
+      outputFormat: 'Print the LCM of A and B.',
+      constraints: '1 ≤ A, B ≤ 10⁶',
+      sampleInput: '12 18',
+      sampleOutput: '36',
+      testCases: [
+        { input: '12 18', expectedOutput: '36' },
+        { input: '5 7', expectedOutput: '35' },
+        { input: '10 25', expectedOutput: '50' },
+        { input: '6 8', expectedOutput: '24' },
+        { input: '100 150', expectedOutput: '300', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write a recursive gcd() function helper
+// Then write lcm() function using gcd
+
+int main() {
+    int a, b;
+    cin >> a >> b;
+    
+    // Call your lcm function and print the result
+    
+    return 0;
+}`,
+      hints: ['First implement recursive gcd(a, b).', 'Then lcm(a, b) = (a * b) / gcd(a, b).', 'Use long long to avoid overflow in multiplication.'],
+      topics: ['Recursion', 'LCM', 'GCD Helper']
     },
   ]
 };
