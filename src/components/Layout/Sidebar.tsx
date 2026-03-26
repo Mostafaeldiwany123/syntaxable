@@ -282,6 +282,30 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
                         </div>
                         {currentTheme === 'frost' && <span>✓</span>}
                       </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleThemeChange('aurora')} className="flex justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <span>Aurora Borealis</span>
+                        </div>
+                        {currentTheme === 'aurora' && <span>✓</span>}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleThemeChange('ember')} className="flex justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <span>Ember Glow</span>
+                        </div>
+                        {currentTheme === 'ember' && <span>✓</span>}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleThemeChange('sakura')} className="flex justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <span>Sakura Bloom</span>
+                        </div>
+                        {currentTheme === 'sakura' && <span>✓</span>}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleThemeChange('void')} className="flex justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <span>Void</span>
+                        </div>
+                        {currentTheme === 'void' && <span>✓</span>}
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
 
@@ -368,6 +392,30 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
                           <span>Frost Blue</span>
                         </div>
                         {currentTheme === 'frost' && <span>✓</span>}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleThemeChange('aurora')} className="flex justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <span>Aurora Borealis</span>
+                        </div>
+                        {currentTheme === 'aurora' && <span>✓</span>}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleThemeChange('ember')} className="flex justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <span>Ember Glow</span>
+                        </div>
+                        {currentTheme === 'ember' && <span>✓</span>}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleThemeChange('sakura')} className="flex justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <span>Sakura Bloom</span>
+                        </div>
+                        {currentTheme === 'sakura' && <span>✓</span>}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleThemeChange('void')} className="flex justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <span>Void</span>
+                        </div>
+                        {currentTheme === 'void' && <span>✓</span>}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

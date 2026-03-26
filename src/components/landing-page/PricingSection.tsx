@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Check, Mail } from "lucide-react";
+import { Check, X, Mail, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
@@ -11,56 +11,91 @@ const plans = [
     price: "0",
     currency: "EGP",
     priceUSD: "$0",
-    description: "Essential features for individuals and small side projects.",
+    description: "Get started for free. Explore the platform and start coding.",
     features: [
-      "Up to 3 active projects",
-      "20 AI credits (1 credit = 1 response)",
-      "Access to basic practice sets",
-      "Lite & Dark themes included",
-      "Rate limiting on compiler usage",
+      { text: "Up to 3 active projects", included: true },
+      { text: "20 AI credits (1 credit = 1 response)", included: true },
+      { text: "Access to basic practice sets", included: true },
+      { text: "Lite & Dark themes included", included: true },
+      { text: "Rate limiting on compiler usage", included: true },
+      { text: "Create custom practice sets", included: false },
+      { text: "Premium themes", included: false },
     ],
     cta: "Get Started",
     popular: false,
     tier: "free"
   },
   {
-    name: "Professional",
+    name: "Students",
     price: "100",
     currency: "EGP",
     priceUSD: "$2",
-    description: "Advanced tools for power users and serious learners.",
+    description: "Unlock your full potential. Built for serious learners.",
     features: [
-      "Up to 20 active projects",
-      "300 AI credits (1 credit = 1 response)",
-      "Upload your own folder to the editor",
-      "Access to all premium themes",
-      "Create custom practice sets",
-      "Professional profile badge",
+      { text: "Up to 20 active projects", included: true },
+      { text: "300 AI credits (1 credit = 1 response)", included: true },
+      { text: "Upload your own folder to the editor", included: true },
+      { text: "Access to all 12 premium themes", included: true },
+      { text: "Professional profile badge", included: true },
+      { text: "Unlimited compiler usage", included: true },
+      { text: "Priority support", included: true },
     ],
     cta: "Beta Trial",
     popular: true,
     tier: "pro"
   },
   {
-    name: "Enterprise",
-    price: "Custom",
-    description: "Scale your organization with custom limits and controls.",
+    name: "Teachers",
+    price: "300",
+    currency: "EGP",
+    priceUSD: "$6",
+    description: "Create, assign, and monitor. Everything a teacher needs.",
     features: [
-      "Unlimited projects & credits",
-      "Team management dashboard",
-      "Dedicated account manager",
-      "Custom API integrations",
-      "SLA & priority 24/7 support",
-      "Custom billing & invoicing"
+      { text: "Everything in Students plan", included: true },
+      { text: "500 AI credits per month", included: true },
+      { text: "Create custom practice sets", included: true },
+      { text: "AI-powered problem generator", included: true },
+      { text: "Create custom quizzes with tab monitoring", included: true },
+      { text: "AI auto-checker for submissions", included: true },
+      { text: "View all users & their activity", included: true },
+      { text: "Teacher profile badge", included: true },
     ],
-    cta: "Contact Sales",
+    cta: "Contact Us",
     popular: false,
-    tier: "enterprise"
+    tier: "teacher"
+  },
+];
+
+const faqs = [
+  {
+    question: "What is a credit?",
+    answer: "A credit equals one AI response. Every time you ask the AI assistant a question and it replies, that uses 1 credit. Credits reset monthly."
+  },
+  {
+    question: "What is the Students plan for?",
+    answer: "The Students plan is designed for individual learners who want to level up their coding skills. You get more projects, more AI credits, all premium themes, and the ability to upload your own code folders into the editor."
+  },
+  {
+    question: "What is the Teachers plan for?",
+    answer: "The Teachers plan is built for educators. You can create custom practice sets, build quizzes with anti-cheating features like tab monitoring, use an AI problem generator to create new exercises instantly, and view all your students' activity on the platform."
+  },
+  {
+    question: "What does \"tab monitoring\" mean in quizzes?",
+    answer: "When a teacher creates a quiz, they can enable tab monitoring. This means the system will detect if a student switches tabs or leaves the quiz page during the exam — helping maintain academic integrity."
+  },
+  {
+    question: "What is the AI problem generator?",
+    answer: "Teachers can use AI to automatically generate new practice problems complete with test cases. Just describe the topic and difficulty, and the AI creates a ready-to-use coding challenge for your students."
+  },
+  {
+    question: "Can I upgrade or downgrade anytime?",
+    answer: "Yes! You can upgrade from Starter to Students or Teachers at any time. If you want to downgrade, your current plan will stay active until the end of your billing period."
   },
 ];
 
 export const PricingSection = () => {
   const [isBetaDialogOpen, setIsBetaDialogOpen] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   return (
     <>
@@ -126,25 +161,17 @@ export const PricingSection = () => {
                     </p>
 
                     <div className="mt-6 flex items-baseline">
-                      {plan.price === "Custom" ? (
-                        <span className="text-4xl font-bold text-foreground tracking-tight">
-                          Custom
-                        </span>
-                      ) : (
-                        <>
-                          <span className="text-4xl font-bold text-foreground tracking-tight">
-                          {plan.price}
-                        </span>
-                        <span className="text-muted-foreground ml-1.5 font-medium uppercase tracking-wider text-xs">
-                          {plan.currency}
-                        </span>
-                        {plan.priceUSD && (
-                          <span className="text-primary mx-2 font-bold focus:shadow-none">/ {plan.priceUSD}</span>
-                        )}
-                        {plan.name !== 'Starter' && (
-                          <span className="text-muted-foreground text-sm border-l border-border pl-1.5 h-6 flex items-center ml-1">/mo</span>
-                        )}
-                        </>
+                      <span className="text-4xl font-bold text-foreground tracking-tight">
+                        {plan.price}
+                      </span>
+                      <span className="text-muted-foreground ml-1.5 font-medium uppercase tracking-wider text-xs">
+                        {plan.currency}
+                      </span>
+                      {plan.priceUSD && (
+                        <span className="text-primary mx-2 font-bold focus:shadow-none">/ {plan.priceUSD}</span>
+                      )}
+                      {plan.name !== 'Starter' && (
+                        <span className="text-muted-foreground text-sm border-l border-border pl-1.5 h-6 flex items-center ml-1">/mo</span>
                       )}
                     </div>
                   </div>
@@ -157,9 +184,13 @@ export const PricingSection = () => {
                     <ul className="space-y-3.5">
                       {plan.features.map((feature, idx) => (
                         <li key={idx} className="flex items-start gap-3">
-                          <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-muted-foreground leading-relaxed">
-                            {feature}
+                          {feature.included ? (
+                            <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                          ) : (
+                            <X className="h-4 w-4 text-muted-foreground/40 mt-0.5 flex-shrink-0" />
+                          )}
+                          <span className={`text-sm leading-relaxed ${feature.included ? 'text-muted-foreground' : 'text-muted-foreground/40 line-through'}`}>
+                            {feature.text}
                           </span>
                         </li>
                       ))}
@@ -173,6 +204,9 @@ export const PricingSection = () => {
                       if (plan.tier === 'pro') {
                         setIsBetaDialogOpen(true);
                       }
+                      if (plan.tier === 'teacher') {
+                        window.location.href = 'mailto:25-101623@students.eui.edu.eg?subject=Teachers%20Plan%20Inquiry';
+                      }
                     }}
                   >
                     {plan.cta}
@@ -181,6 +215,54 @@ export const PricingSection = () => {
               </motion.div>
             ))}
           </div>
+
+          {/* FAQ Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="mt-24"
+          >
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-3">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-muted-foreground max-w-lg mx-auto">
+                Everything you need to know about our pricing plans.
+              </p>
+            </div>
+
+            <div className="max-w-3xl mx-auto space-y-2">
+              {faqs.map((faq, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                  className="border border-border/50 rounded-xl overflow-hidden transition-colors hover:border-muted-foreground/30 bg-card/30"
+                >
+                  <button
+                    onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
+                    className="w-full flex items-center justify-between px-6 py-4 text-left"
+                  >
+                    <span className="text-sm font-medium text-foreground pr-4">{faq.question}</span>
+                    <ChevronDown
+                      className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 ${
+                        openFaqIndex === index ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                  {openFaqIndex === index && (
+                    <div className="px-6 pb-5 pt-0">
+                      <p className="text-sm text-muted-foreground leading-relaxed">{faq.answer}</p>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
 
           {/* Footer Info */}
           <motion.div 
