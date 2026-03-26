@@ -9,3 +9,4 @@ export { DemoEditor } from './DemoEditor';
 export { DemoAIAgentPanel } from './DemoAIAgentPanel';
 export { PricingSection } from './PricingSection';
 export { PracticeSection } from './PracticeSection';
+export { DemoPopup } from './DemoPopup';

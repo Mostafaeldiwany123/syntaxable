@@ -8,7 +8,8 @@ import {
   CTASection, 
   PricingSection,
   PracticeSection,
-  Footer 
+  Footer,
+  DemoPopup
 } from "@/components/landing-page";
 
 
@@ -24,6 +25,7 @@ export const AuthPage = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground relative">
+      <DemoPopup />
       {/* Global Background Grid */}
       <div className="fixed inset-0 grid-bg opacity-40 pointer-events-none" />
 

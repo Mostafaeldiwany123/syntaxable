@@ -6,6 +6,7 @@ import { useSidebar } from "@/context/SidebarContext";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { Button } from "../ui/button";
+import { DemoPopup } from "@/components/landing-page";
 
 export const AppLayout = () => {
   const isMobile = useIsMobile();
@@ -15,6 +16,7 @@ export const AppLayout = () => {
   if (isMobile) {
     return (
       <div className="h-dvh w-screen flex flex-col bg-background">
+        <DemoPopup />
         <header className="flex items-center justify-between px-4 py-3 border-b border-border h-14 shrink-0">
           <Link to="/" className="flex items-center gap-2">
             <img src="/syntaxable.png" alt="Syntaxable" className="h-7 w-7 object-contain" />
@@ -38,6 +40,7 @@ export const AppLayout = () => {
 
   return (
     <div className="flex h-dvh bg-background">
+      <DemoPopup />
       <Sidebar 
         isCollapsed={isCollapsed} 
         onToggleCollapse={toggleCollapse}

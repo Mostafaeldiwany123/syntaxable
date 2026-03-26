@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ShowcaseCursor } from "./components/ui/ShowcaseCursor";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -121,10 +122,23 @@ const AppRoutes = () => {
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
+  const [showcaseCursor, setShowcaseCursor] = useState(false);
+
+  // Press Alt+C to toggle the showcase cursor on/off during recordings
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.altKey && e.key.toLowerCase() === 'c') {
+        setShowcaseCursor(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        {showcaseCursor && <ShowcaseCursor />}
         <Toaster />
         <Sonner />
         <BrowserRouter>

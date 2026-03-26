@@ -33,9 +33,11 @@ export const FeaturesSection = () => {
             className="relative aspect-video rounded-xl overflow-hidden border border-border bg-card"
           >
             <iframe
-              src="https://www.youtube.com/embed/9T8zGYQdmHE?si=qa9ekR4DuFN3VVe1&vq=hd1080"
-              title="Syntaxable Features"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              src="https://www.youtube.com/embed/dtmqKdI5Bms?si=VmGMuW9dZTw5RgU3"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
               className="w-full h-full"
             />
