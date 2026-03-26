@@ -242,19 +242,20 @@ export function useAIChat(options?: UseAIChatOptions) {
 
       setIsStreaming(false);
     } catch (error) {
-      console.error('[useAIChat] Error:', error);
       setIsStreaming(false);
 
       if (error instanceof Error && error.name === 'AbortError') {
-        // Request was cancelled
-        setMessages(prev => prev.filter(m => m.id !== assistantMsgId));
+        // Request was cancelled, but we want to keep the partial content
+        console.info('[useAIChat] Streaming stopped by user');
         return;
       }
 
-      // Update assistant message with error
+      console.error('[useAIChat] Error:', error);
+
+      // Update assistant message with error only if it's not a user-initiated stop
       setMessages(prev => prev.map(m =>
         m.id === assistantMsgId
-          ? { ...m, content: `Error: ${error instanceof Error ? error.message : 'Failed to get response'}` }
+          ? { ...m, content: (m.content || '') + `\n\n[Error: ${error instanceof Error ? error.message : 'Failed to get response'}]` }
           : m
       ));
 
