@@ -65,37 +65,38 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
   const { data: progress } = usePracticeProgress();
   const { collapseForAIAgent } = useSidebar();
   const [practiceCode, setPracticeCode] = useState<string>(() => {
-    // First check if there's a saved solution passed as prop (for custom sets)
+    // Custom set: use the saved solution prop
     if (savedSolutionCode) {
       return savedSolutionCode;
     }
-    // Then check if there's a saved solution in the database (for regular practice)
-    const savedProgress = progress?.find(p => p.problem_id === currentProblem.id);
-    if (savedProgress?.solution_code) {
-      return savedProgress.solution_code;
+    // Check localStorage FIRST — user may have written new code after solving
+    const localSaved = localStorage.getItem(`practice-code-${currentProblem.id}`);
+    if (localSaved) {
+      return localSaved;
     }
-    // Fall back to localStorage
-    const saved = localStorage.getItem(`practice-code-${currentProblem.id}`);
-    return saved || currentProblem.starterCode;
+    // No local edits — fall back to DB solution (initial solve), then starter code
+    const savedProgress = progress?.find(p => p.problem_id === currentProblem.id);
+    return savedProgress?.solution_code || currentProblem.starterCode;
   });
   const [isCompilationOutputOpen, setIsCompilationOutputOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [isAIAgentOpen, setIsAIAgentOpen] = useState(false);
   const prevIsAIAgentOpenRef = useRef(false);
 
-  // Reset test results when problem changes
+  // Update code when switching problems
   React.useEffect(() => {
-    // First check if there's a saved solution passed as prop (for custom sets)
     if (savedSolutionCode) {
+      // Custom set: always use the prop
       setPracticeCode(savedSolutionCode);
     } else {
-      // Then check if there's a saved solution in the database (for regular practice)
-      const savedProgress = progress?.find(p => p.problem_id === currentProblem.id);
-      if (savedProgress?.solution_code) {
-        setPracticeCode(savedProgress.solution_code);
+      // Check localStorage FIRST so post-solve edits are preserved locally
+      const localSaved = localStorage.getItem(`practice-code-${currentProblem.id}`);
+      if (localSaved) {
+        setPracticeCode(localSaved);
       } else {
-        // Fall back to localStorage
-        setPracticeCode(localStorage.getItem(`practice-code-${currentProblem.id}`) || currentProblem.starterCode);
+        // No local copy — use DB solution or starter code
+        const savedProgress = progress?.find(p => p.problem_id === currentProblem.id);
+        setPracticeCode(savedProgress?.solution_code || currentProblem.starterCode);
       }
     }
   }, [currentProblem.id, currentProblem.starterCode, progress, savedSolutionCode]);

@@ -43,7 +43,7 @@ export const UserCard = ({ user }: UserCardProps) => {
 
         <Avatar className={`h-20 w-20 -mt-14 mb-2 border-4 ${isPro ? 'border-pro' : 'border-card'}`}>
           <AvatarImage src={user.avatar_url} alt={user.username} />
-          <AvatarFallback className="text-3xl">{getInitials()}</AvatarFallback>
+          <AvatarFallback seed={user.username} className="text-3xl">{getInitials()}</AvatarFallback>
         </Avatar>
         <div className="flex items-center gap-2">
           <h3 className={`font-bold text-lg ${isPro ? 'text-pro-light' : ''}`}>{user.username}</h3>

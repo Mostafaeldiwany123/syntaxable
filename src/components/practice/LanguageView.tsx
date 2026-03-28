@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { ArrowLeft, BookOpen, CheckCircle2, Circle, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -41,7 +41,34 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
   selectedProblemId,
   completedProblems,
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const SESSION_SEARCH_KEY = `practice-search-${course.language}`;
+  const SESSION_SCROLL_KEY = `practice-scroll-${course.language}`;
+
+  const [searchQuery, setSearchQuery] = useState(() =>
+    sessionStorage.getItem(SESSION_SEARCH_KEY) || ''
+  );
+
+  // Persist search query
+  useEffect(() => {
+    sessionStorage.setItem(SESSION_SEARCH_KEY, searchQuery);
+  }, [searchQuery, SESSION_SEARCH_KEY]);
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Restore scroll position on mount
+  useEffect(() => {
+    const saved = sessionStorage.getItem(SESSION_SCROLL_KEY);
+    if (saved && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = parseInt(saved, 10);
+    }
+  }, [SESSION_SCROLL_KEY]);
+
+  // Save scroll position on scroll
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      sessionStorage.setItem(SESSION_SCROLL_KEY, String(scrollContainerRef.current.scrollTop));
+    }
+  };
 
   const getLessonProgress = (lesson: Lesson) => {
     const completed = lesson.problems.filter(p => completedProblems.has(p.id)).length;
@@ -116,7 +143,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
         />
 
         {/* Lessons Container */}
-        <div className="flex-1 overflow-y-auto px-4 py-6">
+        <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 py-6">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-foreground">

@@ -123,7 +123,7 @@ const LeaderboardPage = () => {
                                     {/* Avatar */}
                                     <Avatar className="h-10 w-10 border border-border/50 shrink-0">
                                         <AvatarImage src={leaderboardUser.avatar_url || undefined} />
-                                        <AvatarFallback className="text-sm font-medium">
+                                        <AvatarFallback seed={leaderboardUser.username} className="text-sm font-medium">
                                             {leaderboardUser.username?.charAt(0).toUpperCase() || 'U'}
                                         </AvatarFallback>
                                     </Avatar>

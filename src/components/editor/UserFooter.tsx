@@ -16,7 +16,7 @@ export const UserFooter = ({ user }: UserFooterProps) => {
       <div className="flex items-center space-x-3">
         <Avatar className="w-10 h-10">
           <AvatarImage src={user.user_metadata.avatar_url} alt={fullName} />
-          <AvatarFallback>{fullName?.charAt(0).toUpperCase()}</AvatarFallback>
+          <AvatarFallback seed={fullName}>{fullName?.charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div>
           <p className="font-semibold text-sm text-foreground">{fullName}</p>

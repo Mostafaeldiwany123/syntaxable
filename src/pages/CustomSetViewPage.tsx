@@ -389,7 +389,7 @@ const CustomSetViewPage = () => {
                   <div className="flex items-center gap-2">
                     <Avatar className="h-7 w-7">
                       <AvatarImage src={user.avatar_url} />
-                      <AvatarFallback className="text-[10px]">{user.username.charAt(0).toUpperCase()}</AvatarFallback>
+                      <AvatarFallback seed={user.username} className="text-[10px]">{user.username.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <span className="text-sm font-normal">{user.username}</span>
                   </div>

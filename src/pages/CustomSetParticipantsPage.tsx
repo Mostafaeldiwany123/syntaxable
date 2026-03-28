@@ -210,7 +210,7 @@ const CustomSetParticipantsPage = () => {
                       {/* Avatar */}
                       <Avatar className="h-10 w-10">
                         <AvatarImage src={participant.avatar_url} />
-                        <AvatarFallback>
+                        <AvatarFallback seed={participant.username}>
                           {participant.username?.charAt(0).toUpperCase() || '?'}
                         </AvatarFallback>
                       </Avatar>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { LayoutDashboard, FolderKanban, LogOut, Users, Mail, UserCheck, Dumbbell, ChevronLeft, ChevronRight, CreditCard, Paintbrush, Lock, Trophy, Award, Github, Instagram, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,6 +23,7 @@ interface SidebarProps {
 export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isMobile = false }: SidebarProps) => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { data: profile, isLoading: profileLoading } = useProfile(user?.id);
   const { data: inboxItems } = useInbox();
   const { openModal } = useAuthModal();
@@ -70,8 +71,22 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
   const navItems = [
     { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/projects", icon: FolderKanban, label: "Projects" },
-    { to: "/practice", icon: Dumbbell, label: "Practice" },
   ];
+
+  const PRACTICE_URL_KEY = 'practice-last-url';
+
+  const handlePracticeClick = () => {
+    onNavigate?.();
+    const saved = sessionStorage.getItem(PRACTICE_URL_KEY);
+    navigate(saved && saved !== '/practice' ? saved : '/practice');
+  };
+
+  // Whenever the user is on a practice sub-route, keep the saved URL updated
+  useEffect(() => {
+    if (location.pathname.startsWith('/practice') && location.pathname !== '/practice') {
+      sessionStorage.setItem(PRACTICE_URL_KEY, location.pathname);
+    }
+  }, [location.pathname]);
 
   const socialItems = [
     { to: "/leaderboard", icon: Trophy, label: "Leaderboard" },
@@ -141,6 +156,30 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
             </NavLink>
           ))}
 
+          {/* Practice — navigates to last visited practice page */}
+          {(() => {
+            const isPracticeActive = location.pathname.startsWith('/practice');
+            return (
+              <button
+                onClick={handlePracticeClick}
+                title={isCollapsed && !isMobile ? "Practice" : undefined}
+                className={`flex items-center text-sm font-medium transition-all duration-200 rounded-lg w-full ${isCollapsed && !isMobile
+                  ? `justify-center p-2.5 ${isPracticeActive
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`
+                  : `px-3 py-2 ${isPracticeActive
+                    ? "bg-primary/10 text-primary border-l-2 border-primary -ml-[2px] px-[calc(0.75rem+2px)]"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`
+                }`}
+              >
+                <Dumbbell className={`${isCollapsed && !isMobile ? '' : 'mr-3'} h-4 w-4 shrink-0`} />
+                {(!isCollapsed || isMobile) && <span className="whitespace-nowrap">Practice</span>}
+              </button>
+            );
+          })()}
+
           {/* Social Section Spacer */}
           {(!isCollapsed || isMobile) && (
             <div className="px-3">
@@ -209,7 +248,7 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
               >
                 <Avatar className="h-8 w-8 border border-border shrink-0">
                   <AvatarImage src={profile?.avatar_url} alt={profile?.username} />
-                  <AvatarFallback className="bg-secondary text-foreground text-xs font-medium">
+                  <AvatarFallback seed={profile?.username} className="text-xs">
                     {getInitials()}
                   </AvatarFallback>
                 </Avatar>

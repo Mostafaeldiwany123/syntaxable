@@ -41,7 +41,7 @@ export const InboxSheet = ({ isOpen, onOpenChange }: InboxSheetProps) => {
                   <div className="flex items-center gap-3 mb-3">
                     <Avatar>
                       <AvatarImage src={item.actor_avatar_url} />
-                      <AvatarFallback>{item.actor_username.charAt(0).toUpperCase()}</AvatarFallback>
+                      <AvatarFallback seed={item.actor_username}>{item.actor_username.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div>
                       <p className="text-sm leading-tight">

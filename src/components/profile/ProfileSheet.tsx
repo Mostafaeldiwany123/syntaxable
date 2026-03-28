@@ -46,7 +46,7 @@ export const ProfileSheet = ({ userId, isOpen, onOpenChange }: ProfileSheetProps
               <div className="flex flex-col items-center space-y-4 mb-8">
                 <Avatar className="h-24 w-24 border-4 border-primary/50">
                   <AvatarImage src={profile.avatar_url} alt={profile.username} />
-                  <AvatarFallback className="text-4xl">{getInitials()}</AvatarFallback>
+                  <AvatarFallback seed={profile.username} className="text-4xl">{getInitials()}</AvatarFallback>
                 </Avatar>
                 <div className="text-center">
                   <h2 className="text-2xl font-bold">{profile.username}</h2>

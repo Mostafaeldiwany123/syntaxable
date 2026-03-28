@@ -255,7 +255,7 @@ const DashboardPage = () => {
                             <div className="flex items-center gap-3 shrink-0">
                               <Avatar className="h-7 w-7 border border-border hidden sm:block">
                                 <AvatarImage src={project.owner_avatar_url || undefined} />
-                                <AvatarFallback className="text-xs">
+                                <AvatarFallback seed={project.owner_username} className="text-xs">
                                   {project.owner_username?.charAt(0).toUpperCase()}
                                 </AvatarFallback>
                               </Avatar>
@@ -308,7 +308,7 @@ const DashboardPage = () => {
                             <div className="flex items-center gap-3 shrink-0">
                               <Avatar className="h-7 w-7 border border-border hidden sm:block">
                                 <AvatarImage src={practice.owner_avatar_url || undefined} />
-                                <AvatarFallback className="text-xs">
+                                <AvatarFallback seed={practice.owner_username} className="text-xs">
                                   {practice.owner_username?.charAt(0).toUpperCase()}
                                 </AvatarFallback>
                               </Avatar>

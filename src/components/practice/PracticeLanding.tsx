@@ -44,11 +44,11 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
   const { data: profile } = useProfile(user?.id);
   const { data: customSets } = useCustomSets();
   const { data: publicSets } = usePublicCustomSets();
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('newest');
-  
+
   const isPro = profile?.tier === 'pro' || profile?.tier === 'admin';
 
   const handleCreateSet = () => {
@@ -81,19 +81,19 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
 
   const filteredAndSortedPublicSets = useMemo(() => {
     if (!publicSets) return [];
-    
+
     // Filter
     let filtered = publicSets.filter(set => {
       const matchesSearch = searchQuery === '' ||
         set.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (set.description?.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (set.owner_username?.toLowerCase().includes(searchQuery.toLowerCase()));
-      
+
       const matchesLanguage = !selectedLanguage || set.language === selectedLanguage;
-      
+
       return matchesSearch && matchesLanguage;
     });
-    
+
     // Sort
     filtered = [...filtered].sort((a, b) => {
       switch (sortBy) {
@@ -109,7 +109,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
           return 0;
       }
     });
-    
+
     return filtered;
   }, [publicSets, searchQuery, selectedLanguage, sortBy]);
 
@@ -153,11 +153,10 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
                 key={card.id}
                 onClick={() => card.isAvailable && card.course && onSelectCourse(card.course)}
                 disabled={!card.isAvailable}
-                className={`group relative overflow-hidden rounded-lg border border-border bg-card p-7 text-left transition-all ${
-                  card.isAvailable
+                className={`group relative overflow-hidden rounded-lg border border-border bg-card p-7 text-left transition-all ${card.isAvailable
                     ? 'hover:border-primary/50 hover:shadow-sm cursor-pointer'
                     : 'opacity-50 cursor-not-allowed'
-                }`}
+                  }`}
               >
                 <div className="flex flex-col items-center text-center h-full">
                   <div className="mb-3 w-12 h-12 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
@@ -237,7 +236,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
                     </button>
                   )}
                 </div>
-                
+
                 {/* Language Filter Dropdown */}
                 <div className="relative">
                   <select
@@ -253,7 +252,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
                   </select>
                   <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 </div>
-                
+
                 {/* Sort Dropdown */}
                 <div className="relative">
                   <select
@@ -271,7 +270,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
                 </div>
               </div>
             </div>
-            
+
             {filteredAndSortedPublicSets.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground text-sm">
                 {searchQuery || selectedLanguage ? 'No sets match your search criteria.' : 'No public sets available.'}

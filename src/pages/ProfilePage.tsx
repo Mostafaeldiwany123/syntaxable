@@ -122,7 +122,7 @@ const ProfilePage = () => {
             <div className="shrink-0">
               <Avatar className={`h-24 w-24 border-4 shadow-lg ${isPro ? 'border-pro' : 'border-primary/30'}`}>
                 <AvatarImage src={profile?.avatar_url} alt={profile?.username} />
-                <AvatarFallback className={`text-4xl ${isPro ? 'bg-pro/20' : 'bg-primary/10'}`}>{getInitials()}</AvatarFallback>
+                <AvatarFallback seed={profile?.username} className="text-4xl">{getInitials()}</AvatarFallback>
               </Avatar>
             </div>
 

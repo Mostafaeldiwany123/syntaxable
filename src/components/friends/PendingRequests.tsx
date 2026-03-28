@@ -33,7 +33,7 @@ export const PendingRequests = () => {
             <div className="flex items-center gap-4">
               <Avatar className="h-11 w-11">
                 <AvatarImage src={request.avatar_url} />
-                <AvatarFallback className="text-sm font-medium">
+                <AvatarFallback seed={request.username} className="text-sm font-medium">
                   {request.username.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>

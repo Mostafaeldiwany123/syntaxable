@@ -30,7 +30,7 @@ export const OnlineFriends = () => {
                   <div className="relative">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={friend.avatar_url} />
-                      <AvatarFallback>{friend.username.charAt(0).toUpperCase()}</AvatarFallback>
+                      <AvatarFallback seed={friend.username}>{friend.username.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <span className="absolute bottom-0 right-0 z-10 block h-2 w-2 rounded-full bg-green-500 ring-2 ring-card" />
                   </div>

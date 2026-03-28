@@ -23,7 +23,7 @@ export const FriendListItem = ({ friend }: FriendListItemProps) => {
         <div className="relative">
           <Avatar className="h-12 w-12 border-2 border-background">
             <AvatarImage src={friend.avatar_url} alt={friend.username} />
-            <AvatarFallback className="text-sm font-medium">
+            <AvatarFallback seed={friend.username} className="text-sm font-medium">
               {friend.username.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
