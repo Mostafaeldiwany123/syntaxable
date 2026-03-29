@@ -26,3 +26,6 @@ dist-ssr
 
 # Backend folder (for now, until ready for open source)
 Backend/
+
+# Large JSON datasets
+FullProblems.json

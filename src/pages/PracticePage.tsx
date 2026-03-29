@@ -3,14 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { PracticeLanding } from '@/components/practice/PracticeLanding';
 import { LanguageView } from '@/components/practice/LanguageView';
 import { ProblemSolvingView } from '@/components/practice/ProblemSolvingView';
-import { Course, Problem, cppCourse, csharpCourse, pythonCourse, javaCourse } from '@/data/practiceProblems';
+import { Course, Problem, Lesson, cppCourse, csharpCourse, pythonCourse, javaCourse } from '@/data/practiceProblems';
 import { usePracticeProgress, useMarkProblemComplete } from '@/hooks/practice';
 import { useAuth } from '@/hooks/useAuth';
+import { fetchJsonCourses, getCachedJsonCourses } from '@/data/practice/jsonStore';
+import { Loader2, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 type ViewState =
   | { type: 'landing' }
+  | { type: 'json_landing'; courses: Course[] }
   | { type: 'categories'; course: Course }
-  | { type: 'solving'; course: Course; currentProblem: Problem };
+  | { type: 'solving'; course: Course; currentProblem: Problem }
+  | { type: 'loading_mixed' };
 
 interface PracticePageProps {
   initialLanguage?: string;
@@ -24,43 +29,130 @@ const PracticePage: React.FC<PracticePageProps> = ({ initialLanguage, initialPro
   const navigate = useNavigate();
 
   const courses: Course[] = useMemo(() => [cppCourse, csharpCourse, pythonCourse, javaCourse], []);
+  const [jsonCourses, setJsonCourses] = useState<Course[] | null>(null);
 
   const [viewState, setViewState] = useState<ViewState>(() => {
-    if (initialLanguage && initialProblemId) {
-      const course = courses.find(c => c.language === initialLanguage);
+    if (initialLanguage === 'mixed') return { type: 'landing' };
+
+    const cachedJsonCourses = getCachedJsonCourses();
+
+    // If starting on the complete JSON landing
+    if (initialLanguage === 'collection') {
+       if (cachedJsonCourses) return { type: 'json_landing', courses: cachedJsonCourses };
+       return { type: 'loading_mixed' };
+    }
+
+    let isJsonRoute = false;
+    let computedLanguage = initialLanguage;
+
+    if (initialLanguage && initialLanguage.startsWith('json-')) {
+       isJsonRoute = true;
+       computedLanguage = initialLanguage.replace('json-', '');
+    }
+
+    const targetCourses = isJsonRoute && cachedJsonCourses ? cachedJsonCourses : courses;
+
+    if (computedLanguage && initialProblemId) {
+      const course = targetCourses.find(c => c.language === computedLanguage && (isJsonRoute ? c.id.startsWith('json-') : !c.id.startsWith('json-')));
       if (course) {
         const problem = course.lessons.flatMap(l => l.problems).find(p => p.id === initialProblemId);
         if (problem) {
           return { type: 'solving', course, currentProblem: problem };
         }
       }
-    } else if (initialLanguage) {
-      const course = courses.find(c => c.language === initialLanguage);
+    } else if (computedLanguage) {
+      const course = targetCourses.find(c => c.language === computedLanguage && (isJsonRoute ? c.id.startsWith('json-') : !c.id.startsWith('json-')));
       if (course) {
         return { type: 'categories', course };
       }
     }
+
+    if (isJsonRoute && !cachedJsonCourses) {
+      return { type: 'loading_mixed' };
+    }
+
     return { type: 'landing' };
   });
 
   useEffect(() => {
+    if (viewState.type === 'loading_mixed') {
+       if (initialLanguage === 'collection') {
+          fetchJsonCourses().then(fetchedCourses => {
+             setJsonCourses(fetchedCourses);
+             setViewState({ type: 'json_landing', courses: fetchedCourses });
+          }).catch(() => setViewState({ type: 'landing' }));
+          return;
+       }
+
+       if (initialLanguage && initialLanguage.startsWith('json-')) {
+          fetchJsonCourses().then(fetchedCourses => {
+             setJsonCourses(fetchedCourses);
+             const computedLanguage = initialLanguage.replace('json-', '');
+             const course = fetchedCourses.find(c => c.language === computedLanguage);
+             if (course && initialProblemId) {
+               const problem = course.lessons.flatMap(l => l.problems).find(p => p.id === initialProblemId);
+               if (problem) {
+                  setViewState({ type: 'solving', course, currentProblem: problem });
+                  return;
+               }
+             }
+             if (course) {
+                setViewState({ type: 'categories', course });
+                return;
+             }
+             setViewState({ type: 'json_landing', courses: fetchedCourses });
+          }).catch(() => setViewState({ type: 'landing' }));
+       }
+    }
+  }, [viewState.type, initialLanguage, initialProblemId]);
+
+  useEffect(() => {
     if (viewState.type === 'solving') {
-      navigate(`/practice/${viewState.course.language}/problem/${viewState.currentProblem.id}`);
+      const courseRouteLang = viewState.course.id.startsWith('json-') ? `json-${viewState.course.language}` : viewState.course.language;
+      navigate(`/practice/${courseRouteLang}/problem/${viewState.currentProblem.id}`);
     } else if (viewState.type === 'categories') {
-      navigate(`/practice/${viewState.course.language}`);
-    } else {
+      const courseRouteLang = viewState.course.id.startsWith('json-') ? `json-${viewState.course.language}` : viewState.course.language;
+      navigate(`/practice/${courseRouteLang}`);
+    } else if (viewState.type === 'landing') {
       navigate('/practice');
+    } else if (viewState.type === 'json_landing') {
+      navigate('/practice/collection');
     }
   }, [viewState, navigate]);
 
   const completedProblems = new Set(progress?.map(p => p.problem_id) || []);
 
   const handleSelectCourse = useCallback((course: Course) => {
+    if (course.id === 'mixed') {
+      const cached = getCachedJsonCourses();
+      if (cached) {
+        setJsonCourses(cached);
+        setViewState({ type: 'json_landing', courses: cached });
+        return;
+      }
+      setViewState({ type: 'loading_mixed' });
+      fetchJsonCourses()
+        .then(fetchedCourses => {
+          setJsonCourses(fetchedCourses);
+          setViewState({ type: 'json_landing', courses: fetchedCourses });
+        })
+        .catch(err => {
+          console.error(err);
+          setViewState({ type: 'landing' });
+        });
+      return;
+    }
     setViewState({ type: 'categories', course });
   }, []);
 
   const handleBackToLanding = useCallback(() => {
-    setViewState({ type: 'landing' });
+    setViewState(prev => {
+      if (prev.type === 'categories' && prev.course.id.startsWith('json-')) {
+        const cached = getCachedJsonCourses();
+        if (cached) return { type: 'json_landing', courses: cached };
+      }
+      return { type: 'landing' };
+    });
   }, []);
 
   const handleSelectCategory = useCallback((course: Course, categoryId: string | null) => {
@@ -116,6 +208,34 @@ const PracticePage: React.FC<PracticePageProps> = ({ initialLanguage, initialPro
           courses={courses}
           onSelectCourse={handleSelectCourse}
         />
+      </div>
+    );
+  }
+
+  if (viewState.type === 'json_landing') {
+    return (
+      <div className="h-dvh w-full bg-background flex flex-col overflow-hidden text-foreground font-sans">
+        <div className="bg-card w-full p-4 flex items-center border-b border-border shrink-0">
+          <Button variant="ghost" size="sm" onClick={handleBackToLanding} className="gap-1">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Platform
+          </Button>
+        </div>
+        <PracticeLanding
+          courses={viewState.courses}
+          onSelectCourse={handleSelectCourse}
+          isJsonMode={true}
+        />
+      </div>
+    );
+  }
+
+  if (viewState.type === 'loading_mixed') {
+    return (
+      <div className="h-dvh w-full bg-background flex flex-col items-center justify-center overflow-hidden text-foreground font-sans">
+        <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
+        <h2 className="text-2xl font-bold tracking-tighter">Loading 10K+ Problems...</h2>
+        <p className="text-muted-foreground mt-2">Connecting to cache and parsing.</p>
       </div>
     );
   }

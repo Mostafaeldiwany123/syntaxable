@@ -44,12 +44,25 @@ const PracticeRoutes = () => {
   const problem = course ? course.lessons.flatMap(l => l.problems).find(p => p.id === problemId) : null;
 
   useEffect(() => {
+    // If it's a JSON course route, we let PracticePage handle the routing and parsing
+    if (language === 'collection' || (language && language.startsWith('json-'))) return;
+    
     if (language && !course) {
       navigate('/practice');
     } else if (language && problemId && !problem) {
       navigate(`/practice/${language}`);
     }
   }, [language, problemId, course, problem, navigate]);
+
+  const isPremiumRoute = language === 'collection' || (language && language.startsWith('json-'));
+
+  if (isPremiumRoute) {
+    return (
+      <PremiumGuard>
+        <PracticePage initialLanguage={language} initialProblemId={problemId} />
+      </PremiumGuard>
+    );
+  }
 
   return <PracticePage initialLanguage={language} initialProblemId={problemId} />;
 };

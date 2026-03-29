@@ -80,10 +80,26 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
     const query = searchQuery.toLowerCase().trim();
     if (!query) return course.lessons;
     
-    return course.lessons.filter(lesson => 
-      lesson.title.toLowerCase().includes(query) || 
-      lesson.description.toLowerCase().includes(query)
-    );
+    return course.lessons.reduce<typeof course.lessons>((acc, lesson) => {
+      const matchLesson = 
+        lesson.title.toLowerCase().includes(query) || 
+        lesson.description.toLowerCase().includes(query);
+      
+      const matchedProblems = lesson.problems.filter(p => 
+        p.title.toLowerCase().includes(query) || 
+        p.id.toLowerCase().includes(query)
+      );
+      
+      if (matchLesson || matchedProblems.length > 0) {
+        acc.push({
+          ...lesson,
+          // If lesson title directly matches the search, show all its problems,
+          // otherwise only show the specific problems that matched.
+          problems: matchLesson ? lesson.problems : matchedProblems
+        });
+      }
+      return acc;
+    }, []);
   }, [course.lessons, searchQuery]);
 
   return (
@@ -109,7 +125,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search lessons..."
+              placeholder="Search lessons or problems..."
               className="h-8 pl-8 text-xs bg-secondary/50 border-none focus-visible:ring-1 focus-visible:ring-primary/50"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -132,7 +148,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
         <ProblemsSidebar
-          lessons={course.lessons}
+          lessons={filteredLessons}
           isOpen={true}
           onClose={() => {}}
           onSelectProblem={onSelectProblem}

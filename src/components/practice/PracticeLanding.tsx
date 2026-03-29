@@ -4,7 +4,7 @@ import { Course } from '@/data/practiceProblems';
 import { useCustomSets, usePublicCustomSets } from '@/hooks/customSets';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/profiles';
-import { Plus, BookOpen, Users, Search, X, ChevronDown } from 'lucide-react';
+import { Plus, BookOpen, Users, Search, X, ChevronDown, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -36,9 +36,10 @@ const sortOptions = [
 interface PracticeLandingProps {
   courses: Course[];
   onSelectCourse: (course: Course) => void;
+  isJsonMode?: boolean;
 }
 
-export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSelectCourse }) => {
+export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSelectCourse, isJsonMode }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: profile } = useProfile(user?.id);
@@ -131,18 +132,20 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
 
   return (
     <div className="h-full flex flex-col">
-      <div className="border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">Practice Coding</h1>
-              <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-                Choose a programming language to start practicing.
-              </p>
+      {!isJsonMode && (
+        <div className="border-b border-border">
+          <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">Practice Coding</h1>
+                <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+                  Choose a programming language to start practicing.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-6xl mx-auto">
@@ -172,26 +175,67 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
               </button>
             ))}
 
+            {/* 10k problems box */}
+            {!isJsonMode && (
+              <button
+                onClick={() => {
+                  if (isPro) {
+                    onSelectCourse({
+                      id: 'mixed',
+                      title: 'Full Problem Set',
+                      description: 'A gigantic collection of algorithmic problems to master your skills.',
+                      language: 'mixed' as any,
+                      lessons: []
+                    });
+                  } else {
+                    toast.error("Pro Feature", {
+                      description: "Accessing the massive 10,000+ Problem Set is currently in testing and reserved for Pro members only.",
+                      action: {
+                        label: "Upgrade",
+                        onClick: () => navigate("/pricing")
+                      },
+                    });
+                  }
+                }}
+                className="group relative overflow-hidden rounded-lg border border-border bg-card p-7 text-left transition-all hover:border-violet-500/50 hover:shadow-sm hover:shadow-violet-500/10 cursor-pointer"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 rounded-bl-[100px] -z-10 group-hover:bg-violet-500/10 transition-colors" />
+                <div className="flex flex-col items-center text-center h-full">
+                  <div className="mb-3 w-14 h-14 rounded-xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center shrink-0 border border-violet-500/20 group-hover:scale-110 transition-transform duration-300">
+                    <Database className="w-7 h-7 text-violet-500" />
+                  </div>
+                  <h3 className="font-semibold text-base mb-2 px-1">Full Problem Set</h3>
+                  <div className="mt-auto">
+                    <span className="text-xs px-2.5 py-1 bg-violet-500/10 text-violet-500 rounded-md font-medium">
+                      8,987 problems
+                    </span>
+                  </div>
+                </div>
+              </button>
+            )}
+
             {/* Create Custom Set Card */}
-            <button
-              onClick={handleCreateSet}
-              className="group relative overflow-hidden rounded-lg border border-dashed border-primary/50 bg-card/50 p-7 text-left transition-all hover:border-primary hover:bg-primary/5 cursor-pointer"
-            >
-              <div className="flex flex-col items-center text-center h-full">
-                <div className="mb-3 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <Plus className="w-6 h-6 text-primary" />
+            {!isJsonMode && (
+              <button
+                onClick={handleCreateSet}
+                className="group relative overflow-hidden rounded-lg border border-dashed border-primary/50 bg-card/50 p-7 text-left transition-all hover:border-primary hover:bg-primary/5 cursor-pointer"
+              >
+                <div className="flex flex-col items-center text-center h-full">
+                  <div className="mb-3 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Plus className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="font-medium text-base mb-2">Create Set</h3>
+                  <div className="mt-auto">
+                    <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary/70 rounded">
+                      Pro Feature
+                    </span>
+                  </div>
                 </div>
-                <h3 className="font-medium text-base mb-2">Create Set</h3>
-                <div className="mt-auto">
-                  <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary/70 rounded">
-                    Pro Feature
-                  </span>
-                </div>
-              </div>
-            </button>
+              </button>
+            )}
 
             {/* My Sets Card */}
-            {hasCustomSets && (
+            {!isJsonMode && hasCustomSets && (
               <button
                 onClick={handleViewMySets}
                 className="group relative overflow-hidden rounded-lg border border-border bg-card p-7 text-left transition-all hover:border-primary/50 hover:shadow-sm cursor-pointer"
@@ -213,7 +257,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
         </div>
 
         {/* Public Sets Section */}
-        {hasPublicSets && (
+        {!isJsonMode && hasPublicSets && (
           <div className="mt-8 max-w-6xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
               <h2 className="text-lg font-semibold">Public Sets</h2>
