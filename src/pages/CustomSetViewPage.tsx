@@ -82,7 +82,7 @@ const CustomSetViewPage = () => {
     id: setId || '',
     title: customSet?.title || 'Custom Set',
     description: customSet?.description || '',
-    language: (customSet?.language || 'python') as 'cpp' | 'csharp' | 'python' | 'java',
+    language: (customSet?.language || 'python') as 'cpp' | 'csharp' | 'python' | 'java' | 'javascript' | 'typescript',
     lessons: [
       {
         id: 'custom-lesson',
@@ -187,7 +187,7 @@ const CustomSetViewPage = () => {
           <div className="h-6 w-px bg-border" />
           <div className="flex items-center gap-2 min-w-0">
             <img
-              src={getFileIconUrl(`file.${customSet.language === 'csharp' ? 'cs' : customSet.language === 'cpp' ? 'cpp' : (customSet.language === 'java' ? 'java' : 'py')}`)}
+              src={getFileIconUrl(`file.${customSet.language === 'csharp' ? 'cs' : customSet.language === 'cpp' ? 'cpp' : customSet.language === 'java' ? 'java' : customSet.language === 'javascript' ? 'js' : customSet.language === 'typescript' ? 'ts' : 'py'}`)}
               alt=""
               className="w-4 h-4 shrink-0"
             />
@@ -302,7 +302,7 @@ const CustomSetViewPage = () => {
                       <div className="flex items-center gap-2">
                         <div className="p-2 bg-primary/10 rounded-lg">
                           <img
-                            src={getFileIconUrl(`file.${customSet.language === 'csharp' ? 'cs' : customSet.language === 'cpp' ? 'cpp' : (customSet.language === 'java' ? 'java' : 'py')}`)}
+                            src={getFileIconUrl(`file.${customSet.language === 'csharp' ? 'cs' : customSet.language === 'cpp' ? 'cpp' : customSet.language === 'java' ? 'java' : customSet.language === 'javascript' ? 'js' : customSet.language === 'typescript' ? 'ts' : 'py'}`)}
                             alt=""
                             className="w-5 h-5"
                           />

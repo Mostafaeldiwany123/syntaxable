@@ -1,0 +1,1 @@
+export { javascriptCourse } from './course';

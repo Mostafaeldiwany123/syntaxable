@@ -199,8 +199,8 @@ const CompilationOutput: React.FC<CompilationOutputProps> = ({
     setCollectedInputs([]);
     setCurrentInputIndex(0);
 
-    // Check if code has interactive inputs (C/C++/C#/Java/Python)
-    if (compiler.analyzeCode && (language === 'cpp' || language === 'c' || language === 'csharp' || language === 'java' || language === 'python')) {
+    // Check if code has interactive inputs (C/C++/C#/Java/Python/JavaScript/TypeScript)
+    if (compiler.analyzeCode && (language === 'cpp' || language === 'c' || language === 'csharp' || language === 'java' || language === 'python' || language === 'javascript' || language === 'typescript')) {
       const analysis = compiler.analyzeCode(code);
 
       if (analysis.totalInputs > 0) {

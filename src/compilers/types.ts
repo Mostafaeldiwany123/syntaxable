@@ -1,4 +1,4 @@
-export type CompilerType = 'cpp' | 'c' | 'csharp' | 'python' | 'html' | 'react' | 'java';
+export type CompilerType = 'cpp' | 'c' | 'csharp' | 'python' | 'html' | 'react' | 'java' | 'javascript' | 'typescript';
 
 export interface FileData {
   name: string;

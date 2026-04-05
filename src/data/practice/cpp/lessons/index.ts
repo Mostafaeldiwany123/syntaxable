@@ -14,7 +14,7 @@ import { dynamicArrays } from './06-dynamic-arrays';
 import { pointersPassByReference } from './07-pointers-pass-by-reference';
 import { structs } from './08-structs';
 import { oopPart1 } from './09-oop-part-1';
-import type { Lesson } from '../types';
+import type { Lesson } from '../../types';
 
 export const cppLessons: Lesson[] = [
   basics,

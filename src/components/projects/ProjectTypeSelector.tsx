@@ -15,6 +15,8 @@ const projectTypes: { value: ProjectType; label: string; extension: string }[] =
   { value: 'react', label: 'React', extension: '.tsx' },
   { value: 'python', label: 'Python', extension: '.py' },
   { value: 'java', label: 'Java', extension: '.java' },
+  { value: 'javascript', label: 'JavaScript', extension: '.js' },
+  { value: 'typescript', label: 'TypeScript', extension: '.ts' },
 ];
 
 export const ProjectTypeSelector = ({ value, onChange }: ProjectTypeSelectorProps) => {
@@ -22,7 +24,7 @@ export const ProjectTypeSelector = ({ value, onChange }: ProjectTypeSelectorProp
     <RadioGroup
       value={value}
       onValueChange={(val) => onChange(val as ProjectType)}
-      className="grid grid-cols-6 gap-2"
+      className="grid grid-cols-4 gap-2"
     >
       {projectTypes.map((type) => (
         <div key={type.value}>

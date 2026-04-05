@@ -32,7 +32,9 @@ export const ProjectCard = ({ project, isOwner, onRename, onDelete }: ProjectCar
       'csharp': 'cs',
       'python': 'py',
       'html': 'html',
-      'java': 'java'
+      'java': 'java',
+      'javascript': 'js',
+      'typescript': 'ts'
     };
     const ext = extMap[type] || 'cpp';
     return getFileIconUrl(`file.${ext}`);

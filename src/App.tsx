@@ -34,13 +34,13 @@ import TermsOfServicePage from "./pages/TermsOfServicePage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import AchievementsPage from "./pages/AchievementsPage";
 import { RewardPopup } from "./components/achievements/RewardPopup";
-import { cppCourse, csharpCourse, pythonCourse, javaCourse } from './data/practiceProblems';
+import { cppCourse, csharpCourse, pythonCourse, javaCourse, javascriptCourse, typescriptCourse } from './data/practiceProblems';
 
 const PracticeRoutes = () => {
   const { language, problemId } = useParams();
   const navigate = useNavigate();
 
-  const course = language === 'cpp' ? cppCourse : language === 'csharp' ? csharpCourse : language === 'python' ? pythonCourse : language === 'java' ? javaCourse : null;
+  const course = language === 'cpp' ? cppCourse : language === 'csharp' ? csharpCourse : language === 'python' ? pythonCourse : language === 'java' ? javaCourse : language === 'javascript' ? javascriptCourse : language === 'typescript' ? typescriptCourse : null;
   const problem = course ? course.lessons.flatMap(l => l.problems).find(p => p.id === problemId) : null;
 
   useEffect(() => {

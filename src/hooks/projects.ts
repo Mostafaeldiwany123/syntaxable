@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { getProjectTemplate } from "@/lib/project-templates";
 
 // --- Types ---
-export type ProjectType = 'cpp' | 'csharp' | 'html' | 'react' | 'python' | 'java';
+export type ProjectType = 'cpp' | 'csharp' | 'html' | 'react' | 'python' | 'java' | 'javascript' | 'typescript';
 
 export type Project = {
   id: string;

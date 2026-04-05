@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PracticeLanding } from '@/components/practice/PracticeLanding';
 import { LanguageView } from '@/components/practice/LanguageView';
 import { ProblemSolvingView } from '@/components/practice/ProblemSolvingView';
-import { Course, Problem, cppCourse, csharpCourse, pythonCourse, javaCourse } from '@/data/practiceProblems';
+import { Course, Problem, cppCourse, csharpCourse, pythonCourse, javaCourse, javascriptCourse, typescriptCourse } from '@/data/practiceProblems';
 import { usePracticeProgress, useMarkProblemComplete } from '@/hooks/practice';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -23,7 +23,7 @@ const PracticePage: React.FC<PracticePageProps> = ({ initialLanguage, initialPro
   const markProblemComplete = useMarkProblemComplete();
   const navigate = useNavigate();
 
-  const courses: Course[] = useMemo(() => [cppCourse, csharpCourse, pythonCourse, javaCourse], []);
+  const courses: Course[] = useMemo(() => [cppCourse, csharpCourse, pythonCourse, javaCourse, javascriptCourse, typescriptCourse], []);
 
   const [viewState, setViewState] = useState<ViewState>(() => {
     if (initialLanguage && initialProblemId) {

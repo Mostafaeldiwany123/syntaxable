@@ -97,7 +97,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
           </Button>
           <div className="h-6 w-px bg-border" />
           <img
-            src={`${CDN_BASE}/${course.language.toLowerCase() === 'csharp' ? 'csharp' : course.language.toLowerCase() === 'cpp' ? 'cpp' : (course.language.toLowerCase() === 'java' ? 'java' : 'python')}.svg`}
+            src={`${CDN_BASE}/${course.language === 'csharp' ? 'csharp' : course.language === 'cpp' ? 'cpp' : course.language === 'java' ? 'java' : course.language === 'javascript' ? 'javascript' : course.language === 'typescript' ? 'typescript' : 'python'}.svg`}
             alt=""
             className="w-5 h-5 ml-1"
           />

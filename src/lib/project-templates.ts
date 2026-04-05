@@ -27,6 +27,16 @@ export const getProjectTemplate = (projectType: ProjectType): TemplateInfo => {
         filename: 'Main.java',
         content: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello from Syntaxable!");\n    }\n}',
       };
+    case 'javascript':
+      return {
+        filename: 'main.js',
+        content: 'function main() {\n    console.log("Hello from Syntaxable!");\n}\n\nmain();',
+      };
+    case 'typescript':
+      return {
+        filename: 'main.ts',
+        content: 'function main(): void {\n    console.log("Hello from Syntaxable!");\n}\n\nmain();',
+      };
     case 'html':
       return {
         filename: 'index.html',

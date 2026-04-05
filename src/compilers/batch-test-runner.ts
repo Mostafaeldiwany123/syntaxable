@@ -3,8 +3,10 @@ import { cppCompiler } from './cpp-compiler';
 import { csharpCompiler } from './csharp-compiler';
 import { pythonCompiler } from './python-compiler';
 import { javaCompiler } from './java-compiler';
+import { javascriptCompiler } from './javascript-compiler';
+import { typescriptCompiler } from './typescript-compiler';
 
-export type LanguageType = 'cpp' | 'csharp' | 'python' | 'java';
+export type LanguageType = 'cpp' | 'csharp' | 'python' | 'java' | 'javascript' | 'typescript';
 
 export interface BatchTestCase {
   input: string;
@@ -247,10 +249,26 @@ int main() {
 async function runSingleTest(
   code: string,
   testCase: BatchTestCase,
-  language: 'csharp' | 'python' | 'java'
+  language: 'csharp' | 'python' | 'java' | 'javascript' | 'typescript'
 ): Promise<BatchTestResult> {
-  const compiler = language === 'csharp' ? csharpCompiler : (language === 'python' ? pythonCompiler : javaCompiler);
-  const entryFile = language === 'csharp' ? 'Program.cs' : (language === 'python' ? 'main.py' : 'Main.java');
+  const compiler = language === 'csharp'
+    ? csharpCompiler
+    : language === 'python'
+      ? pythonCompiler
+      : language === 'java'
+        ? javaCompiler
+        : language === 'javascript'
+          ? javascriptCompiler
+          : typescriptCompiler;
+  const entryFile = language === 'csharp'
+    ? 'Program.cs'
+    : language === 'python'
+      ? 'main.py'
+      : language === 'java'
+        ? 'Main.java'
+        : language === 'javascript'
+          ? 'main.js'
+          : 'main.ts';
 
   try {
     const result = await compiler.compileWithStdin!(
@@ -297,7 +315,7 @@ async function runSingleTest(
 async function runIndividualTests(
   code: string,
   testCases: BatchTestCase[],
-  language: 'csharp' | 'python' | 'java'
+  language: 'csharp' | 'python' | 'java' | 'javascript' | 'typescript'
 ): Promise<BatchTestResult[]> {
   // Run all tests in parallel
   const results = await Promise.all(
@@ -416,6 +434,8 @@ export async function runBatchTests(
     case 'csharp':
     case 'python':
     case 'java':
+    case 'javascript':
+    case 'typescript':
       return runIndividualTests(code, testCases, language);
     default:
       throw new Error(`Unsupported language: ${language}`);

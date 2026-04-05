@@ -6,6 +6,8 @@ import { pythonCompiler } from './python-compiler';
 import { htmlCompiler } from './html-compiler';
 import { reactCompiler } from './react-compiler';
 import { javaCompiler } from './java-compiler';
+import { javascriptCompiler } from './javascript-compiler';
+import { typescriptCompiler } from './typescript-compiler';
 
 export * from './types';
 export { cppCompiler } from './cpp-compiler';
@@ -15,6 +17,8 @@ export { pythonCompiler } from './python-compiler';
 export { htmlCompiler } from './html-compiler';
 export { reactCompiler } from './react-compiler';
 export { javaCompiler } from './java-compiler';
+export { javascriptCompiler } from './javascript-compiler';
+export { typescriptCompiler } from './typescript-compiler';
 export { runBatchTests, type BatchTestCase, type BatchTestResult, type LanguageType } from './batch-test-runner';
 
 // Registry of all compilers
@@ -26,6 +30,8 @@ const compilers: Compiler[] = [
   cCompiler,
   csharpCompiler,
   javaCompiler,
+  javascriptCompiler,
+  typescriptCompiler,
 ];
 
 export function detectCompiler(fileName: string): Compiler | null {

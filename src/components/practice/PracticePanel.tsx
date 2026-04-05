@@ -4,7 +4,7 @@ import { Problem, TestCase } from '@/data/practiceProblems';
 import { runBatchTests, type BatchTestResult, type LanguageType } from '@/compilers';
 import { toast } from 'sonner';
 
-type CourseLanguage = 'cpp' | 'python' | 'javascript' | 'java' | 'csharp' | 'c';
+type CourseLanguage = 'cpp' | 'python' | 'javascript' | 'java' | 'csharp' | 'c' | 'typescript';
 
 interface TestResult {
   passed: boolean;
@@ -26,7 +26,7 @@ interface PracticePanelProps {
   language?: CourseLanguage;
 }
 
-const VALID_LANGUAGES: LanguageType[] = ['cpp', 'csharp', 'python', 'java'];
+const VALID_LANGUAGES: LanguageType[] = ['cpp', 'csharp', 'python', 'java', 'javascript', 'typescript'];
 
 function isValidLanguage(lang: string): lang is LanguageType {
   return VALID_LANGUAGES.includes(lang as LanguageType);

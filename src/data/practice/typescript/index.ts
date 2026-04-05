@@ -1,0 +1,1 @@
+export { typescriptCourse } from './course';

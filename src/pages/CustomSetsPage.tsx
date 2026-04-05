@@ -81,7 +81,7 @@ const CustomSetsPage = () => {
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="p-2 bg-secondary/50 border border-border rounded-lg shrink-0">
                       <img
-                        src={getFileIconUrl(`file.${set.language === 'csharp' ? 'cs' : set.language === 'cpp' ? 'cpp' : set.language === 'java' ? 'java' : 'py'}`)}
+                        src={getFileIconUrl(`file.${set.language === 'csharp' ? 'cs' : set.language === 'cpp' ? 'cpp' : set.language === 'java' ? 'java' : set.language === 'javascript' ? 'js' : set.language === 'typescript' ? 'ts' : 'py'}`)}
                         alt=""
                         className="w-5 h-5"
                       />

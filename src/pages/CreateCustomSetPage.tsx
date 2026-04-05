@@ -18,7 +18,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import Editor from "@monaco-editor/react";
 import { getDynamicTheme } from "@/lib/editor-theme";
 
-type Language = 'cpp' | 'csharp' | 'python' | 'java';
+type Language = 'cpp' | 'csharp' | 'python' | 'java' | 'javascript' | 'typescript';
 
 interface Problem {
   title: string;
@@ -61,6 +61,8 @@ const languageOptions: { value: Language; label: string; extension: string }[] =
   { value: 'csharp', label: 'C#', extension: '.cs' },
   { value: 'python', label: 'Python', extension: '.py' },
   { value: 'java', label: 'Java', extension: '.java' },
+  { value: 'javascript', label: 'JavaScript', extension: '.js' },
+  { value: 'typescript', label: 'TypeScript', extension: '.ts' },
 ];
 
 const defaultStarterCode: Record<Language, string> = {
@@ -91,6 +93,18 @@ public class Main {
         // Your code here
     }
 }`,
+  javascript: `function main() {
+    // Your code here
+    console.log("Hello, World!");
+}
+
+main();`,
+  typescript: `function main(): void {
+    // Your code here
+    console.log("Hello, World!");
+}
+
+main();`,
 };
 
 const getMonacoLanguage = (lang: Language): string => {
@@ -99,6 +113,8 @@ const getMonacoLanguage = (lang: Language): string => {
     cpp: 'cpp',
     csharp: 'csharp',
     java: 'java',
+    javascript: 'javascript',
+    typescript: 'typescript',
   };
   return langMap[lang];
 };
@@ -109,6 +125,8 @@ const getFileName = (lang: Language): string => {
     cpp: 'main.cpp',
     csharp: 'Program.cs',
     java: 'Main.java',
+    javascript: 'main.js',
+    typescript: 'main.ts',
   };
   return extMap[lang];
 };

@@ -36,6 +36,6 @@ export interface Course {
   id: string;
   title: string;
   description: string;
-  language: 'cpp' | 'python' | 'javascript' | 'java' | 'csharp' | 'c';
+  language: 'cpp' | 'python' | 'javascript' | 'java' | 'csharp' | 'c' | 'typescript';
   lessons: Lesson[];
 }

@@ -1,4 +1,4 @@
-import type { Course } from '../../types';
+import type { Course } from '../types';
 import { pythonLessons } from './lessons';
 
 export const pythonCourse: Course = {
