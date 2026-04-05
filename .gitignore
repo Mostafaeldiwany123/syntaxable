@@ -28,4 +28,4 @@ dist-ssr
 Backend/
 
 # Large JSON datasets
-FullProblems.json
+# FullProblems.json is tracked on this branch (feature/practice-problems)
