@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, FolderKanban, LogOut, Users, Mail, UserCheck, Dumbbell, ChevronLeft, ChevronRight, CreditCard, Paintbrush, Lock, Trophy, Award, Github, Instagram, Linkedin } from "lucide-react";
+import { LayoutDashboard, FolderKanban, LogOut, Users, Mail, UserCheck, Dumbbell, ChevronLeft, ChevronRight, CreditCard, Paintbrush, Lock, Trophy, Award, Github, Instagram, Linkedin, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -71,6 +71,7 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
   const navItems = [
     { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/projects", icon: FolderKanban, label: "Projects" },
+    { to: "/learn", icon: GraduationCap, label: "Learn (Beta)" },
   ];
 
   const PRACTICE_URL_KEY = 'practice-last-url';

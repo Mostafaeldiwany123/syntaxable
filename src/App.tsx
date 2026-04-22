@@ -22,6 +22,7 @@ import CommunityPage from "./pages/CommunityPage";
 import FriendsPage from "./pages/FriendsPage";
 import ProfilePage from "./pages/ProfilePage";
 import PracticePage from "./pages/PracticePage";
+import LearnPage from "./pages/LearnPage";
 import AuthPage from "./pages/AuthPage";
 import CustomSetsPage from "./pages/CustomSetsPage";
 import CreateCustomSetPage from "./pages/CreateCustomSetPage";
@@ -54,6 +55,11 @@ const PracticeRoutes = () => {
   return <PracticePage initialLanguage={language} initialProblemId={problemId} />;
 };
 
+const LearnRoutes = () => {
+  const { language, lessonId } = useParams();
+  return <LearnPage initialLanguage={language} initialLessonId={lessonId} />;
+};
+
 const AppRoutes = () => {
   const { user, loading } = useAuth();
 
@@ -71,6 +77,9 @@ const AppRoutes = () => {
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={user ? <DashboardPage /> : <Navigate to="/" replace />} />
           <Route path="/projects" element={user ? <ProjectsPage /> : <Navigate to="/" replace />} />
+          <Route path="/learn" element={user ? <LearnRoutes /> : <Navigate to="/" replace />} />
+          <Route path="/learn/:language" element={user ? <LearnRoutes /> : <Navigate to="/" replace />} />
+          <Route path="/learn/:language/:lessonId" element={user ? <LearnRoutes /> : <Navigate to="/" replace />} />
           <Route path="/practice" element={user ? <PracticeRoutes /> : <Navigate to="/" replace />} />
           <Route path="/practice/:language" element={user ? <PracticeRoutes /> : <Navigate to="/" replace />} />
           <Route path="/practice/:language/problem/:problemId" element={user ? <PracticeRoutes /> : <Navigate to="/" replace />} />
