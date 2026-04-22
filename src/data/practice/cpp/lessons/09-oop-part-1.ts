@@ -2,7 +2,7 @@ import type { Lesson } from '../../types';
 
 export const oopPart1: Lesson = {
   id: 'oop-part-1',
-  title: 'Object-Oriented Programming (Part 1)',
+  title: 'OOP (Part 1)',
   description: 'Learn about classes, objects, constructors, access modifiers, encapsulation, and member functions in C++.',
   order: 16,
   topics: ['Classes and Objects', 'Access Modifiers', 'Constructors', 'Encapsulation', 'Member Functions', 'Getters and Setters'],

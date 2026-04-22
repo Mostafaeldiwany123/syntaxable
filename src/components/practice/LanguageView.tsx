@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Course, Lesson, Problem } from '@/data/practiceProblems';
 import ProblemsSidebar from './ProblemsSidebar';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface LanguageViewProps {
   course: Course;
@@ -41,6 +42,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
   selectedProblemId,
   completedProblems,
 }) => {
+  const isMobile = useIsMobile();
   const SESSION_SEARCH_KEY = `practice-search-${course.language}`;
   const SESSION_SCROLL_KEY = `practice-scroll-${course.language}`;
 
@@ -89,22 +91,24 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={onBack} className="gap-1">
+      <div className="h-14 border-b border-border bg-card flex items-center justify-between px-2 sm:px-4 shrink-0 gap-2">
+        <div className="flex items-center gap-1 sm:gap-3 min-w-0">
+          <Button variant="ghost" size="sm" onClick={onBack} className="gap-1 px-2 shrink-0">
             <ArrowLeft className="h-4 w-4" />
-            Back
+            <span className="hidden sm:inline">Back</span>
           </Button>
-          <div className="h-6 w-px bg-border" />
-          <img
-            src={`${CDN_BASE}/${course.language === 'csharp' ? 'csharp' : course.language === 'cpp' ? 'cpp' : course.language === 'java' ? 'java' : course.language === 'javascript' ? 'javascript' : course.language === 'typescript' ? 'typescript' : 'python'}.svg`}
-            alt=""
-            className="w-5 h-5 ml-1"
-          />
-          <span className="font-medium ml-2">{course.language.toUpperCase()}</span>
+          <div className="h-6 w-px bg-border hidden sm:block shrink-0" />
+          <div className="flex items-center min-w-0 shrink-0">
+            <img
+              src={`${CDN_BASE}/${course.language === 'csharp' ? 'csharp' : course.language === 'cpp' ? 'cpp' : course.language === 'java' ? 'java' : course.language === 'javascript' ? 'javascript' : course.language === 'typescript' ? 'typescript' : 'python'}.svg`}
+              alt=""
+              className="w-4 h-4 sm:w-5 sm:h-5 ml-1"
+            />
+            <span className="font-medium ml-1.5 sm:ml-2 text-sm sm:text-base truncate">{course.language.toUpperCase()}</span>
+          </div>
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
           <div className="relative w-64 hidden md:block">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
@@ -116,13 +120,19 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
             />
           </div>
           
-          <div className="h-6 w-px bg-border hidden md:block" />
+          <div className="h-6 w-px bg-border hidden md:block shrink-0" />
           
-          <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
-            <BookOpen className="h-4 w-4" />
+          <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground whitespace-nowrap bg-secondary/30 sm:bg-transparent px-2 py-1 sm:p-0 rounded-md sm:rounded-none">
+            <BookOpen className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span>
-              {course.lessons.reduce((sum, l) => sum + l.problems.filter(p => completedProblems.has(p.id)).length, 0)}/
-              {course.lessons.reduce((sum, l) => sum + l.problems.length, 0)} completed
+              <span className="sm:hidden">
+                {course.lessons.reduce((sum, l) => sum + l.problems.filter(p => completedProblems.has(p.id)).length, 0)}/
+                {course.lessons.reduce((sum, l) => sum + l.problems.length, 0)}
+              </span>
+              <span className="hidden sm:inline">
+                {course.lessons.reduce((sum, l) => sum + l.problems.filter(p => completedProblems.has(p.id)).length, 0)}/
+                {course.lessons.reduce((sum, l) => sum + l.problems.length, 0)} completed
+              </span>
             </span>
           </div>
         </div>
@@ -131,31 +141,33 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
-        <ProblemsSidebar
-          lessons={course.lessons}
-          isOpen={true}
-          onClose={() => {}}
-          onSelectProblem={onSelectProblem}
-          selectedProblemId={selectedProblemId}
-          completedProblems={completedProblems}
-          title={course.title}
-          language={course.language}
-        />
+        {!isMobile && (
+          <ProblemsSidebar
+            lessons={course.lessons}
+            isOpen={true}
+            onClose={() => {}}
+            onSelectProblem={onSelectProblem}
+            selectedProblemId={selectedProblemId}
+            completedProblems={completedProblems}
+            title={course.title}
+            language={course.language}
+          />
+        )}
 
         {/* Lessons Container */}
         <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 py-6">
           <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
               <h2 className="text-lg font-semibold text-foreground">
                 {searchQuery ? `Search Results (${filteredLessons.length})` : 'Select a Lesson'}
               </h2>
               {/* Mobile Search - Visible only on small screens */}
-              <div className="relative w-48 md:hidden">
-                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+              <div className="relative w-full sm:w-48 md:hidden">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search..."
-                  className="h-7 pl-7 text-[10px] bg-secondary/50 border-none"
+                  placeholder="Search lessons..."
+                  className="h-9 pl-8 text-sm bg-secondary/50 border-none"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />

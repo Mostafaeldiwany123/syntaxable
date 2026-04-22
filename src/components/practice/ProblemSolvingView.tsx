@@ -12,6 +12,7 @@ import PracticePanel from './PracticePanel';
 import ProblemsSidebar from './ProblemsSidebar';
 import { AIAgentPanel } from '@/components/ai-agent';
 import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -64,6 +65,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
   const { user } = useAuth();
   const { data: progress } = usePracticeProgress();
   const { collapseForAIAgent } = useSidebar();
+  const isMobile = useIsMobile();
   const [practiceCode, setPracticeCode] = useState<string>(() => {
     // Custom set: use the saved solution prop
     if (savedSolutionCode) {
@@ -163,33 +165,33 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
   return (
     <div className="h-full flex flex-col">
       {/* Header with Navigation */}
-      <div className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={onBack} className="gap-1">
+      <div className="h-14 border-b border-border bg-card flex items-center justify-between px-2 sm:px-4 shrink-0 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="flex items-center gap-1 sm:gap-3 shrink-0 min-w-max">
+          <Button variant="ghost" size="sm" onClick={onBack} className="gap-1 px-2 shrink-0">
             <ArrowLeft className="h-4 w-4" />
-            Exit
+            <span className="hidden sm:inline">Exit</span>
           </Button>
-          <div className="h-6 w-px bg-border" />
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-sm">{currentProblem.title}</span>
-            <DifficultyBadge difficulty={currentProblem.difficulty} />
-            {isCompleted && <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />}
+          <div className="h-6 w-px bg-border hidden sm:block" />
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="font-medium text-sm truncate max-w-[120px] sm:max-w-[200px]">{currentProblem.title}</span>
+            <DifficultyBadge difficulty={currentProblem.difficulty} className="hidden sm:flex" />
+            {isCompleted && <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />}
           </div>
         </div>
 
         {/* Navigation Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-auto pl-2 min-w-max">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setShowSidebar(!showSidebar)}
-            className="gap-1"
+            className="gap-1 px-2"
           >
             <List className="h-4 w-4" />
-            All Questions
+            <span className="hidden sm:inline">All Questions</span>
           </Button>
 
-          <div className="h-6 w-px bg-border mx-1" />
+          <div className="h-6 w-px bg-border mx-0.5 sm:mx-1" />
 
           <Button
             variant="outline"
@@ -199,7 +201,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
             className="gap-1 px-2"
           >
             <ChevronLeft className="h-4 w-4" />
-            Prev
+            <span className="hidden sm:inline">Prev</span>
           </Button>
           <Button
             variant="outline"
@@ -208,7 +210,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
             disabled={!hasNext}
             className="gap-1 px-2"
           >
-            Next
+            <span className="hidden sm:inline">Next</span>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
@@ -233,7 +235,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
 
         {/* Code and Problem Panels */}
         <div className="flex-1">
-          <ResizablePanelGroup direction="horizontal">
+          <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"}>
             {/* Code Editor */}
             <ResizablePanel defaultSize={50} minSize={30} maxSize={70} className="relative flex flex-col">
               <div className="flex-1">

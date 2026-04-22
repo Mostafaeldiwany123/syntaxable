@@ -75,12 +75,12 @@ const StatusBar = ({
 
   return (
     <>
-      <div className="h-12 bg-card border-t border-border flex items-center px-4 select-none">
+      <div className="h-12 bg-card border-t border-border flex items-center px-2 md:px-4 select-none overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] w-full">
         {/* Left: Navigation & Actions */}
-        <div className="flex items-center gap-1 min-w-0 flex-1">
+        <div className="flex items-center gap-0.5 md:gap-1 flex-1 min-w-max">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button asChild variant="ghost" size="icon" className="h-8 w-8">
+              <Button asChild variant="ghost" size="icon" className="h-8 w-8 shrink-0">
                 <Link to="/">
                   <Home className="h-4 w-4" />
                 </Link>
@@ -92,7 +92,7 @@ const StatusBar = ({
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button asChild variant="ghost" size="icon" className="h-8 w-8">
+              <Button asChild variant="ghost" size="icon" className="h-8 w-8 shrink-0">
                 <Link to={`/room/${roomId}`}>
                   <Share2 className="h-4 w-4" />
                 </Link>
@@ -104,7 +104,7 @@ const StatusBar = ({
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onHistoryClick}>
+              <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={onHistoryClick}>
                 <History className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
@@ -114,7 +114,7 @@ const StatusBar = ({
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onExportClick}>
+              <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={onExportClick}>
                 <Download className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
@@ -126,7 +126,7 @@ const StatusBar = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <AlertDialogTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" disabled={!hasUncommittedFiles || isReadOnly}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" disabled={!hasUncommittedFiles || isReadOnly}>
                     <RotateCcw className="h-4 w-4" />
                   </Button>
                 </AlertDialogTrigger>
@@ -155,7 +155,7 @@ const StatusBar = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 relative"
+                    className="h-8 w-8 relative shrink-0"
                     onClick={onSaveClick}
                     disabled={!hasDirtyFiles || isSaving}
                   >
@@ -172,7 +172,7 @@ const StatusBar = ({
                   <Button
                     variant={hasUncommittedFiles ? "secondary" : "ghost"}
                     size="sm"
-                    className="h-8 gap-1.5 relative"
+                    className="h-8 gap-1.5 relative shrink-0"
                     onClick={onCommitClick}
                     disabled={!hasUncommittedFiles}
                   >
@@ -191,7 +191,7 @@ const StatusBar = ({
 
         {/* Center: Typing Presence or Project Name */}
         {!isMobile && (
-          <div className="flex-1 flex justify-center px-2">
+          <div className="flex-1 flex justify-center px-2 min-w-max">
             {typingUsers && typingUsers.length > 0 ? (
               <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/60 border border-border/60 w-64 md:w-72 justify-center">
                 <div className="flex items-center gap-1 text-xs text-muted-foreground truncate">
@@ -218,8 +218,8 @@ const StatusBar = ({
         )}
 
         {/* Right: Connected Users & Run Button */}
-        <div className="flex items-center gap-3 justify-end flex-1 min-w-0">
-          <div className="flex items-center -space-x-2">
+        <div className="flex items-center gap-2 md:gap-3 justify-end flex-1 min-w-max ml-auto pl-2">
+          <div className="flex items-center -space-x-2 shrink-0">
             {connectedUsers.map((user) => (
               <Tooltip key={user.id}>
                 <TooltipTrigger>

@@ -141,15 +141,14 @@ ${problem.explanation ? `**Explanation:**\n${problem.explanation}` : ''}`;
   return (
     <div className="h-full flex flex-col bg-card border-l border-border">
       {/* Header */}
-      <div className="h-10 bg-card border-b border-border flex items-center justify-between px-3 select-none shrink-0">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-foreground uppercase tracking-wide">Problem</span>
-          <span className="text-xs text-muted-foreground">•</span>
-          <span className="text-xs text-muted-foreground truncate max-w-[150px]">{problem.title}</span>
-          <DifficultyBadge difficulty={problem.difficulty} />
+      <div className="h-10 bg-card border-b border-border flex items-center justify-between px-2 sm:px-3 select-none shrink-0 gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <span className="text-xs font-medium text-foreground uppercase tracking-wide hidden sm:inline">Problem</span>
+          <span className="text-xs text-muted-foreground hidden sm:inline">•</span>
+          <span className="text-xs text-muted-foreground truncate max-w-[120px] sm:max-w-[200px]">{problem.title}</span>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={handleCopyProblem}
             className="p-1.5 rounded text-muted-foreground hover:text-foreground transition-colors"

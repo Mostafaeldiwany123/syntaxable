@@ -246,7 +246,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
                   <select
                     value={selectedLanguage}
                     onChange={(e) => setSelectedLanguage(e.target.value)}
-                    className="appearance-none bg-background border border-input rounded-md px-3 pr-8 h-8 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="appearance-none bg-background border border-input rounded-md px-3 pr-8 h-8 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary w-full"
                   >
                     {languageFilterOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -262,7 +262,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="appearance-none bg-background border border-input rounded-md px-3 pr-8 h-8 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="appearance-none bg-background border border-input rounded-md px-3 pr-8 h-8 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary w-full"
                   >
                     {sortOptions.map((option) => (
                       <option key={option.value} value={option.value}>
