@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef, MutableRefObject } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import Editor, { useMonaco, type Monaco } from "@monaco-editor/react";
 import { FileCode, X } from 'lucide-react';
 import { getFileIconUrl } from '@/lib/project-utils';
@@ -6,9 +6,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { getDynamicTheme } from '@/lib/editor-theme';
-import type { editor as monacoEditorType } from 'monaco-editor';
-
-type Theme = 'vs-dark' | 'light' | 'custom-dynamic';
 
 declare global {
   interface Window {
@@ -54,120 +51,6 @@ const getLanguage = (fileName: string): string => {
   return langMap[ext || ''] || 'plaintext';
 };
 
-/**
- * RemoteAwareEditor — wraps Monaco's <Editor> and applies remote content
- * changes via the model API (pushEditOperations) instead of changing the
- * `value` prop. This preserves every local user's cursor position when a
- * remote collaborator types.
- */
-interface RemoteAwareEditorProps {
-  activeFile: string;
-  fileContents: Record<string, string>;
-  isReadOnly: boolean;
-  onChange: (value: string | undefined) => void;
-  editorRef: MutableRefObject<monacoEditorType.IStandaloneCodeEditor | null>;
-  editorContentRef: MutableRefObject<string>;
-  isApplyingRemoteRef: MutableRefObject<boolean>;
-  handleEditorDidMount: (editor: monacoEditorType.IStandaloneCodeEditor, monacoInstance: Monaco) => void;
-  setIsEditorLoading: (loading: boolean) => void;
-}
-
-const RemoteAwareEditor = ({
-  activeFile,
-  fileContents,
-  isReadOnly,
-  onChange,
-  editorRef,
-  editorContentRef,
-  isApplyingRemoteRef,
-  handleEditorDidMount,
-  setIsEditorLoading,
-}: RemoteAwareEditorProps) => {
-  // When the active file changes OR when content changes from outside (remote update),
-  // apply the new content to the Monaco model directly to preserve cursor positions.
-  useEffect(() => {
-    const editor = editorRef.current;
-    if (!editor) return;
-
-    const incomingContent = fileContents[activeFile] ?? '';
-
-    // Skip if the editor already has this content (it was a local edit)
-    if (editor.getValue() === incomingContent) return;
-
-    // Apply the remote update without touching cursor / selections
-    const model = editor.getModel();
-    if (!model) return;
-
-    isApplyingRemoteRef.current = true;
-
-    // Save and restore selections so cursor positions are preserved
-    const selections = editor.getSelections();
-
-    // Use pushEditOperations to keep undo stack intact and avoid full replacement
-    model.pushEditOperations(
-      selections ?? [],
-      [
-        {
-          range: model.getFullModelRange(),
-          text: incomingContent,
-        },
-      ],
-      () => selections
-    );
-
-    // Update our local tracker
-    editorContentRef.current = incomingContent;
-
-    isApplyingRemoteRef.current = false;
-  // We intentionally depend on fileContents[activeFile] by watching fileContents
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeFile, fileContents[activeFile]]);
-
-  const handleChange = useCallback((value: string | undefined) => {
-    // Suppress feedback loop when we applied a remote update ourselves
-    if (isApplyingRemoteRef.current) return;
-    editorContentRef.current = value ?? '';
-    onChange(value);
-  }, [onChange, isApplyingRemoteRef, editorContentRef]);
-
-  return (
-    <Editor
-      height="100%"
-      language={getLanguage(activeFile)}
-      defaultValue={fileContents[activeFile] ?? ''}
-      onChange={handleChange}
-      beforeMount={(monaco) => {
-        setIsEditorLoading(true);
-        monaco.editor.defineTheme('custom-dynamic', getDynamicTheme());
-      }}
-      onMount={handleEditorDidMount}
-      theme="custom-dynamic"
-      loading=""
-      options={{
-        readOnly: isReadOnly,
-        minimap: { enabled: false },
-        fontSize: 14,
-        fontFamily: "'Inconsolata', 'Consolas', 'Monaco', 'Courier New', monospace",
-        fontLigatures: true,
-        lineHeight: 22,
-        padding: { top: 16 },
-        scrollBeyondLastLine: false,
-        smoothScrolling: true,
-        cursorBlinking: "smooth",
-        cursorSmoothCaretAnimation: "on",
-        tabSize: 2,
-        insertSpaces: true,
-        wordWrap: "on",
-        renderLineHighlight: "all",
-        renderWhitespace: "none",
-        bracketPairColorization: {
-          enabled: true,
-        },
-      }}
-    />
-  );
-};
-
 const CodeEditor = ({
   openFiles,
   activeFile,
@@ -184,11 +67,7 @@ const CodeEditor = ({
   const _isLoading = isEditorLoading;
   const monaco = useMonaco();
   const isMobile = useIsMobile();
-  const editorRef = useRef<monacoEditorType.IStandaloneCodeEditor | null>(null);
-  // Tracks the content the editor currently has so we can detect remote changes
-  const editorContentRef = useRef<string>("");
-  // Guard to suppress local onChange while we apply a remote update
-  const isApplyingRemoteRef = useRef<boolean>(false);
+  const editorRef = useRef<any>(null);
 
   // Re-evaluate CSS variables for Monaco Theme when global theme changes
   useEffect(() => {
@@ -222,12 +101,9 @@ const CodeEditor = ({
     };
   }, [onAIAgentClick]);
 
-  const handleEditorDidMount = useCallback((editor: monacoEditorType.IStandaloneCodeEditor, monacoInstance: Monaco) => {
-    // Store editor reference
+  const handleEditorDidMount = useCallback((editor: any, monacoInstance: Monaco) => {
     editorRef.current = editor;
-    // Seed our content tracker with the initial value
-    editorContentRef.current = editor.getValue();
-    
+
     monacoInstance.editor.defineTheme('custom-dynamic', getDynamicTheme());
     monacoInstance.editor.setTheme('custom-dynamic');
     setIsEditorLoading(false);
@@ -254,7 +130,6 @@ const CodeEditor = ({
       };
 
       const handleTouchMove = (e: TouchEvent) => {
-        // Track if user is scrolling
         const moveDistance = Math.sqrt(
           Math.pow(e.touches[0].clientX - touchStartPos.x, 2) +
           Math.pow(e.touches[0].clientY - touchStartPos.y, 2)
@@ -268,10 +143,6 @@ const CodeEditor = ({
         const touchEndTime = Date.now();
         const duration = touchEndTime - touchStartTime;
 
-        // Only show keyboard if:
-        // 1. It was a quick tap (less than 300ms)
-        // 2. User didn't scroll (hasMoved is false)
-        // 3. Touch didn't move much (less than 10px)
         if (duration < 300 && !hasMoved) {
           editor.updateOptions({ domReadOnly: false });
           editor.focus();
@@ -344,7 +215,7 @@ const CodeEditor = ({
             );
           })}
         </div>
-        
+
         {/* AI Agent Button */}
         <TooltipProvider>
           <Tooltip>
@@ -372,17 +243,41 @@ const CodeEditor = ({
             Read-Only Mode
           </div>
         )}
-        <RemoteAwareEditor
+        {/* key={activeFile} forces a clean re-mount when switching tabs */}
+        <Editor
           key={activeFile}
-          activeFile={activeFile}
-          fileContents={fileContents}
-          isReadOnly={isReadOnly}
+          height="100%"
+          language={getLanguage(activeFile)}
+          value={fileContents[activeFile] || ""}
           onChange={onChange}
-          editorRef={editorRef}
-          editorContentRef={editorContentRef}
-          isApplyingRemoteRef={isApplyingRemoteRef}
-          handleEditorDidMount={handleEditorDidMount}
-          setIsEditorLoading={setIsEditorLoading}
+          beforeMount={(monaco) => {
+            setIsEditorLoading(true);
+            monaco.editor.defineTheme('custom-dynamic', getDynamicTheme());
+          }}
+          onMount={handleEditorDidMount}
+          theme="custom-dynamic"
+          loading=""
+          options={{
+            readOnly: isReadOnly,
+            minimap: { enabled: false },
+            fontSize: 14,
+            fontFamily: "'Inconsolata', 'Consolas', 'Monaco', 'Courier New', monospace",
+            fontLigatures: true,
+            lineHeight: 22,
+            padding: { top: 16 },
+            scrollBeyondLastLine: false,
+            smoothScrolling: true,
+            cursorBlinking: "smooth",
+            cursorSmoothCaretAnimation: "on",
+            tabSize: 2,
+            insertSpaces: true,
+            wordWrap: "on",
+            renderLineHighlight: "all",
+            renderWhitespace: "none",
+            bracketPairColorization: {
+              enabled: true,
+            },
+          }}
         />
       </div>
     </div>

@@ -142,6 +142,9 @@ const EditorPage = () => {
   const typingBroadcastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const latestTypingPayloadRef = useRef<{ path: string, user: UserProfile & { id: string } } | null>(null);
 
+  // Debounce ref for syncing uncommittedFiles on remote updates (badge indicator only, not critical path)
+  const uncommittedSyncTimerRef = useRef<Record<string, NodeJS.Timeout>>({}); 
+
   const isReadOnly = permission === 'viewer';
 
   // Function to fetch files from DB
@@ -244,7 +247,7 @@ const EditorPage = () => {
     latestCodePayloadRef.current = { path, content };
 
     const now = Date.now();
-    const THROTTLE_MS = 50;
+    const THROTTLE_MS = 300;
     const timeSinceLast = now - lastBroadcastTimeRef.current;
 
     if (!broadcastTimeoutRef.current) {
@@ -386,26 +389,30 @@ const EditorPage = () => {
           setUsers(Object.values(newState).map(([user]) => user));
         })
         .on("broadcast", { event: "code_update" }, ({ payload }) => {
+          // Only update fileData synchronously — this is what drives the editor content.
           setFileData(prev => ({ ...prev, [payload.path]: { ...prev[payload.path], content: payload.content } }));
 
-          // Keep uncommittedFiles in sync for all users, not just the typer.
-          // Use the ref so we read current dbFileData without stale closures
-          // and without nesting setState calls (which caused the multi-cursor regression).
-          const dbContent = dbFileDataRef.current[payload.path]?.content ?? '';
-          const isDifferentFromDb = payload.content !== dbContent;
-
-          setUncommittedFiles(prev => {
-            const alreadyTracked = prev.has(payload.path);
-            if (isDifferentFromDb === alreadyTracked) return prev;
-            const next = new Set(prev);
-            if (isDifferentFromDb) {
-              next.add(payload.path);
-            } else {
-              next.delete(payload.path);
-            }
-            uncommittedFilesRef.current = next;
-            return next;
-          });
+          // Debounce the uncommittedFiles badge sync — it's not critical path.
+          // Doing a full string compare on every incoming message was a major lag source.
+          if (uncommittedSyncTimerRef.current[payload.path]) {
+            clearTimeout(uncommittedSyncTimerRef.current[payload.path]);
+          }
+          uncommittedSyncTimerRef.current[payload.path] = setTimeout(() => {
+            const dbContent = dbFileDataRef.current[payload.path]?.content ?? '';
+            const isDifferentFromDb = payload.content !== dbContent;
+            setUncommittedFiles(prev => {
+              const alreadyTracked = prev.has(payload.path);
+              if (isDifferentFromDb === alreadyTracked) return prev;
+              const next = new Set(prev);
+              if (isDifferentFromDb) {
+                next.add(payload.path);
+              } else {
+                next.delete(payload.path);
+              }
+              uncommittedFilesRef.current = next;
+              return next;
+            });
+          }, 1000); // 1 second debounce — badge update latency is acceptable
         })
         .on("broadcast", { event: "typing" }, ({ payload }) => {
           const typingUser: UserPresence = payload.user;
@@ -476,13 +483,14 @@ const EditorPage = () => {
 
     setFileData(prev => ({ ...prev, [activeFile]: { ...prev[activeFile], content: newCode } }));
 
-    // Compare with DB content to determine if dirty
-    const dbContent = dbFileData[activeFile]?.content ?? '';
+    // Use ref so we always read fresh DB content without string comparison on every keystroke.
+    // Only check dirty state when the Set membership would actually change.
+    const dbContent = dbFileDataRef.current[activeFile]?.content ?? '';
     const isDirty = newCode !== dbContent;
 
     setDirtyFiles(prev => {
       const isCurrentlyDirty = prev.has(activeFile);
-      if (isDirty === isCurrentlyDirty) return prev;
+      if (isDirty === isCurrentlyDirty) return prev; // bail out — no change
 
       const newDirtyFiles = new Set(prev);
       if (isDirty) {
