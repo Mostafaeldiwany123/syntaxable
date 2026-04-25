@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     ChevronRight,
     ChevronDown,
@@ -46,6 +46,16 @@ interface FileExplorerProps {
     uncommittedFiles?: Set<string>;
 }
 
+/** Returns true if this folder node (or any descendant) contains the given file path */
+const folderContainsFile = (node: FileNode, filePath: string): boolean => {
+    if (!node.children) return false;
+    return node.children.some(child =>
+        child.type === 'file'
+            ? child.path === filePath
+            : folderContainsFile(child, filePath)
+    );
+};
+
 const FileItem = ({
     item,
     level = 0,
@@ -67,7 +77,16 @@ const FileItem = ({
     dirtyFiles: Set<string>,
     uncommittedFiles?: Set<string>,
 }) => {
-    const [isOpen, setIsOpen] = useState(false);
+    // Folders start expanded by default
+    const [isOpen, setIsOpen] = useState(true);
+
+    // Auto-expand this folder whenever the active file lives inside it
+    useEffect(() => {
+        if (item.type === 'folder' && activeFile && folderContainsFile(item, activeFile)) {
+            setIsOpen(true);
+        }
+    }, [activeFile, item]);
+
     const isFolder = item.type === 'folder';
     const isActive = item.type === 'file' && activeFile === item.path;
     const isDirty = item.type === 'file' && dirtyFiles.has(item.path);

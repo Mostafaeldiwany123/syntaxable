@@ -182,7 +182,7 @@ const StatusBar = ({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>{hasUncommittedFiles ? `Commit ${hasUncommittedFiles} changed file(s)` : 'No changes to commit'}</p>
+                  <p>{hasUncommittedFiles ? 'Commit changes' : 'No changes to commit'}</p>
                 </TooltipContent>
               </Tooltip>
             </>

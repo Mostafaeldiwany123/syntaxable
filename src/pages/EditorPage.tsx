@@ -113,6 +113,7 @@ const EditorPage = () => {
   const [uncommittedFiles, setUncommittedFiles] = useState<Set<string>>(new Set()); // Saved locally but not committed
   const dirtyFilesRef = useRef<Set<string>>(new Set());
   const uncommittedFilesRef = useRef<Set<string>>(new Set());
+  const dbFileDataRef = useRef<Record<string, FileData>>({}); // Always mirrors dbFileData state
   const [isCommitDialogOpen, setIsCommitDialogOpen] = useState(false);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [isBatchCommitting, setIsBatchCommitting] = useState(false);
@@ -346,6 +347,12 @@ const EditorPage = () => {
     getUserAndProfile();
   }, [navigate]);
 
+  // Keep dbFileDataRef in sync with dbFileData state so realtime handlers
+  // can read current DB content without stale closures or nested setState calls.
+  useEffect(() => {
+    dbFileDataRef.current = dbFileData;
+  }, [dbFileData]);
+
   // 2. File Fetching Effect
   useEffect(() => {
     if (!roomId || !currentUser || !currentUserProfile || isPermissionLoading || permission === undefined) return;
@@ -380,6 +387,25 @@ const EditorPage = () => {
         })
         .on("broadcast", { event: "code_update" }, ({ payload }) => {
           setFileData(prev => ({ ...prev, [payload.path]: { ...prev[payload.path], content: payload.content } }));
+
+          // Keep uncommittedFiles in sync for all users, not just the typer.
+          // Use the ref so we read current dbFileData without stale closures
+          // and without nesting setState calls (which caused the multi-cursor regression).
+          const dbContent = dbFileDataRef.current[payload.path]?.content ?? '';
+          const isDifferentFromDb = payload.content !== dbContent;
+
+          setUncommittedFiles(prev => {
+            const alreadyTracked = prev.has(payload.path);
+            if (isDifferentFromDb === alreadyTracked) return prev;
+            const next = new Set(prev);
+            if (isDifferentFromDb) {
+              next.add(payload.path);
+            } else {
+              next.delete(payload.path);
+            }
+            uncommittedFilesRef.current = next;
+            return next;
+          });
         })
         .on("broadcast", { event: "typing" }, ({ payload }) => {
           const typingUser: UserPresence = payload.user;
@@ -715,8 +741,15 @@ const EditorPage = () => {
       return updated;
     });
 
+    // Broadcast restored content to all other users so their editors update too
+    filesToRestore.forEach(path => {
+      if (dbFileData[path]) {
+        broadcastCode(path, dbFileData[path].content);
+      }
+    });
+
     toast.success("Restored to latest commit");
-  }, [uncommittedFiles, roomId, dbFileData]);
+  }, [uncommittedFiles, roomId, dbFileData, broadcastCode]);
 
   const handleFileSelect = (path: string) => {
     setActiveFile(path);
