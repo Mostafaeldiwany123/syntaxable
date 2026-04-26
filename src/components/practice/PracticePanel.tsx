@@ -3,6 +3,7 @@ import { Play, Loader2, CheckCircle2, XCircle, Lightbulb, ChevronDown, ChevronUp
 import { Problem, TestCase } from '@/data/practiceProblems';
 import { runBatchTests, type BatchTestResult, type LanguageType } from '@/compilers';
 import { toast } from 'sonner';
+import { MarkdownRenderer } from '@/components/ai-agent/MarkdownRenderer';
 
 type CourseLanguage = 'cpp' | 'python' | 'javascript' | 'java' | 'csharp' | 'c' | 'typescript';
 
@@ -199,8 +200,8 @@ ${problem.explanation ? `**Explanation:**\n${problem.explanation}` : ''}`;
             </div>
 
             {/* Description */}
-            <div className="prose prose-sm max-w-none">
-              <p className="text-sm text-foreground whitespace-pre-wrap">{problem.description}</p>
+            <div className="text-sm text-foreground">
+              <MarkdownRenderer content={problem.description} />
             </div>
 
             {/* Input Format */}
