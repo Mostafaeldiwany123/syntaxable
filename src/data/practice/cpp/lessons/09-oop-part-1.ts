@@ -183,7 +183,7 @@ Read N products, create an array of Product objects, and print the total invento
         { input: '3\nApple\n1.50\n10\nBanana\n0.75\n20\nOrange\n2.00\n5', expectedOutput: '40.00' },
         { input: '1\nLaptop\n999.99\n2', expectedOutput: '1999.98' },
         { input: '2\nA\n10.00\n3\nB\n5.00\n4', expectedOutput: '50.00' },
-        { input: '4\nPen\n1.00\n100\nPencil\n0.50\n200\nEraser\n0.25\n50\nRuler\n2.00\n25', expectedOutput: '250.00' },
+        { input: '4\nPen\n1.00\n100\nPencil\n0.50\n200\nEraser\n0.25\n50\nRuler\n2.00\n25', expectedOutput: '262.50' },
       ],
       starterCode: `#include <iostream>
 #include <iomanip>
