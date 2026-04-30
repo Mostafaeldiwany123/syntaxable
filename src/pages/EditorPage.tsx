@@ -638,6 +638,10 @@ const EditorPage = () => {
     setIsBatchCommitting(true);
 
     // First save all uncommitted files to DB, then commit
+    // NOTE: We call supabase.rpc() directly instead of using the commitChange
+    // mutation's mutate(), because mutate() is stateful — calling it multiple
+    // times concurrently causes earlier onSuccess/onError callbacks to get
+    // swallowed, leaving Promises unresolved and the loader stuck forever.
     const savePromises = filesToCommit.map(async (path) => {
       const file = fileData[path];
       if (!file || !file.id) {
@@ -652,22 +656,18 @@ const EditorPage = () => {
 
       if (saveError) throw saveError;
 
-      // Create version/commit
-      return new Promise<void>((resolve, reject) => {
-        commitChange({
-          fileId: file.id,
-          content: file.content,
-          commitMessage,
-        }, {
-          onSuccess: () => {
-            // Clear localStorage for this file
-            const localKey = getLocalStorageKey(roomId, path);
-            localStorage.removeItem(localKey);
-            resolve();
-          },
-          onError: (err) => reject(err),
-        });
+      // Create version/commit directly via RPC
+      const { error: commitError } = await supabase.rpc('commit_change', {
+        p_file_id: file.id,
+        p_content: file.content,
+        p_commit_message: commitMessage,
       });
+
+      if (commitError) throw commitError;
+
+      // Clear localStorage for this file
+      const localKey = getLocalStorageKey(roomId, path);
+      localStorage.removeItem(localKey);
     });
 
     Promise.all(savePromises)
@@ -696,6 +696,14 @@ const EditorPage = () => {
         setUncommittedFiles(new Set());
         uncommittedFilesRef.current = new Set();
         setIsCommitDialogOpen(false);
+
+        // Invalidate file history cache since we bypassed the mutation
+        filesToCommit.forEach(path => {
+          const fileId = fileData[path]?.id;
+          if (fileId) {
+            queryClient.invalidateQueries({ queryKey: ['fileHistory', fileId] });
+          }
+        });
       })
       .catch((error) => {
         console.error("Commit failed:", error);
