@@ -170,6 +170,80 @@ int main() {
         'Use cout << "..." << endl; in the constructors and destructors.'
       ],
       topics: ['Inheritance', 'Constructors', 'Destructors']
+    },
+    {
+      id: 'inheritance-constructor-chaining',
+      title: 'Parameterized Base Constructors',
+      difficulty: 'medium',
+      description: `If a base class does not have a default constructor, or if you want to pass specific arguments to it, you must explicitly call the base class constructor in the derived class's **initialization list**.\n\nDefine a base class \`Rectangle\` with:\n- Private members: \`length\` (int) and \`width\` (int)\n- Constructor \`Rectangle(int l, int w)\`\n- Public method \`int getArea()\` returning \`length * width\`\n\nDefine a derived class \`Square\` inheriting from \`Rectangle\`:\n- Constructor \`Square(int side)\` that explicitly calls the \`Rectangle\` constructor passing \`side\` for both length and width: \`Square(int side) : Rectangle(side, side) {}\`\n\nIn \`main\`, read the side of a square, create a \`Square\` object, and print its area.`,
+      inputFormat: 'A single integer (side).',
+      outputFormat: 'Print the area of the square.',
+      constraints: 'side > 0',
+      sampleInput: '5',
+      sampleOutput: '25',
+      testCases: [
+        { input: '5', expectedOutput: '25' },
+        { input: '10', expectedOutput: '100' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Define Rectangle class
+class Rectangle {
+private:
+    int length, width;
+public:
+    Rectangle(int l, int w) : length(l), width(w) {}
+    int getArea() { return length * width; }
+};
+
+// Define Square class here
+
+int main() {
+    int s;
+    cin >> s;
+    
+    Square sq(s);
+    cout << sq.getArea() << endl;
+    
+    return 0;
+}`,
+      hints: [
+        'class Square : public Rectangle { public: Square(int side) : Rectangle(side, side) {} };',
+        'Since Rectangle has no default constructor, you MUST use the initialization list to call Rectangle(l, w).'
+      ],
+      topics: ['Inheritance', 'Constructor Chaining']
+    },
+    {
+      id: 'inheritance-overriding-vs-hiding',
+      title: 'Overriding vs Hiding',
+      difficulty: 'medium',
+      description: `If a derived class defines a method with the same name as a base class method, it **hides** the base class method. If you still want to call the base class method from the derived class, you must use the scope resolution operator \`::\`.\n\nDefine a base class \`Person\` with:\n- A public method \`void introduce()\`: prints \`I am a person.\`\n\nDefine a derived class \`Student\` inheriting from \`Person\`:\n- Redefine \`introduce()\` to first call the base class \`introduce()\`, then print \`I am a student.\`\n\nIn \`main\`:\n1. Create a \`Student\` object.\n2. Call its \`introduce()\` method.`,
+      inputFormat: 'None',
+      outputFormat: 'Print the two sentences on separate lines.',
+      constraints: 'None',
+      sampleInput: '',
+      sampleOutput: 'I am a person.\nI am a student.',
+      testCases: [
+        { input: '', expectedOutput: 'I am a person.\nI am a student.' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Define Person class
+
+// Define Student class
+
+int main() {
+    Student s;
+    s.introduce();
+    
+    return 0;
+}`,
+      hints: [
+        'Inside Student\'s introduce(): Person::introduce(); cout << "I am a student." << endl;'
+      ],
+      topics: ['Inheritance', 'Method Hiding', 'Scope Resolution']
     }
   ]
 };

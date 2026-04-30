@@ -199,6 +199,116 @@ int main() {
         'Book constructor must have default values: Book(string t = "", float p = 0) {}'
       ],
       topics: ['Aggregation', 'Operator Overloading', 'Class Interaction']
+    },
+    {
+      id: 'operator-overloading-fraction',
+      title: 'Fraction Operator Overloading (== and <<)',
+      difficulty: 'hard',
+      description: `You can overload the stream insertion operator \`<<\` so that you can directly print your custom objects using \`cout << obj;\`. Since the left operand is \`ostream\`, this must be implemented as a **friend function**.\n\nDefine a class \`Fraction\` with:\n- Private members: \`num\` (int) and \`den\` (int)\n- A constructor \`Fraction(int n, int d)\`\n- A friend function to overload \`==\`: returns \`true\` if two fractions are equivalent (i.e., \`n1 * d2 == n2 * d1\`).\n- A friend function to overload \`<<\`: outputs the fraction in the format \`num/den\`.\n\nIn \`main\`:\n1. Read four integers: \`n1\`, \`d1\`, \`n2\`, \`d2\`.\n2. Create two \`Fraction\` objects.\n3. Compare them using \`==\$. If they are equivalent, print \`Equivalent\`, otherwise print \`Not Equivalent\`.\n4. Output the two fractions on the next line using the overloaded \`<<\`, separated by a space.`,
+      inputFormat: 'Four space-separated integers: n1 d1 n2 d2.',
+      outputFormat: 'First line: "Equivalent" or "Not Equivalent". Second line: The two fractions separated by a space.',
+      constraints: 'd1, d2 > 0',
+      sampleInput: '1 2 2 4',
+      sampleOutput: 'Equivalent\n1/2 2/4',
+      testCases: [
+        { input: '1 2 2 4', expectedOutput: 'Equivalent\n1/2 2/4' },
+        { input: '3 4 5 8', expectedOutput: 'Not Equivalent\n3/4 5/8' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+class Fraction {
+private:
+    int num, den;
+public:
+    Fraction(int n, int d) : num(n), den(d) {}
+    
+    // Declare friend function for ==
+    // Declare friend function for <<
+};
+
+// Implement operator== here
+
+// Implement operator<< here
+
+int main() {
+    int n1, d1, n2, d2;
+    cin >> n1 >> d1 >> n2 >> d2;
+    
+    Fraction f1(n1, d1);
+    Fraction f2(n2, d2);
+    
+    if (f1 == f2) cout << "Equivalent" << endl;
+    else cout << "Not Equivalent" << endl;
+    
+    cout << f1 << " " << f2 << endl;
+    
+    return 0;
+}`,
+      hints: [
+        'friend bool operator==(const Fraction& f1, const Fraction& f2);',
+        'friend ostream& operator<<(ostream& os, const Fraction& f);',
+        'Inside operator<<: os << f.num << "/" << f.den; return os;',
+        'To compare fractions safely without floats: return (f1.num * f2.den == f2.num * f1.den);'
+      ],
+      topics: ['Operator Overloading', 'Friend Functions']
+    },
+    {
+      id: 'unary-operator-overloading',
+      title: 'Unary Operator Overloading (++)',
+      difficulty: 'medium',
+      description: `Unary operators like \`++\` and \`--\` take a single argument and can be overloaded. You can overload both the **pre-increment** (\`++obj\`) and **post-increment** (\`obj++\`) operators.\n\nDefine a class \`Counter\` with:\n- Private member: \`count\` (int)\n- A constructor \`Counter(int c)\`\n- A getter \`int getCount()\`\n- Overload **pre-increment**: \`Counter operator++()\` (Increments count, then returns \`*this\`)\n- Overload **post-increment**: \`Counter operator++(int)\` (Saves a copy of the current state, increments count, and returns the copy)\n\nIn \`main\`:\n1. Read an integer \`N\`.\n2. Create \`Counter c(N);\$.\n3. Print \`c.getCount()\$.\n4. Call \`++c;\` and print \`c.getCount()\$.\n5. Call \`c++;\` and print \`c.getCount()\$.`,
+      inputFormat: 'A single integer N.',
+      outputFormat: 'Print the count on three separate lines.',
+      constraints: '-1000 ≤ N ≤ 1000',
+      sampleInput: '5',
+      sampleOutput: '5\n6\n7',
+      testCases: [
+        { input: '5', expectedOutput: '5\n6\n7' },
+        { input: '0', expectedOutput: '0\n1\n2' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+class Counter {
+private:
+    int count;
+public:
+    Counter(int c) : count(c) {}
+    int getCount() { return count; }
+    
+    // Pre-increment
+    Counter operator++() {
+        count++;
+        return *this;
+    }
+    
+    // Post-increment (the 'int' is just a dummy parameter to distinguish it from pre-increment)
+    Counter operator++(int) {
+        // Implement post-increment here
+    }
+};
+
+int main() {
+    int n;
+    cin >> n;
+    
+    Counter c(n);
+    cout << c.getCount() << endl;
+    
+    ++c;
+    cout << c.getCount() << endl;
+    
+    c++;
+    cout << c.getCount() << endl;
+    
+    return 0;
+}`,
+      hints: [
+        'For post-increment, you need to return the value *before* incrementing.',
+        'Counter temp = *this; count++; return temp;'
+      ],
+      topics: ['Operator Overloading']
     }
   ]
 };
