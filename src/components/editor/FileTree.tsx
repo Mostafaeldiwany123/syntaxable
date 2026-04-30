@@ -25,10 +25,12 @@ interface TreeNodeProps {
   node: FileNode;
   activeFile: string | null;
   onFileSelect: (path: string) => void;
+  level?: number;
+  index?: number;
 }
 
-const TreeNode = ({ node, activeFile, onFileSelect }: TreeNodeProps) => {
-  const [isOpen, setIsOpen] = useState(true);
+const TreeNode = ({ node, activeFile, onFileSelect, level = 0, index = 0 }: TreeNodeProps) => {
+  const [isOpen, setIsOpen] = useState(level === 0 && index === 0);
 
   const NodeContent = () => {
     if (node.type === "folder") {
@@ -78,6 +80,7 @@ const TreeNode = ({ node, activeFile, onFileSelect }: TreeNodeProps) => {
                 node={child}
                 activeFile={activeFile}
                 onFileSelect={onFileSelect}
+                level={level + 1}
               />
             ))}
           </div>
@@ -112,12 +115,14 @@ export const FileTree = ({
 }) => {
   return (
     <div className="space-y-1">
-      {tree?.map((node) => (
+      {tree?.map((node, idx) => (
         <TreeNode
           key={node.path}
           node={node}
           activeFile={activeFile}
           onFileSelect={onFileSelect}
+          level={0}
+          index={idx}
         />
       ))}
     </div>

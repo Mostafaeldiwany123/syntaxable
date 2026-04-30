@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -7,6 +7,28 @@ import 'katex/dist/katex.min.css';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Copy, Check } from 'lucide-react';
+import mermaid from 'mermaid';
+
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'dark',
+  securityLevel: 'loose',
+});
+
+const MermaidChart = ({ chart }: { chart: string }) => {
+  const [svg, setSvg] = useState('');
+  const id = useMemo(() => `mermaid-${Math.random().toString(36).substr(2, 9)}`, []);
+
+  useEffect(() => {
+    mermaid.render(id, chart).then((result) => {
+      setSvg(result.svg);
+    }).catch(e => {
+        setSvg(`<div class="text-destructive text-sm font-mono whitespace-pre-wrap">${e.message}</div>`);
+    });
+  }, [chart, id]);
+
+  return <div dangerouslySetInnerHTML={{ __html: svg }} className="flex justify-center my-4 overflow-x-auto bg-card p-4 rounded-lg border border-border" />;
+};
 
 const customTheme = Object.fromEntries(
   Object.entries(oneDark).map(([key, value]) => {
@@ -103,6 +125,10 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
                   {children}
                 </code>
               );
+            }
+            
+            if (match && match[1] === 'mermaid') {
+              return <MermaidChart chart={codeString} />;
             }
             
             return (

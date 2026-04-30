@@ -59,6 +59,7 @@ const folderContainsFile = (node: FileNode, filePath: string): boolean => {
 const FileItem = ({
     item,
     level = 0,
+    index,
     onSelect,
     activeFile,
     onRename,
@@ -69,6 +70,7 @@ const FileItem = ({
 }: {
     item: FileNode,
     level?: number,
+    index?: number,
     onSelect: (path: string) => void,
     activeFile: string | null,
     onRename: (path: string, currentName: string) => void,
@@ -77,8 +79,8 @@ const FileItem = ({
     dirtyFiles: Set<string>,
     uncommittedFiles?: Set<string>,
 }) => {
-    // Folders start expanded by default
-    const [isOpen, setIsOpen] = useState(true);
+    // Folders start expanded if they are the very first root folder
+    const [isOpen, setIsOpen] = useState(level === 0 && index === 0);
 
     // Auto-expand this folder whenever the active file lives inside it
     useEffect(() => {
@@ -278,10 +280,11 @@ const FileExplorer = ({
                                     Empty project
                                 </div>
                             ) : (
-                                files.map(item => (
+                                files.map((item, idx) => (
                                     <FileItem
                                         key={item.path}
                                         item={item}
+                                        index={idx}
                                         onSelect={onFileSelect}
                                         activeFile={activeFile}
                                         onRename={onRenameFile}

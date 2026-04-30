@@ -6,6 +6,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { getDynamicTheme } from '@/lib/editor-theme';
+import { MarkdownRenderer } from '@/components/ai-agent/MarkdownRenderer';
 
 declare global {
   interface Window {
@@ -63,11 +64,16 @@ const CodeEditor = ({
   isReadOnly = false,
 }: CodeEditorProps) => {
   const [isEditorLoading, setIsEditorLoading] = useState(true);
+  const [isRawMode, setIsRawMode] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _isLoading = isEditorLoading;
   const monaco = useMonaco();
   const isMobile = useIsMobile();
   const editorRef = useRef<any>(null);
+
+  useEffect(() => {
+    setIsRawMode(false);
+  }, [activeFile]);
 
   // Re-evaluate CSS variables for Monaco Theme when global theme changes
   useEffect(() => {
@@ -216,39 +222,60 @@ const CodeEditor = ({
           })}
         </div>
 
-        {/* AI Agent Button */}
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onAIAgentClick}
-                className="h-7 text-xs font-medium transition-colors mr-1 shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary"
-              >
-                AI Assistant
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>Open AI Assistant (Ctrl+K)</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        {/* Actions Bar */}
+        <div className="flex items-center">
+          {activeFile && getLanguage(activeFile) === 'markdown' && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsRawMode(!isRawMode)}
+              className="h-7 text-xs font-medium transition-colors mr-1 shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary"
+            >
+              {isRawMode ? "View Preview" : "View Raw"}
+            </Button>
+          )}
+
+          {/* AI Agent Button */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onAIAgentClick}
+                  className="h-7 text-xs font-medium transition-colors mr-1 shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary"
+                >
+                  AI Assistant
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Open AI Assistant (Ctrl+K)</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </div>
 
       {/* Editor Area */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative overflow-hidden">
         {isReadOnly && (
           <div className="absolute top-2 right-4 z-10 bg-yellow-500/20 text-yellow-300 text-xs font-bold px-2 py-1 rounded-full">
             Read-Only Mode
           </div>
         )}
-        {/* key={activeFile} forces a clean re-mount when switching tabs */}
-        <Editor
-          key={activeFile}
-          height="100%"
-          language={getLanguage(activeFile)}
-          value={fileContents[activeFile] || ""}
+        
+        {activeFile && getLanguage(activeFile) === 'markdown' && !isRawMode ? (
+          <div className="h-full w-full overflow-y-auto bg-background p-6">
+            <div className="max-w-4xl mx-auto">
+              <MarkdownRenderer content={fileContents[activeFile] || ""} />
+            </div>
+          </div>
+        ) : (
+          <Editor
+            key={activeFile}
+            height="100%"
+            language={getLanguage(activeFile)}
+            value={fileContents[activeFile] || ""}
           onChange={onChange}
           beforeMount={(monaco) => {
             setIsEditorLoading(true);
@@ -279,6 +306,7 @@ const CodeEditor = ({
             },
           }}
         />
+        )}
       </div>
     </div>
   );
