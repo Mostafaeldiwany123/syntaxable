@@ -16,6 +16,8 @@ import { structs } from './08-structs';
 import { oopPart1 } from './09-oop-part-1';
 import { oopPart2 } from './10-oop-part-2';
 import { oopPart3 } from './11-oop-part-3';
+import { oopPart4 } from './12-oop-part-4';
+import { oopPart5 } from './13-oop-part-5';
 import type { Lesson } from '../../types';
 
 export const cppLessons: Lesson[] = [
@@ -37,4 +39,6 @@ export const cppLessons: Lesson[] = [
   oopPart1,
   oopPart2,
   oopPart3,
+  oopPart4,
+  oopPart5,
 ].sort((a, b) => a.order - b.order);
