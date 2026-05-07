@@ -66,37 +66,34 @@ function extractValues(output: string): string[] {
     const trimmed = line.trim();
     if (!trimmed) continue;
 
-    // Try to extract values from the line
-    // Pattern 1: Lines that are just a number
-    if (/^-?\d+\.?\d*$/.test(trimmed)) {
-      values.push(trimmed);
-      continue;
-    }
+    // Pattern: Hex addresses (0x...)
+    // Replace them with a placeholder to ignore the exact value
+    const normalizedLine = trimmed.replace(/0x[0-9a-fA-F]+/g, '__ADDR__');
 
-    // Pattern 2: Lines that are just a word (no spaces, no special chars except letters)
-    if (/^[A-Za-z]+$/.test(trimmed)) {
-      values.push(trimmed);
-      continue;
-    }
-
-    // Pattern 3: Extract values after common separators (: = ->)
-    // "Value: 42" -> extract "42"
-    // "Result = 100" -> extract "100"
-    const separatorMatch = trimmed.match(/[:=->]\s*(-?\d+\.?\d*|[A-Za-z]+)\s*$/);
-    if (separatorMatch) {
-      values.push(separatorMatch[1]);
-      continue;
-    }
-
-    // Pattern 4: Extract all numbers from the line
-    const numbers = trimmed.match(/-?\d+\.?\d*/g);
-    if (numbers && numbers.length > 0) {
-      // If the line has numbers, add them
-      values.push(...numbers);
+    // Extract all numbers, words, and our __ADDR__ placeholder
+    const matches = normalizedLine.match(/-?\d+\.?\d*|[A-Za-z]+|__ADDR__/g);
+    if (matches) {
+      values.push(...matches);
     }
   }
 
   return values;
+}
+
+function compareValues(actual: string, expected: string): boolean {
+  if (actual === expected) return true;
+  if (expected === '__ADDR__' && actual === '__ADDR__') return true;
+
+  // Try numeric comparison
+  const actualNum = parseFloat(actual);
+  const expectedNum = parseFloat(expected);
+  
+  if (!isNaN(actualNum) && !isNaN(expectedNum)) {
+    // Check if they are close enough (handles precision issues like 1800 vs 1800.00)
+    return Math.abs(actualNum - expectedNum) < 0.001;
+  }
+
+  return false;
 }
 
 /**
@@ -105,22 +102,25 @@ function extractValues(output: string): string[] {
 function compareOutputs(actual: string, expected: string): { passed: boolean; reason: string } {
   // Normalize both
   const actualNorm = actual.trim().replace(/\r\n/g, '\n');
-  const expectedNorm = expected.trim().replace(/\r\n/g, '\n');
+  let expectedNorm = expected.trim().replace(/\r\n/g, '\n');
 
   // Exact match - best case
   if (actualNorm === expectedNorm) {
     return { passed: true, reason: 'Exact match' };
   }
 
+  // Support [ADDR] placeholder in expected output
+  const expectedForExtraction = expectedNorm.replace(/\[ADDR\]/g, '__ADDR__');
+
   // Extract values from both
-  const actualValues = extractValues(actual);
-  const expectedValues = extractValues(expected);
+  const actualValues = extractValues(actualNorm);
+  const expectedValues = extractValues(expectedForExtraction);
 
   // Compare extracted values
   if (actualValues.length === expectedValues.length) {
     let allMatch = true;
     for (let i = 0; i < actualValues.length; i++) {
-      if (actualValues[i] !== expectedValues[i]) {
+      if (!compareValues(actualValues[i], expectedValues[i])) {
         allMatch = false;
         break;
       }
@@ -137,23 +137,25 @@ function compareOutputs(actual: string, expected: string): { passed: boolean; re
   // If expected has fewer lines, try to match values in order
   if (actualLines.length >= expectedLines.length) {
     const expectedVals = expectedLines.flatMap(l => {
-      const nums = l.match(/-?\d+\.?\d*/g) || [];
-      const words = l.match(/\b[A-Za-z]+\b/g) || [];
-      return [...nums, ...words];
+      const normalizedLine = l.replace(/\[ADDR\]/g, '__ADDR__');
+      const nums = normalizedLine.match(/-?\d+\.?\d*/g) || [];
+      const words = normalizedLine.match(/\b[A-Za-z]+\b/g) || [];
+      const addrs = normalizedLine.match(/__ADDR__/g) || [];
+      // Re-extract in order of appearance? 
+      // Actually, match() with g returns in order.
+      // But nums/words/addrs are separate.
+      // Let's just use extractValues for the line.
+      return extractValues(normalizedLine);
     });
 
-    const actualVals = actualLines.flatMap(l => {
-      const nums = l.match(/-?\d+\.?\d*/g) || [];
-      const words = l.match(/\b[A-Za-z]+\b/g) || [];
-      return [...nums, ...words];
-    });
+    const actualVals = actualLines.flatMap(l => extractValues(l));
 
     // Check if expected values appear in order in actual values
     let valIndex = 0;
     for (const ev of expectedVals) {
       let found = false;
       while (valIndex < actualVals.length) {
-        if (actualVals[valIndex] === ev) {
+        if (compareValues(actualVals[valIndex], ev)) {
           found = true;
           valIndex++;
           break;

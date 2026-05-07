@@ -16,8 +16,6 @@ declare global {
   }
 }
 
-// Dynamic theme helper is now imported from @/lib/editor-theme
-
 interface CodeEditorProps {
   openFiles: string[];
   activeFile: string | null;
@@ -65,8 +63,6 @@ const CodeEditor = ({
 }: CodeEditorProps) => {
   const [isEditorLoading, setIsEditorLoading] = useState(true);
   const [isRawMode, setIsRawMode] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _isLoading = isEditorLoading;
   const monaco = useMonaco();
   const isMobile = useIsMobile();
   const editorRef = useRef<any>(null);
@@ -75,7 +71,6 @@ const CodeEditor = ({
     setIsRawMode(false);
   }, [activeFile]);
 
-  // Re-evaluate CSS variables for Monaco Theme when global theme changes
   useEffect(() => {
     const handleThemeChange = () => {
       if (monaco) {
@@ -89,10 +84,8 @@ const CodeEditor = ({
     };
   }, [monaco]);
 
-  // Add keyboard shortcut for AI agent - works globally including in Monaco editor
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Check for Ctrl+K (Windows/Linux) or Cmd+K (Mac)
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         e.stopPropagation();
@@ -100,7 +93,6 @@ const CodeEditor = ({
       }
     };
 
-    // Add to window for global capture
     window.addEventListener('keydown', handleKeyDown, true);
     return () => {
       window.removeEventListener('keydown', handleKeyDown, true);
@@ -114,7 +106,6 @@ const CodeEditor = ({
     monacoInstance.editor.setTheme('custom-dynamic');
     setIsEditorLoading(false);
 
-    // Add keybinding for Ctrl/Cmd+K in Monaco editor
     editor.addCommand(monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.KeyK, () => {
       onAIAgentClick();
     });
@@ -172,6 +163,24 @@ const CodeEditor = ({
     }
   }, [isMobile, onAIAgentClick]);
 
+  useEffect(() => {
+    if (editorRef.current && activeFile) {
+      const content = fileContents[activeFile] || "";
+      const language = getLanguage(activeFile);
+
+      if (editorRef.current.getValue() !== content) {
+        editorRef.current.setValue(content);
+      }
+
+      if (monaco) {
+        const model = editorRef.current.getModel();
+        if (model) {
+          monaco.editor.setModelLanguage(model, language);
+        }
+      }
+    }
+  }, [activeFile, fileContents, monaco]);
+
   if (!activeFile) {
     return (
       <div className="h-full w-full bg-background text-muted-foreground flex items-center justify-center">
@@ -186,7 +195,6 @@ const CodeEditor = ({
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Tabs */}
       <div className="flex justify-between items-center bg-card border-b border-border">
         <div className="flex overflow-x-auto flex-1">
           {openFiles.map(filePath => {
@@ -222,7 +230,6 @@ const CodeEditor = ({
           })}
         </div>
 
-        {/* Actions Bar */}
         <div className="flex items-center">
           {activeFile && getLanguage(activeFile) === 'markdown' && (
             <Button
@@ -235,7 +242,6 @@ const CodeEditor = ({
             </Button>
           )}
 
-          {/* AI Agent Button */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -256,14 +262,13 @@ const CodeEditor = ({
         </div>
       </div>
 
-      {/* Editor Area */}
       <div className="flex-1 relative overflow-hidden">
         {isReadOnly && (
           <div className="absolute top-2 right-4 z-10 bg-yellow-500/20 text-yellow-300 text-xs font-bold px-2 py-1 rounded-full">
             Read-Only Mode
           </div>
         )}
-        
+
         {activeFile && getLanguage(activeFile) === 'markdown' && !isRawMode ? (
           <div className="h-full w-full overflow-y-auto bg-background p-6">
             <div className="max-w-4xl mx-auto">
@@ -272,40 +277,39 @@ const CodeEditor = ({
           </div>
         ) : (
           <Editor
-            key={activeFile}
             height="100%"
             language={getLanguage(activeFile)}
             value={fileContents[activeFile] || ""}
-          onChange={onChange}
-          beforeMount={(monaco) => {
-            setIsEditorLoading(true);
-            monaco.editor.defineTheme('custom-dynamic', getDynamicTheme());
-          }}
-          onMount={handleEditorDidMount}
-          theme="custom-dynamic"
-          loading=""
-          options={{
-            readOnly: isReadOnly,
-            minimap: { enabled: false },
-            fontSize: 14,
-            fontFamily: "'Inconsolata', 'Consolas', 'Monaco', 'Courier New', monospace",
-            fontLigatures: true,
-            lineHeight: 22,
-            padding: { top: 16 },
-            scrollBeyondLastLine: false,
-            smoothScrolling: true,
-            cursorBlinking: "smooth",
-            cursorSmoothCaretAnimation: "on",
-            tabSize: 2,
-            insertSpaces: true,
-            wordWrap: "on",
-            renderLineHighlight: "all",
-            renderWhitespace: "none",
-            bracketPairColorization: {
-              enabled: true,
-            },
-          }}
-        />
+            onChange={onChange}
+            beforeMount={(monaco) => {
+              setIsEditorLoading(true);
+              monaco.editor.defineTheme('custom-dynamic', getDynamicTheme());
+            }}
+            onMount={handleEditorDidMount}
+            theme="custom-dynamic"
+            loading=""
+            options={{
+              readOnly: isReadOnly,
+              minimap: { enabled: false },
+              fontSize: 14,
+              fontFamily: "'Inconsolata', 'Consolas', 'Monaco', 'Courier New', monospace",
+              fontLigatures: true,
+              lineHeight: 22,
+              padding: { top: 16 },
+              scrollBeyondLastLine: false,
+              smoothScrolling: true,
+              cursorBlinking: "smooth",
+              cursorSmoothCaretAnimation: "on",
+              tabSize: 2,
+              insertSpaces: true,
+              wordWrap: "on",
+              renderLineHighlight: "all",
+              renderWhitespace: "none",
+              bracketPairColorization: {
+                enabled: true,
+              },
+            }}
+          />
         )}
       </div>
     </div>

@@ -135,8 +135,16 @@ int main() {
       sampleOutput: 'Value: 42\nAddress: 0x7ffc...\nPointer: 0x7ffc...\nDereferenced: 42',
       explanation: 'The address will vary each run. The key is that the pointer stores the address and *ptr gives the value.',
       testCases: [
-        { input: '42', expectedOutput: '42', isHidden: true },
-        { input: '0', expectedOutput: '0', isHidden: true },
+        { 
+          input: '42', 
+          expectedOutput: 'Value: 42\nAddress: [ADDR]\nPointer: [ADDR]\nDereferenced: 42',
+          isHidden: true 
+        },
+        { 
+          input: '100', 
+          expectedOutput: 'Value: 100\nAddress: [ADDR]\nPointer: [ADDR]\nDereferenced: 100',
+          isHidden: true 
+        },
       ],
       starterCode: `#include <iostream>
 using namespace std;

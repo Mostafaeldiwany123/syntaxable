@@ -47,12 +47,12 @@ const buildFileTree = (files: { path: string }[]): FileNode[] => {
   files.forEach(({ path }) => {
     const isExplicitFolder = path.endsWith("/");
     const parts = path.split("/").filter(Boolean);
-    
+
     let currentLevel = root;
     parts.forEach((part, index) => {
       const isLastPart = index === parts.length - 1;
       const nodeType = (isLastPart && !isExplicitFolder) ? "file" : "folder";
-      
+
       let node = currentLevel.children?.find(child => child.name === part);
 
       if (!node) {
@@ -64,7 +64,7 @@ const buildFileTree = (files: { path: string }[]): FileNode[] => {
         };
         currentLevel.children?.push(node);
       }
-      
+
       if (node.type === "folder") {
         currentLevel = node;
       }
@@ -143,7 +143,7 @@ const EditorPage = () => {
   const latestTypingPayloadRef = useRef<{ path: string, user: UserProfile & { id: string } } | null>(null);
 
   // Debounce ref for syncing uncommittedFiles on remote updates (badge indicator only, not critical path)
-  const uncommittedSyncTimerRef = useRef<Record<string, NodeJS.Timeout>>({}); 
+  const uncommittedSyncTimerRef = useRef<Record<string, NodeJS.Timeout>>({});
 
   const isReadOnly = permission === 'viewer';
 
@@ -165,11 +165,11 @@ const EditorPage = () => {
       if (files && files.length > 0) {
         const tree = buildFileTree(files);
         setFileTree(tree);
-        
+
         // Build DB state
-        const dbContents = files.reduce((acc, file) => ({ 
-          ...acc, 
-          [file.path]: { id: file.id, content: file.content || "" } 
+        const dbContents = files.reduce((acc, file) => ({
+          ...acc,
+          [file.path]: { id: file.id, content: file.content || "" }
         }), {});
         setDbFileData(dbContents);
 
@@ -177,11 +177,11 @@ const EditorPage = () => {
         const localUncommitted = new Set<string>();
         const mergedFileData: Record<string, FileData> = {};
         const initialSavedContent: Record<string, string> = {};
-        
+
         files.forEach(file => {
           const localKey = getLocalStorageKey(roomId, file.path);
           const localContent = localStorage.getItem(localKey);
-          
+
           if (localContent !== null && localContent !== file.content) {
             // There's uncommitted local changes
             mergedFileData[file.path] = { id: file.id, content: localContent };
@@ -389,7 +389,19 @@ const EditorPage = () => {
           setUsers(Object.values(newState).map(([user]) => user));
         })
         .on("broadcast", { event: "code_update" }, ({ payload }) => {
-          // Only update fileData synchronously — this is what drives the editor content.
+          // Only update fileData if the user isn't actively editing this file,
+          // or if the content is different from what they have.
+          // To prevent overwriting local uncommitted changes, we check if the file is dirty.
+
+          const isLocalDirty = dirtyFilesRef.current.has(payload.path);
+
+          if (isLocalDirty) {
+            // If the file is dirty locally, we don't want to overwrite the user's
+            // current working version with a remote update unless we have a merge strategy.
+            // For now, we prioritize local changes to prevent data loss.
+            return;
+          }
+
           setFileData(prev => ({ ...prev, [payload.path]: { ...prev[payload.path], content: payload.content } }));
 
           // Debounce the uncommittedFiles badge sync — it's not critical path.
@@ -529,7 +541,7 @@ const EditorPage = () => {
     if (roomId && activeFile && isDirty) {
       const localKey = getLocalStorageKey(roomId, activeFile);
       localStorage.setItem(localKey, newCode);
-      
+
       // Also ensure it's marked as uncommitted so it's loaded back on refresh
       setUncommittedFiles(prev => {
         if (prev.has(activeFile)) return prev;
@@ -552,13 +564,13 @@ const EditorPage = () => {
     // Save to localStorage and determine which files need to be committed
     const filesNeedingCommit: string[] = [];
     const filesMatchingDB: string[] = [];
-    
+
     filesToSave.forEach(path => {
       const file = fileData[path];
       if (file) {
         const localKey = getLocalStorageKey(roomId, path);
         const dbContent = dbFileData[path]?.content ?? '';
-        
+
         // Only save to localStorage if content differs from DB
         if (file.content !== dbContent) {
           localStorage.setItem(localKey, file.content);
@@ -586,7 +598,7 @@ const EditorPage = () => {
     // Clear dirty files
     setDirtyFiles(new Set());
     dirtyFilesRef.current = new Set();
-    
+
     // Update uncommitted files - add files that differ from DB, remove those that match
     setUncommittedFiles(prev => {
       const next = new Set([...Array.from(prev), ...filesNeedingCommit]);
@@ -802,7 +814,7 @@ const EditorPage = () => {
 
   const executeNewFile = async (fileName: string, folderPath: string = "") => {
     if (!roomId) return;
-    const finalPath = folderPath 
+    const finalPath = folderPath
       ? `${folderPath.endsWith('/') ? folderPath : folderPath + '/'}${fileName}`
       : fileName;
 
@@ -844,7 +856,7 @@ const EditorPage = () => {
 
   const executeNewFolder = async (folderName: string, folderPath: string = "") => {
     if (!roomId) return;
-    const baseDir = folderPath 
+    const baseDir = folderPath
       ? (folderPath.endsWith('/') ? folderPath : folderPath + '/')
       : "";
     const finalPath = `${baseDir}${folderName}/`;
@@ -929,7 +941,7 @@ const EditorPage = () => {
     });
 
     let deleteError = null;
-    
+
     if (isFolder) {
       // Correctly delete the folder itself AND all items inside
       // We check for path, path/ and path/% to be absolutely safe
@@ -957,7 +969,7 @@ const EditorPage = () => {
 
       toast.success(isFolder ? "Folder deleted!" : "File deleted!");
       await refreshFileTree();
-      
+
       if (isFolder) {
         setOpenFiles(prev => prev.filter(p => !p.startsWith(path + '/')));
         if (activeFile && activeFile.startsWith(path + '/')) {
@@ -967,7 +979,7 @@ const EditorPage = () => {
         setOpenFiles(prev => prev.filter(p => p !== path));
         if (activeFile === path) setActiveFile(openFiles.filter(p => p !== path)[0] || null);
       }
-      
+
       broadcastFileOperation("delete", { path });
     }
   };
