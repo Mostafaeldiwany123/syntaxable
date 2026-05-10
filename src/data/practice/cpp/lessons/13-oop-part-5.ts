@@ -244,6 +244,158 @@ int main() {
         'Inside Student\'s introduce(): Person::introduce(); cout << "I am a student." << endl;'
       ],
       topics: ['Inheritance', 'Method Hiding', 'Scope Resolution']
+    },
+    {
+      id: 'vehicle-and-car-inheritance',
+      title: 'Vehicle and Car (Basic Inheritance)',
+      difficulty: 'easy',
+      description: `Inheritance allows us to define a class in terms of another class.\n\nDefine a base class \`Vehicle\` with:\n- Protected member: \`int speed\`\n- Constructor \`Vehicle(int s)\`\n- Method \`void showSpeed()\` that prints "Speed: [speed]"\n\nDefine a derived class \`Car\` inheriting from \`Vehicle\`:\n- Private member: \`int doors\`\n- Constructor \`Car(int s, int d)\` that calls the \`Vehicle\` constructor.\n- Method \`void showCar()\` that prints "Car has [doors] doors"\n\nIn \`main\`, read \`speed\` and \`doors\`, create a \`Car\`, and call \`showSpeed()\` then \`showCar()\$.`,
+      inputFormat: 'Two space-separated integers: speed and doors',
+      outputFormat: 'Print the speed and doors on separate lines.',
+      constraints: 'speed >= 0, doors > 0',
+      sampleInput: '120 4',
+      sampleOutput: 'Speed: 120\nCar has 4 doors',
+      testCases: [
+        { input: '120 4', expectedOutput: 'Speed: 120\nCar has 4 doors' },
+        { input: '80 2', expectedOutput: 'Speed: 80\nCar has 2 doors' }
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+class Vehicle {
+protected:
+    int speed;
+public:
+    Vehicle(int s) : speed(s) {}
+    void showSpeed() { cout << "Speed: " << speed << endl; }
+};
+
+// Define Car class here
+
+int main() {
+    int s, d;
+    cin >> s >> d;
+    
+    Car myCar(s, d);
+    myCar.showSpeed();
+    myCar.showCar();
+    
+    return 0;
+}`,
+      hints: [
+        'class Car : public Vehicle { ... };',
+        'Car(int s, int d) : Vehicle(s) { doors = d; }'
+      ],
+      topics: ['Inheritance', 'Constructor Chaining']
+    },
+    {
+      id: 'animal-sound-redefinition',
+      title: 'Animal Sound Redefinition',
+      difficulty: 'easy',
+      description: `A derived class can redefine a method from its base class.\n\nDefine a base class \`Animal\` with:\n- Method \`void makeSound()\` that prints "Some generic sound"\n\nDefine a derived class \`Cat\` inheriting from \`Animal\`:\n- Redefine \`makeSound()\` to print "Meow"\n\nDefine another derived class \`Dog\` inheriting from \`Animal\`:\n- Redefine \`makeSound()\` to print "Woof"\n\nIn \`main\`, read an integer \`type\`. If \`type == 1\`, create a \`Cat\` and make it sound. If \`type == 2\`, create a \`Dog\` and make it sound. Otherwise, create an \`Animal\` and make it sound.`,
+      inputFormat: 'A single integer (type)',
+      outputFormat: 'Print the appropriate sound.',
+      constraints: 'None',
+      sampleInput: '1',
+      sampleOutput: 'Meow',
+      testCases: [
+        { input: '1', expectedOutput: 'Meow' },
+        { input: '2', expectedOutput: 'Woof' },
+        { input: '3', expectedOutput: 'Some generic sound' }
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Define Animal, Cat, and Dog classes
+
+int main() {
+    int type;
+    cin >> type;
+    
+    if (type == 1) {
+        Cat c;
+        c.makeSound();
+    } else if (type == 2) {
+        Dog d;
+        d.makeSound();
+    } else {
+        Animal a;
+        a.makeSound();
+    }
+    
+    return 0;
+}`,
+      hints: [
+        'Just write void makeSound() { ... } inside each class with the correct print statement.'
+      ],
+      topics: ['Inheritance', 'Method Redefinition']
+    },
+    {
+      id: 'shape-area-inheritance',
+      title: 'Shape Area (Inheritance & Protected)',
+      difficulty: 'medium',
+      description: `Protected members are very useful when building class hierarchies.\n\nDefine a base class \`Shape\` with:\n- Protected members: \`width\` (int) and \`height\` (int)\n- Constructor \`Shape(int w, int h)\`\n\nDefine a derived class \`Rectangle\` inheriting from \`Shape\`:\n- Constructor \`Rectangle(int w, int h)\`\n- Method \`int getArea()\` that returns \`width * height\` (has access because they are protected!)\n\nDefine a derived class \`Triangle\` inheriting from \`Shape\`:\n- Constructor \`Triangle(int w, int h)\`\n- Method \`int getArea()\` that returns \`(width * height) / 2\`\n\nIn \`main\`, read \`w\` and \`h\`. Create a \`Rectangle\` and print its area, then create a \`Triangle\` and print its area.`,
+      inputFormat: 'Two space-separated integers: w and h',
+      outputFormat: 'Print the rectangle area, then the triangle area on separate lines.',
+      constraints: 'w >= 0, h >= 0',
+      sampleInput: '4 5',
+      sampleOutput: '20\n10',
+      testCases: [
+        { input: '4 5', expectedOutput: '20\n10' },
+        { input: '10 10', expectedOutput: '100\n50' }
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Define Shape, Rectangle, and Triangle classes
+
+int main() {
+    int w, h;
+    cin >> w >> h;
+    
+    Rectangle r(w, h);
+    cout << r.getArea() << endl;
+    
+    Triangle t(w, h);
+    cout << t.getArea() << endl;
+    
+    return 0;
+}`,
+      hints: [
+        'Constructors: Rectangle(int w, int h) : Shape(w, h) {}'
+      ],
+      topics: ['Inheritance', 'Protected Modifiers', 'Constructor Chaining']
+    },
+    {
+      id: 'constructor-destructor-multi-level',
+      title: 'Multi-level Constructor Ordering',
+      difficulty: 'medium',
+      description: `Let's trace constructors and destructors in multi-level inheritance.\n\nDefine a base class \`A\`:\n- Constructor prints "A created"\n- Destructor prints "A destroyed"\n\nDefine a derived class \`B\` inheriting from \`A\`:\n- Constructor prints "B created"\n- Destructor prints "B destroyed"\n\nDefine a derived class \`C\` inheriting from \`B\`:\n- Constructor prints "C created"\n- Destructor prints "C destroyed"\n\nIn \`main\`, simply create a \`C\` object in a block so you can see the creation and destruction order.`,
+      inputFormat: 'None',
+      outputFormat: 'Print the constructor and destructor messages in order.',
+      constraints: 'None',
+      sampleInput: '',
+      sampleOutput: 'A created\nB created\nC created\nC destroyed\nB destroyed\nA destroyed',
+      testCases: [
+        { input: '', expectedOutput: 'A created\nB created\nC created\nC destroyed\nB destroyed\nA destroyed' }
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Define A, B, and C classes
+
+int main() {
+    {
+        C obj;
+    }
+    return 0;
+}`,
+      hints: [
+        'class B : public A { ... };',
+        'class C : public B { ... };',
+        'Constructors go top-down (A -> B -> C), destructors go bottom-up (C -> B -> A).'
+      ],
+      topics: ['Inheritance', 'Constructors', 'Destructors', 'Multi-level Inheritance']
     }
   ]
 };

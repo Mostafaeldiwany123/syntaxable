@@ -309,6 +309,198 @@ int main() {
         'Counter temp = *this; count++; return temp;'
       ],
       topics: ['Operator Overloading']
+    },
+    {
+      id: 'point-equality',
+      title: 'Point Equality (Operator ==)',
+      difficulty: 'easy',
+      description: `Overloading the \`==\` operator allows you to compare two objects of your class to see if they are "equal" based on your own logic.\n\nDefine a class \`Point\` with:\n- Private members: \`x\` (int) and \`y\` (int)\n- A constructor \`Point(int xVal, int yVal)\`\n- Overload the \`==\` operator as a **member function** that returns \`true\` if both \`x\` and \`y\` are the same as the other point, and \`false\` otherwise.\n\nIn \`main\`, read the coordinates of two points (\`x1, y1\` and \`x2, y2\`). Create two \`Point\` objects and compare them using \`p1 == p2\$. If they are equal, print "Equal". Otherwise, print "Not Equal".`,
+      inputFormat: 'Four space-separated integers: x1 y1 x2 y2',
+      outputFormat: 'Print "Equal" or "Not Equal"',
+      constraints: '-1000 <= x, y <= 1000',
+      sampleInput: '3 4 3 4',
+      sampleOutput: 'Equal',
+      testCases: [
+        { input: '3 4 3 4', expectedOutput: 'Equal' },
+        { input: '0 0 1 1', expectedOutput: 'Not Equal' },
+        { input: '-5 10 -5 10', expectedOutput: 'Equal' }
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+class Point {
+private:
+    int x, y;
+public:
+    Point(int xVal, int yVal) : x(xVal), y(yVal) {}
+    
+    // Overload == operator here
+};
+
+int main() {
+    int x1, y1, x2, y2;
+    cin >> x1 >> y1 >> x2 >> y2;
+    
+    Point p1(x1, y1);
+    Point p2(x2, y2);
+    
+    if (p1 == p2) {
+        cout << "Equal" << endl;
+    } else {
+        cout << "Not Equal" << endl;
+    }
+    
+    return 0;
+}`,
+      hints: [
+        'Member function signature: bool operator==(const Point& other)',
+        'Inside the function: return (x == other.x && y == other.y);'
+      ],
+      topics: ['Operator Overloading']
+    },
+    {
+      id: 'distance-subtraction',
+      title: 'Distance Subtraction (Operator -)',
+      difficulty: 'medium',
+      description: `You can overload the \`-\` operator to perform a specific action, like calculating the distance between two objects.\n\nDefine a class \`Point1D\` with:\n- Private member: \`x\` (int)\n- Constructor \`Point1D(int xVal)\`\n- Overload the \`-\` operator as a **member function** that returns the **absolute distance** between this point's \`x\` and the other point's \`x\`. (The return type should be \`int\`).\n\nIn \`main\`, read two integers \`x1\` and \`x2\`, create two \`Point1D\` objects, and print the result of \`p1 - p2\$.`,
+      inputFormat: 'Two space-separated integers: x1 x2',
+      outputFormat: 'Print the absolute distance (int).',
+      constraints: '-1000 <= x1, x2 <= 1000',
+      sampleInput: '5 9',
+      sampleOutput: '4',
+      testCases: [
+        { input: '5 9', expectedOutput: '4' },
+        { input: '10 2', expectedOutput: '8' },
+        { input: '-3 4', expectedOutput: '7' }
+      ],
+      starterCode: `#include <iostream>
+#include <cmath>
+using namespace std;
+
+class Point1D {
+private:
+    int x;
+public:
+    Point1D(int xVal) : x(xVal) {}
+    
+    // Overload - operator here
+};
+
+int main() {
+    int x1, x2;
+    cin >> x1 >> x2;
+    
+    Point1D p1(x1);
+    Point1D p2(x2);
+    
+    cout << p1 - p2 << endl;
+    
+    return 0;
+}`,
+      hints: [
+        'Signature: int operator-(const Point1D& other)',
+        'Use the abs() function from <cmath> to get the absolute difference: return abs(x - other.x);'
+      ],
+      topics: ['Operator Overloading']
+    },
+    {
+      id: 'greater-than-measurement',
+      title: 'Comparing Measurements (Operator >)',
+      difficulty: 'medium',
+      description: `Let's practice overloading the \`>\` operator to compare two measurements.\n\nDefine a class \`Measurement\` with:\n- Private members: \`meters\` (int), \`centimeters\` (int)\n- Constructor \`Measurement(int m, int c)\`\n- Overload the \`>\` operator as a member function to return \`true\` if this measurement is strictly greater than the other measurement, and \`false\` otherwise.\n\nIn \`main\`, read two measurements \`m1 c1\` and \`m2 c2\`. Print "First is longer", "Second is longer", or "Equal" appropriately using your overloaded operators (you might only need \`>\` if you use it cleverly, e.g., if \`!(m1 > m2) && !(m2 > m1)\` they are equal).`,
+      inputFormat: 'Four integers: m1 c1 m2 c2',
+      outputFormat: 'Print "First is longer", "Second is longer", or "Equal".',
+      constraints: '0 <= m <= 1000, 0 <= c < 100',
+      sampleInput: '3 50 3 40',
+      sampleOutput: 'First is longer',
+      testCases: [
+        { input: '3 50 3 40', expectedOutput: 'First is longer' },
+        { input: '2 90 3 10', expectedOutput: 'Second is longer' },
+        { input: '5 0 5 0', expectedOutput: 'Equal' }
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+class Measurement {
+private:
+    int meters, centimeters;
+public:
+    Measurement(int m, int c) : meters(m), centimeters(c) {}
+    
+    // Overload > operator here
+};
+
+int main() {
+    int m1, c1, m2, c2;
+    cin >> m1 >> c1 >> m2 >> c2;
+    
+    Measurement meas1(m1, c1);
+    Measurement meas2(m2, c2);
+    
+    if (meas1 > meas2) {
+        cout << "First is longer" << endl;
+    } else if (meas2 > meas1) { // We can swap the operands!
+        cout << "Second is longer" << endl;
+    } else {
+        cout << "Equal" << endl;
+    }
+    
+    return 0;
+}`,
+      hints: [
+        'Signature: bool operator>(const Measurement& other)',
+        'Inside operator>: if (meters > other.meters) return true; else if (meters == other.meters && centimeters > other.centimeters) return true; else return false;'
+      ],
+      topics: ['Operator Overloading']
+    },
+    {
+      id: 'house-room-aggregation',
+      title: 'House and Room (Aggregation)',
+      difficulty: 'easy',
+      description: `Aggregation represents a "has-a" relationship.\n\nDefine a class \`Room\` with:\n- Private member: \`area\` (int)\n- Constructor \`Room(int a)\`\n- Getter \`int getArea()\`\n\nDefine a class \`House\` that aggregates a \`Room\`:\n- Private member: \`Room livingRoom\`\n- Constructor \`House(int roomArea)\` that initializes the \`livingRoom\` using an initialization list.\n- Public method \`void show()\` that prints "House has a living room of area [area]"\n\nIn \`main\`, read an area integer, create a \`House\`, and call \`show()\$.`,
+      inputFormat: 'A single integer (area).',
+      outputFormat: 'Print: House has a living room of area [area]',
+      constraints: '1 <= area <= 1000',
+      sampleInput: '250',
+      sampleOutput: 'House has a living room of area 250',
+      testCases: [
+        { input: '250', expectedOutput: 'House has a living room of area 250' },
+        { input: '100', expectedOutput: 'House has a living room of area 100' }
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+class Room {
+private:
+    int area;
+public:
+    Room(int a) : area(a) {}
+    int getArea() { return area; }
+};
+
+class House {
+private:
+    Room livingRoom;
+public:
+    // Initialize the aggregated object in the constructor list
+    House(int roomArea) : livingRoom(roomArea) {}
+    
+    void show() {
+        cout << "House has a living room of area " << livingRoom.getArea() << endl;
+    }
+};
+
+int main() {
+    int area;
+    cin >> area;
+    House h(area);
+    h.show();
+    return 0;
+}`,
+      hints: [
+        'This is mostly a typing exercise to understand syntax. Ensure the House constructor uses the initializer list: House(int roomArea) : livingRoom(roomArea) {}'
+      ],
+      topics: ['Aggregation']
     }
   ]
 };

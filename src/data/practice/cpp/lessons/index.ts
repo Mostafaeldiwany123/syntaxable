@@ -18,6 +18,8 @@ import { oopPart2 } from './10-oop-part-2';
 import { oopPart3 } from './11-oop-part-3';
 import { oopPart4 } from './12-oop-part-4';
 import { oopPart5 } from './13-oop-part-5';
+import { oopPart6 } from './14-oop-part-6';
+import { templates } from './15-templates';
 import type { Lesson } from '../../types';
 
 export const cppLessons: Lesson[] = [
@@ -41,4 +43,6 @@ export const cppLessons: Lesson[] = [
   oopPart3,
   oopPart4,
   oopPart5,
+  oopPart6,
+  templates,
 ].sort((a, b) => a.order - b.order);
