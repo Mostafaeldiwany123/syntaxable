@@ -104,12 +104,23 @@ const analyzeCode = (sourceCode: string): InputAnalysis => {
   let lastPrompt = '';
   
   lines.forEach((line, lineIndex) => {
+    // Clear lastPrompt if the line indicates a block/class/method closure or new definition,
+    // to prevent prompts from leaking across scopes.
+    if (line.includes('}') && !line.includes('cout')) {
+      lastPrompt = '';
+    }
+    if (/^\s*(class|struct|void|int|double|float|bool|char|string)\s+\w+/.test(line)) {
+      lastPrompt = '';
+    }
+
     // Check for cout prompts on this line
     const coutMatch = line.match(/(?:std::)?cout\s*<<\s*"([^"]+)"/);
     if (coutMatch) {
       lastPrompt = coutMatch[1];
     }
     
+    let hasInputOnLine = false;
+
     // Check for cin >> variable; statements
     let cinMatch;
     const lineCinRegex = /(?:std::)?cin\s*>>\s*([a-zA-Z_][a-zA-Z0-9_]*)/g;
@@ -119,6 +130,7 @@ const analyzeCode = (sourceCode: string): InputAnalysis => {
         variableName: cinMatch[1],
         lineNumber: lineIndex + 1
       });
+      hasInputOnLine = true;
     }
     
     // Check for getline(cin, variable) statements
@@ -129,6 +141,11 @@ const analyzeCode = (sourceCode: string): InputAnalysis => {
         variableName: getlineMatch[1],
         lineNumber: lineIndex + 1
       });
+      hasInputOnLine = true;
+    }
+
+    if (hasInputOnLine) {
+      lastPrompt = '';
     }
   });
   

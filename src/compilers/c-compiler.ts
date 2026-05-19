@@ -92,12 +92,23 @@ const analyzeCode = (sourceCode: string): InputAnalysis => {
   let lastPrompt = '';
   
   lines.forEach((line, lineIndex) => {
+    // Clear lastPrompt if the line indicates a block/class/method closure or new definition,
+    // to prevent prompts from leaking across scopes.
+    if (line.includes('}') && !line.includes('printf')) {
+      lastPrompt = '';
+    }
+    if (/^\s*(void|int|double|float|char)\s+\w+/.test(line)) {
+      lastPrompt = '';
+    }
+
     // Check for printf prompts on this line
     const printfMatch = line.match(/printf\s*\(\s*"([^"]+)"/);
     if (printfMatch) {
       lastPrompt = printfMatch[1];
     }
     
+    let hasInputOnLine = false;
+
     // Check for scanf inputs on this line
     const scanfMatch = line.match(/scanf\s*\([^,]*,\s*&?\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\)/);
     if (scanfMatch) {
@@ -106,6 +117,7 @@ const analyzeCode = (sourceCode: string): InputAnalysis => {
         variableName: scanfMatch[1],
         lineNumber: lineIndex + 1
       });
+      hasInputOnLine = true;
     }
     
     // Check for fgets inputs on this line
@@ -116,6 +128,7 @@ const analyzeCode = (sourceCode: string): InputAnalysis => {
         variableName: fgetsMatch[1],
         lineNumber: lineIndex + 1
       });
+      hasInputOnLine = true;
     }
     
     // Check for gets inputs on this line (deprecated but still used)
@@ -126,6 +139,11 @@ const analyzeCode = (sourceCode: string): InputAnalysis => {
         variableName: getsMatch[1],
         lineNumber: lineIndex + 1
       });
+      hasInputOnLine = true;
+    }
+
+    if (hasInputOnLine) {
+      lastPrompt = '';
     }
   });
   

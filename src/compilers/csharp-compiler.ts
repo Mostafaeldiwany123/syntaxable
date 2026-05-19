@@ -92,6 +92,15 @@ const analyzeCode = (sourceCode: string): InputAnalysis => {
   let lastPrompt = '';
   
   lines.forEach((line, lineIndex) => {
+    // Clear lastPrompt if the line indicates a block/class/method closure or new definition,
+    // to prevent prompts from leaking across scopes.
+    if (line.includes('}') && !line.includes('Console.Write')) {
+      lastPrompt = '';
+    }
+    if (/^\s*(class|namespace|void|int|double|float|bool|char|string)\s+\w+/.test(line)) {
+      lastPrompt = '';
+    }
+
     // Check for Console.Write prompts on this line
     const writeMatch = line.match(/Console\.Write\s*\(\s*"([^"]+)"/);
     if (writeMatch) {
@@ -104,6 +113,8 @@ const analyzeCode = (sourceCode: string): InputAnalysis => {
       // This is output only, not a prompt for input
     }
     
+    let hasInputOnLine = false;
+
     // Check for Console.ReadLine() statements
     const readLineMatch = line.match(/Console\.ReadLine\s*\(\s*\)/);
     if (readLineMatch) {
@@ -116,7 +127,7 @@ const analyzeCode = (sourceCode: string): InputAnalysis => {
         variableName: varName,
         lineNumber: lineIndex + 1
       });
-      lastPrompt = ''; // Reset prompt after using
+      hasInputOnLine = true;
     }
     
     // Check for Console.Read() statements (reads single character)
@@ -127,6 +138,10 @@ const analyzeCode = (sourceCode: string): InputAnalysis => {
         variableName: 'char',
         lineNumber: lineIndex + 1
       });
+      hasInputOnLine = true;
+    }
+
+    if (hasInputOnLine) {
       lastPrompt = '';
     }
   });
