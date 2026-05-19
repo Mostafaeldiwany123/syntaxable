@@ -105,38 +105,45 @@ const ProjectsPage = () => {
 
   return (
     <div className="min-h-full">
-      <div className="border-b border-border">
+      <div className="border-b border-border/30 bg-background/25 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">Your Projects</h1>
-              <p className="text-muted-foreground mt-1 text-sm sm:text-base">Manage all your collaborative projects here.</p>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground via-foreground/90 to-foreground/75 bg-clip-text text-transparent">
+                Your Projects
+              </h1>
+              <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+                Manage all your collaborative projects here.
+              </p>
             </div>
-            <Button onClick={handleOpenCreateDialog} className="w-full sm:w-auto">
+            <Button 
+              onClick={handleOpenCreateDialog} 
+              className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 font-medium"
+            >
               <Plus className="mr-2 h-4 w-4" /> New Project
             </Button>
           </div>
         </div>
       </div>
       
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10 relative z-10">
         <div>
           <CreateProjectDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
         </div>
 
-        <div className="mb-6 mt-4 flex flex-col sm:flex-row gap-4">
+        <div className="mb-6 mt-2 flex flex-col sm:flex-row gap-4">
           <div className="relative flex-grow">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70" />
             <Input 
               placeholder="Search projects..." 
-              className="pl-10"
+              className="pl-10 bg-card/40 border-border/40 backdrop-blur-sm focus-visible:border-primary/50 transition-colors"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="w-full sm:w-[180px]">
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-card/40 border-border/40 backdrop-blur-sm focus-visible:border-primary/50 transition-colors">
                 <SelectValue placeholder="Sort by..." />
               </SelectTrigger>
               <SelectContent>
@@ -149,10 +156,17 @@ const ProjectsPage = () => {
         </div>
 
         {sortedAndFilteredProjects.length === 0 ? (
-          <div className="text-center py-16 border border-dashed border-border rounded-lg">
-            <Folder className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+          <div className="text-center py-16 border border-dashed border-border/40 rounded-xl bg-card/20 backdrop-blur-sm">
+            <Folder className="h-12 w-12 text-muted-foreground/45 mx-auto mb-4" />
             <p className="text-muted-foreground">{searchTerm ? "No projects match your search." : "You don't have any projects yet."}</p>
-            {!searchTerm && <Button className="mt-4" onClick={handleOpenCreateDialog}>Create a New Project</Button>}
+            {!searchTerm && (
+              <Button 
+                className="mt-4 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-300" 
+                onClick={handleOpenCreateDialog}
+              >
+                Create a New Project
+              </Button>
+            )}
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

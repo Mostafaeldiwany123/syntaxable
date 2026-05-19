@@ -42,68 +42,91 @@ export const ProjectCard = ({ project, isOwner, onRename, onDelete }: ProjectCar
 
   return (
     <Card
-      className="group flex flex-col hover:border-primary/80 hover:shadow-lg transition-all duration-300 bg-secondary/30 border-border/50"
+      className="group flex flex-col hover:border-primary/50 hover:bg-card/65 transition-all duration-300 bg-card/45 backdrop-blur-sm border-border/40 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] rounded-xl overflow-hidden"
     >
-      <CardHeader className="cursor-pointer" onClick={() => navigate(`/editor/${project.room_id}`)}>
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg shrink-0">
-            <img src={getProjectTypeIcon(project.project_type)} alt={project.project_type} className="h-5 w-5" />
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between gap-3">
+          <div 
+            className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer" 
+            onClick={() => navigate(`/editor/${project.room_id}`)}
+          >
+            <div className="p-2 bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20 rounded-lg shrink-0">
+              <img src={getProjectTypeIcon(project.project_type)} alt={project.project_type} className="h-5 w-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <CardTitle className="text-base font-semibold group-hover:text-primary transition-colors truncate tracking-tight">
+                {project.name}
+              </CardTitle>
+              <CardDescription className="text-xs text-muted-foreground/80 mt-0.5">
+                {lastEdited}
+              </CardDescription>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors truncate">{project.name}</CardTitle>
-            <CardDescription>{lastEdited}</CardDescription>
-          </div>
-          {isOwner ? (
-            <Badge variant="outline" className="border-primary/50 text-primary ml-2">Owner</Badge>
-          ) : (
-            <div className="flex items-center gap-2 ml-2">
-              <Avatar className="h-6 w-6">
-                <AvatarImage src={project.owner_avatar_url || undefined} alt={project.owner_username || 'Owner'} />
-                <AvatarFallback className="text-xs">{project.owner_username?.charAt(0).toUpperCase()}</AvatarFallback>
-              </Avatar>
-              <span className="text-xs text-muted-foreground">{project.owner_username}</span>
+          {isOwner && (
+            <div onClick={(e) => e.stopPropagation()} className="shrink-0">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted/50 text-muted-foreground hover:text-foreground">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => onRename(project)}>
+                    <Pencil className="mr-2 h-4 w-4" /> Rename
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-red-500 focus:text-red-500"
+                    onClick={() => onDelete(project)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           )}
         </div>
       </CardHeader>
-      <CardContent className="flex-grow" />
-      <CardFooter className="flex justify-between items-center pt-4 border-t border-border/50">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+
+      <CardContent className="flex-grow py-2 pb-4">
+        {isOwner ? (
+          <div className="flex items-center gap-1.5 text-xs text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20 w-fit">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            <span className="font-medium">Owner</span>
+          </div>
+        ) : (
+          <div 
+            className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/40 px-2.5 py-1 rounded-full border border-border/40 w-fit max-w-full"
+            title={`Shared by ${project.owner_username || 'another user'}`}
+          >
+            <span className="shrink-0 text-[10px] uppercase tracking-wider font-semibold opacity-70">Shared by</span>
+            <Avatar className="h-4 w-4 shrink-0 border border-background">
+              <AvatarImage src={project.owner_avatar_url || undefined} alt={project.owner_username || 'Owner'} />
+              <AvatarFallback className="text-[9px] bg-primary/20 text-primary-foreground font-semibold">
+                {project.owner_username?.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="font-medium text-foreground truncate max-w-[120px]">
+              {project.owner_username}
+            </span>
+          </div>
+        )}
+      </CardContent>
+
+      <CardFooter className="flex justify-between items-center py-3 border-t border-border/30 bg-black/10 px-6">
+        <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <div className="flex items-center gap-1.5" title={`${project.commit_count} commits`}>
-            <GitCommit className="h-4 w-4" />
-            <span>{project.commit_count}</span>
+            <GitCommit className="h-3.5 w-3.5 text-muted-foreground/75" />
+            <span>{project.commit_count} {project.commit_count === 1 ? 'commit' : 'commits'}</span>
           </div>
         </div>
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-primary hover:bg-primary/10"
-            onClick={() => navigate(`/editor/${project.room_id}`)}
-          >
-            Open <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-          {isOwner && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onRename(project)}>
-                  <Pencil className="mr-2 h-4 w-4" /> Rename
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-red-500 focus:text-red-500"
-                  onClick={() => onDelete(project)}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" /> Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-xs text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 group/btn h-8 py-1"
+          onClick={() => navigate(`/editor/${project.room_id}`)}
+        >
+          Open <ArrowRight className="ml-1.5 h-3.5 w-3.5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+        </Button>
       </CardFooter>
     </Card>
   );

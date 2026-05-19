@@ -22,6 +22,17 @@ export default {
         sans: ["var(--font-sans)", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"],
       },
+      fontWeight: {
+        thin: "300",
+        extralight: "300",
+        light: "300",
+        normal: "400",
+        medium: "400",
+        semibold: "400",
+        bold: "400",
+        extrabold: "700",
+        black: "700",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

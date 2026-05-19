@@ -12,6 +12,7 @@ import { InboxSheet } from "../inbox/InboxSheet";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 interface SidebarProps {
   onNavigate?: () => void;
@@ -71,7 +72,6 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
   const navItems = [
     { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/projects", icon: FolderKanban, label: "Projects" },
-    { to: "/learn", icon: GraduationCap, label: "Learn (Beta)" },
   ];
 
   const PRACTICE_URL_KEY = 'practice-last-url';
@@ -107,10 +107,10 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
     <>
       <aside
         className={`flex flex-col bg-card h-full overflow-hidden transition-all duration-300 ease-in-out ${isMobile
-          ? 'w-60 border-r-0'
+          ? 'w-full border-r-0'
           : isCollapsed
-            ? 'w-16 border-r border-border'
-            : 'w-60 border-r border-border'
+            ? 'w-16 border-r border-border/40'
+            : 'w-60 border-r border-border/40'
           }`}
       >
         {/* Logo */}
@@ -139,21 +139,31 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
               end={item.to === "/dashboard"}
               onClick={handleNavClick}
               className={({ isActive }) =>
-                `flex items-center text-sm font-medium transition-all duration-200 rounded-lg ${isCollapsed && !isMobile
-                  ? `justify-center p-2.5 ${isActive
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  }`
-                  : `px-3 py-2 ${isActive
-                    ? "bg-primary/10 text-primary border-l-2 border-primary -ml-[2px] px-[calc(0.75rem+2px)]"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  }`
+                `relative flex items-center text-sm font-medium transition-colors duration-200 rounded-lg ${isCollapsed && !isMobile
+                  ? "justify-center p-2.5"
+                  : "px-3 py-2"
+                } ${isActive 
+                  ? "text-primary" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/35"
                 }`
               }
               title={isCollapsed && !isMobile ? item.label : undefined}
             >
-              <item.icon className={`${isCollapsed && !isMobile ? '' : 'mr-3'} h-4 w-4 shrink-0`} />
-              {(!isCollapsed || isMobile) && <span className="whitespace-nowrap">{item.label}</span>}
+              {({ isActive }) => (
+                <>
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeTabIndicator"
+                      className="absolute inset-0 bg-primary/10 rounded-lg"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <span className={`relative z-10 flex items-center w-full ${isCollapsed && !isMobile ? 'justify-center' : ''}`}>
+                    <item.icon className={`${isCollapsed && !isMobile ? '' : 'mr-3'} h-4 w-4 shrink-0`} />
+                    {(!isCollapsed || isMobile) && <span className="whitespace-nowrap">{item.label}</span>}
+                  </span>
+                </>
+              )}
             </NavLink>
           ))}
 
@@ -164,19 +174,25 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
               <button
                 onClick={handlePracticeClick}
                 title={isCollapsed && !isMobile ? "Practice" : undefined}
-                className={`flex items-center text-sm font-medium transition-all duration-200 rounded-lg w-full ${isCollapsed && !isMobile
-                  ? `justify-center p-2.5 ${isPracticeActive
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  }`
-                  : `px-3 py-2 ${isPracticeActive
-                    ? "bg-primary/10 text-primary border-l-2 border-primary -ml-[2px] px-[calc(0.75rem+2px)]"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  }`
+                className={`relative flex items-center text-sm font-medium transition-colors duration-200 rounded-lg w-full ${isCollapsed && !isMobile
+                  ? "justify-center p-2.5"
+                  : "px-3 py-2"
+                } ${isPracticeActive 
+                  ? "text-primary" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/35"
                 }`}
               >
-                <Dumbbell className={`${isCollapsed && !isMobile ? '' : 'mr-3'} h-4 w-4 shrink-0`} />
-                {(!isCollapsed || isMobile) && <span className="whitespace-nowrap">Practice</span>}
+                {isPracticeActive && (
+                  <motion.div
+                    layoutId="activeTabIndicator"
+                    className="absolute inset-0 bg-primary/10 rounded-lg"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+                <span className={`relative z-10 flex items-center w-full ${isCollapsed && !isMobile ? 'justify-center' : ''}`}>
+                  <Dumbbell className={`${isCollapsed && !isMobile ? '' : 'mr-3'} h-4 w-4 shrink-0`} />
+                  {(!isCollapsed || isMobile) && <span className="whitespace-nowrap">Practice</span>}
+                </span>
               </button>
             );
           })()}
@@ -207,21 +223,31 @@ export const Sidebar = ({ onNavigate, isCollapsed = false, onToggleCollapse, isM
               to={item.to}
               onClick={handleNavClick}
               className={({ isActive }) =>
-                `flex items-center text-sm font-medium transition-all duration-200 rounded-lg ${isCollapsed && !isMobile
-                  ? `justify-center p-2.5 ${isActive
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  }`
-                  : `px-3 py-2 ${isActive
-                    ? "bg-primary/10 text-primary border-l-2 border-primary -ml-[2px] px-[calc(0.75rem+2px)]"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  }`
+                `relative flex items-center text-sm font-medium transition-colors duration-200 rounded-lg ${isCollapsed && !isMobile
+                  ? "justify-center p-2.5"
+                  : "px-3 py-2"
+                } ${isActive 
+                  ? "text-primary" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/35"
                 }`
               }
               title={isCollapsed && !isMobile ? item.label : undefined}
             >
-              <item.icon className={`${isCollapsed && !isMobile ? '' : 'mr-3'} h-4 w-4 shrink-0`} />
-              {(!isCollapsed || isMobile) && <span className="whitespace-nowrap">{item.label}</span>}
+              {({ isActive }) => (
+                <>
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeTabIndicator"
+                      className="absolute inset-0 bg-primary/10 rounded-lg"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <span className={`relative z-10 flex items-center w-full ${isCollapsed && !isMobile ? 'justify-center' : ''}`}>
+                    <item.icon className={`${isCollapsed && !isMobile ? '' : 'mr-3'} h-4 w-4 shrink-0`} />
+                    {(!isCollapsed || isMobile) && <span className="whitespace-nowrap">{item.label}</span>}
+                  </span>
+                </>
+              )}
             </NavLink>
           ))}
         </nav>

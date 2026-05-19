@@ -8,15 +8,17 @@ export interface LeaderboardUser {
     current_streak: number;
     longest_streak: number;
     problems_solved: number;
+    tier?: 'free' | 'pro' | 'admin';
+    description?: string | null;
 }
 
 export const useLeaderboard = () => {
     return useQuery<LeaderboardUser[], Error>({
-        queryKey: ['leaderboard'],
+        queryKey: ['leaderboard_v2'],
         queryFn: async () => {
             const { data, error } = await supabase
                 .from('profiles')
-                .select('id, username, avatar_url, current_streak, longest_streak, problems_solved')
+                .select('id, username, avatar_url, current_streak, longest_streak, problems_solved, tier, description')
                 .not('username', 'is', null)
                 .order('current_streak', { ascending: false })
                 .order('problems_solved', { ascending: false });
@@ -24,6 +26,6 @@ export const useLeaderboard = () => {
             if (error) throw error;
             return (data as LeaderboardUser[]) || [];
         },
-        staleTime: 1000 * 60 * 5, // 5 minutes
+        staleTime: 0, // Always fetch fresh in dev/production to get up-to-date bio and rankings
     });
 };

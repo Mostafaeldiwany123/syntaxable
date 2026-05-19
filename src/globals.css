@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500;600;700&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -15,40 +15,40 @@ body {
 @layer base {
   :root {
     /* Fonts */
-    --font-heading: 'Assistant', sans-serif;
-    --font-sans: 'Assistant', sans-serif;
+    --font-heading: 'PT Sans', sans-serif;
+    --font-sans: 'PT Sans', sans-serif;
     --font-mono: 'Inconsolata', monospace;
 
-    /* Clean dark palette - inspired by Linear, Vercel */
-    --background: 0 0% 7%;
-    --foreground: 0 0% 95%;
+    /* Premium dark palette — pitch-black bg, muted tones */
+    --background: 0 0% 3%;
+    --foreground: 0 0% 82%;
 
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 82%;
 
-    --popover: 0 0% 12%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 82%;
 
-    --primary: 210 100% 60%;
+    --primary: 210 100% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 90%;
+    --secondary: 0 0% 6%;
+    --secondary-foreground: 0 0% 65%;
 
-    --muted: 0 0% 40%;
-    --muted-foreground: 0 0% 55%;
+    --muted: 0 0% 9%;
+    --muted-foreground: 0 0% 34%;
 
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 90%;
+    --accent: 0 0% 6%;
+    --accent-foreground: 0 0% 65%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 210 100% 60%;
+    --border: 0 0% 13%;
+    --input: 0 0% 13%;
+    --ring: 210 100% 55%;
 
-    --radius: 0.5rem;
+    --radius: 0.375rem;
 
     --accent-green: 152 69% 50%;
     --accent-orange: 38 92% 50%;
@@ -59,9 +59,9 @@ body {
     --pro-light: #e6c98f;
     --pro-primary: #c5a059;
     --pro-dark: #b08d4a;
-    --pro-bg: #0f0e0a;
-    --pro-grad-1: #1a1812;
-    --pro-grad-2: #252015;
+    --pro-bg: #080808;
+    --pro-grad-1: #0e0e0a;
+    --pro-grad-2: #161410;
 
     /* Social Colors */
     --social-whatsapp: #25D366;
@@ -71,20 +71,20 @@ body {
 
     /* Editor Theme (Must be Hex format for Monaco) */
     --editor-base: vs-dark;
-    --editor-bg: #121212;
-    --editor-fg: #f2f2f2;
-    --editor-line-highlight: #1a1a1a;
-    --editor-line-number: #4a4a4a;
-    --editor-line-number-active: #a0a0a0;
-    --editor-selection: #3a3a3a;
-    --editor-selection-inactive: #1a1a1a;
-    --editor-indent-guide: #2a2a2a;
-    --editor-indent-guide-active: #3a3a3a;
-    --editor-cursor: #a0a0a0;
-    --editor-whitespace: #2a2a2a;
-    --editor-widget-bg: #1e1e1e;
-    --editor-widget-border: #333333;
-    --editor-suggest-selected: #3a3a3a;
+    --editor-bg: #080808;
+    --editor-fg: #ebebeb;
+    --editor-line-highlight: #0e0e0e;
+    --editor-line-number: #3a3a3a;
+    --editor-line-number-active: #888888;
+    --editor-selection: #1e1e1e;
+    --editor-selection-inactive: #111111;
+    --editor-indent-guide: #181818;
+    --editor-indent-guide-active: #282828;
+    --editor-cursor: #888888;
+    --editor-whitespace: #181818;
+    --editor-widget-bg: #0a0a0a;
+    --editor-widget-border: #1e1e1e;
+    --editor-suggest-selected: #1a1a1a;
   }
 
   :root[data-theme='light'] {
@@ -485,6 +485,10 @@ body {
 @layer base {
   * {
     @apply border-border;
+  }
+
+  h1, h2, h3, h4, h5, h6, strong, b, th {
+    font-weight: 400;
   }
 
   *:focus-visible {

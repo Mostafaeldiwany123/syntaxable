@@ -58,7 +58,7 @@ const AchievementsPage = () => {
                 <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div>
-                            <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+                            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground via-foreground/90 to-foreground/75 bg-clip-text text-transparent">
                                 Achievements
                             </h1>
                             <p className="text-muted-foreground mt-1 text-sm sm:text-base">
