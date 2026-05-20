@@ -9,7 +9,6 @@ import { useSidebar } from '@/context/SidebarContext';
 import CodeEditor from '@/components/editor/CodeEditor';
 import CompilationOutput from '@/components/editor/CompilationOutput';
 import PracticePanel from './PracticePanel';
-import ProblemsSidebar from './ProblemsSidebar';
 import { AIAgentPanel } from '@/components/ai-agent';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -64,7 +63,15 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
 }) => {
   const { user } = useAuth();
   const { data: progress } = usePracticeProgress();
-  const { collapseForAIAgent } = useSidebar();
+  const {
+    collapseForAIAgent,
+    setPracticeData,
+    showPracticeSidebar,
+    setShowPracticeSidebar,
+    isCollapsed,
+    setCollapsed,
+    setMobileOpen,
+  } = useSidebar();
   const isMobile = useIsMobile();
   const [practiceCode, setPracticeCode] = useState<string>(() => {
     // Custom set: use the saved solution prop
@@ -81,10 +88,29 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
     return savedProgress?.solution_code || currentProblem.starterCode;
   });
   const [isCompilationOutputOpen, setIsCompilationOutputOpen] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
   const [isAIAgentOpen, setIsAIAgentOpen] = useState(false);
   const prevIsAIAgentOpenRef = useRef(false);
 
+  // Memoize completedProblems to avoid unstable dependency references
+  const completedProblems = React.useMemo(() => new Set(progress?.map(p => p.problem_id) || []), [progress]);
+
+  // Register practice data to the sidebar context
+  useEffect(() => {
+    setPracticeData({
+      lessons,
+      course,
+      currentProblemId: currentProblem.id,
+      completedProblems,
+      onSelectProblem,
+    });
+    setShowPracticeSidebar(true);
+
+    return () => {
+      setPracticeData(null);
+      setShowPracticeSidebar(false);
+    };
+  }, [lessons, course, currentProblem.id, completedProblems, onSelectProblem, setPracticeData, setShowPracticeSidebar]);
+ 
   // Update code when switching problems
   React.useEffect(() => {
     if (savedSolutionCode) {
@@ -102,7 +128,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
       }
     }
   }, [currentProblem.id, currentProblem.starterCode, progress, savedSolutionCode]);
-
+ 
   // Only collapse sidebar when AI agent opens, don't restore when it closes
   useEffect(() => {
     if (isAIAgentOpen && !prevIsAIAgentOpenRef.current) {
@@ -111,10 +137,9 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
     }
     prevIsAIAgentOpenRef.current = isAIAgentOpen;
   }, [isAIAgentOpen, collapseForAIAgent]);
-
-  const completedProblems = new Set(progress?.map(p => p.problem_id) || []);
+ 
   const isCompleted = completedProblems.has(currentProblem.id);
-
+ 
   // Get file extension and name based on language
   const getFileExtension = (lang: string): string => {
     switch (lang) {
@@ -126,16 +151,16 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
       default: return 'cpp';
     }
   };
-
+ 
   const fileExtension = getFileExtension(course.language);
   const fileName = `main.${fileExtension}`;
-
+ 
   // Save code to localStorage when it changes
   const handleCodeChange = useCallback((value: string) => {
     setPracticeCode(value);
     localStorage.setItem(`practice-code-${currentProblem.id}`, value);
   }, [currentProblem.id]);
-
+ 
   // Handle AI agent toggle
   const handleAIAgentToggle = useCallback(() => {
     if (!aiEnabled) {
@@ -146,7 +171,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
     }
     setIsAIAgentOpen(!isAIAgentOpen);
   }, [aiEnabled, isAIAgentOpen]);
-
+ 
   const getChatContext = useCallback(() => ({
     type: 'practice' as const,
     problemTitle: currentProblem.title,
@@ -162,6 +187,23 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
     sampleOutput: currentProblem.sampleOutput,
   }), [practiceCode, currentProblem, course.language, fileName]);
 
+  const handleAllQuestionsToggle = () => {
+    if (isMobile) {
+      setMobileOpen(true);
+    } else {
+      if (isCollapsed) {
+        setCollapsed(false);
+        setShowPracticeSidebar(true);
+      } else {
+        if (showPracticeSidebar) {
+          setCollapsed(true);
+        } else {
+          setShowPracticeSidebar(true);
+        }
+      }
+    }
+  };
+ 
   return (
     <div className="h-full flex flex-col">
       {/* Header with Navigation */}
@@ -178,21 +220,21 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
             {isCompleted && <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />}
           </div>
         </div>
-
+ 
         {/* Navigation Controls */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-auto pl-2 min-w-max">
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setShowSidebar(!showSidebar)}
+            onClick={handleAllQuestionsToggle}
             className="gap-1 px-2"
           >
             <List className="h-4 w-4" />
             <span className="hidden sm:inline">All Questions</span>
           </Button>
-
+ 
           <div className="h-6 w-px bg-border mx-0.5 sm:mx-1" />
-
+ 
           <Button
             variant="outline"
             size="sm"
@@ -215,23 +257,9 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
           </Button>
         </div>
       </div>
-
+ 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar (conditionally shown) */}
-        {showSidebar && (
-          <ProblemsSidebar
-            lessons={lessons}
-            isOpen={true}
-            onClose={() => setShowSidebar(false)}
-            onSelectProblem={(problem) => {
-              onSelectProblem(problem);
-            }}
-            selectedProblemId={currentProblem.id}
-            completedProblems={completedProblems}
-            language={course.language.toUpperCase()}
-          />
-        )}
 
         {/* Code and Problem Panels */}
         <div className="flex-1">

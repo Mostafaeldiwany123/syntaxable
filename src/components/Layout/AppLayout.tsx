@@ -10,8 +10,7 @@ import { DemoPopup } from "@/components/landing-page";
 
 export const AppLayout = () => {
   const isMobile = useIsMobile();
-  const { isCollapsed, toggleCollapse, setCollapsed } = useSidebar();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { isCollapsed, toggleCollapse, setCollapsed, isMobileOpen, setMobileOpen } = useSidebar();
 
   if (isMobile) {
     return (
@@ -22,12 +21,12 @@ export const AppLayout = () => {
             <img src="/syntaxable.png" alt="Syntaxable" className="h-7 w-7 object-contain" />
             <h1 className="text-lg font-bold text-foreground">Syntaxable</h1>
           </Link>
-          <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(true)}>
+          <Button variant="ghost" size="icon" onClick={() => setMobileOpen(true)}>
             <Menu className="h-5 w-5" />
           </Button>
         </header>
         <AnimatePresence>
-          {isSidebarOpen && (
+          {isMobileOpen && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -36,16 +35,16 @@ export const AppLayout = () => {
               className="fixed inset-0 z-50 bg-background flex flex-col"
             >
               <header className="flex items-center justify-between px-4 py-3 border-b border-border h-14 shrink-0">
-                <Link to="/" className="flex items-center gap-2" onClick={() => setIsSidebarOpen(false)}>
+                <Link to="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
                   <img src="/syntaxable.png" alt="Syntaxable" className="h-7 w-7 object-contain" />
                   <h1 className="text-lg font-bold text-foreground">Syntaxable</h1>
                 </Link>
-                <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(false)}>
+                <Button variant="ghost" size="icon" onClick={() => setMobileOpen(false)}>
                   <X className="h-5 w-5" />
                 </Button>
               </header>
               <div className="flex-1 overflow-hidden">
-                <Sidebar onNavigate={() => setIsSidebarOpen(false)} isMobile={true} />
+                <Sidebar onNavigate={() => setMobileOpen(false)} isMobile={true} />
               </div>
             </motion.div>
           )}

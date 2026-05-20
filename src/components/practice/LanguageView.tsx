@@ -5,8 +5,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Course, Lesson, Problem } from '@/data/practiceProblems';
-import ProblemsSidebar from './ProblemsSidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useSidebar } from '@/context/SidebarContext';
 
 interface LanguageViewProps {
   course: Course;
@@ -42,9 +42,27 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
   selectedProblemId,
   completedProblems,
 }) => {
+  const { setPracticeData, setShowPracticeSidebar } = useSidebar();
   const isMobile = useIsMobile();
   const SESSION_SEARCH_KEY = `practice-search-${course.language}`;
   const SESSION_SCROLL_KEY = `practice-scroll-${course.language}`;
+
+  // Register practice data to the sidebar context
+  useEffect(() => {
+    setPracticeData({
+      lessons: course.lessons,
+      course,
+      currentProblemId: selectedProblemId,
+      completedProblems,
+      onSelectProblem,
+    });
+    setShowPracticeSidebar(true);
+
+    return () => {
+      setPracticeData(null);
+      setShowPracticeSidebar(false);
+    };
+  }, [course, course.lessons, selectedProblemId, completedProblems, onSelectProblem, setPracticeData, setShowPracticeSidebar]);
 
   const [searchQuery, setSearchQuery] = useState(() =>
     sessionStorage.getItem(SESSION_SEARCH_KEY) || ''
@@ -140,20 +158,6 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar */}
-        {!isMobile && (
-          <ProblemsSidebar
-            lessons={course.lessons}
-            isOpen={true}
-            onClose={() => {}}
-            onSelectProblem={onSelectProblem}
-            selectedProblemId={selectedProblemId}
-            completedProblems={completedProblems}
-            title={course.title}
-            language={course.language}
-          />
-        )}
-
         {/* Lessons Container */}
         <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 py-6">
           <div className="max-w-6xl mx-auto">
@@ -227,7 +231,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                             </Badge>
                           </div>
 
-                          <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                          <div className="h-2 w-full bg-secondary/30 border border-border/40 rounded-full overflow-hidden">
                             <div
                               className="h-full bg-primary transition-all duration-700 ease-out"
                               style={{ width: `${progress.percent}%` }}
