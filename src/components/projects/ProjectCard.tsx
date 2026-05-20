@@ -112,7 +112,7 @@ export const ProjectCard = ({ project, isOwner, onRename, onDelete }: ProjectCar
         )}
       </CardContent>
 
-      <CardFooter className="flex justify-between items-center py-3 border-t border-border/30 bg-black/10 px-6">
+      <CardFooter className="flex justify-between items-center py-3 border-t border-border/30 px-6">
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <div className="flex items-center gap-1.5" title={`${project.commit_count} commits`}>
             <GitCommit className="h-3.5 w-3.5 text-muted-foreground/75" />

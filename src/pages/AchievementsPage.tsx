@@ -8,6 +8,30 @@ import { useRewardStatus, useClaimReward } from "@/hooks/useAchievementRewards";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { motion, Variants } from "framer-motion";
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.04,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { y: 15, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 260,
+      damping: 22,
+    },
+  },
+};
 
 const AchievementsPage = () => {
     const { user } = useAuth();
@@ -52,26 +76,31 @@ const AchievementsPage = () => {
     };
 
     return (
-        <div className="min-h-full">
+        <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="min-h-full"
+        >
             {/* Header */}
             <div className="border-b border-border">
                 <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <div>
+                        <motion.div variants={itemVariants}>
                             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground via-foreground/90 to-foreground/75 bg-clip-text text-transparent">
                                 Achievements
                             </h1>
                             <p className="text-muted-foreground mt-1 text-sm sm:text-base">
                                 Track your progress and earn badges
                             </p>
-                        </div>
-                        <div className="flex items-center gap-2 px-4 py-2 bg-secondary/50 rounded-lg border border-border">
+                        </motion.div>
+                        <motion.div variants={itemVariants} className="flex items-center gap-2 px-4 py-2 bg-secondary/50 rounded-lg border border-border">
                             <Trophy className="h-5 w-5 text-yellow-500" />
                             <span className="font-semibold">
                                 {isLoading ? "..." : `${unlockedCount} / ${ACHIEVEMENTS.length}`}
                             </span>
                             <span className="text-muted-foreground text-sm">unlocked</span>
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
             </div>
@@ -102,68 +131,73 @@ const AchievementsPage = () => {
                             const IconComponent = achievement.icon;
 
                             return (
-                                <Card
+                                <motion.div
                                     key={achievement.id}
-                                    className={`relative flex flex-col items-center p-4 sm:p-6 transition-all duration-300 h-full ${isUnlocked
-                                        ? 'bg-card border-primary/30 hover:border-primary/50 hover:shadow-lg'
-                                        : 'bg-card/50 border-border/50 opacity-75'
-                                        }`}
+                                    variants={itemVariants}
+                                    className="h-full"
                                 >
-                                    {/* Circular Badge Container */}
-                                    <div className={`relative mb-3 sm:mb-4`}>
-                                        <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center transition-all duration-300 ${isUnlocked
-                                            ? 'bg-primary/10 ring-2 ring-primary/30'
-                                            : 'bg-secondary/50 ring-1 ring-border/50'
-                                            }`}>
-                                            <IconComponent
-                                                className="h-8 w-8 sm:h-10 sm:w-10"
-                                                isUnlocked={isUnlocked}
-                                            />
-                                        </div>
-                                        {isUnlocked && (
-                                            <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-primary rounded-full flex items-center justify-center">
-                                                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                </svg>
+                                    <Card
+                                        className={`relative flex flex-col items-center p-4 sm:p-6 transition-all duration-300 h-full ${isUnlocked
+                                            ? 'bg-card border-primary/30 hover:border-primary/50 hover:shadow-lg'
+                                            : 'bg-card/50 border-border/50 opacity-75'
+                                            }`}
+                                    >
+                                        {/* Circular Badge Container */}
+                                        <div className={`relative mb-3 sm:mb-4`}>
+                                            <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center transition-all duration-300 ${isUnlocked
+                                                ? 'bg-primary/10 ring-2 ring-primary/30'
+                                                : 'bg-secondary/50 ring-1 ring-border/50'
+                                                }`}>
+                                                <IconComponent
+                                                    className="h-8 w-8 sm:h-10 sm:w-10"
+                                                    isUnlocked={isUnlocked}
+                                                />
                                             </div>
-                                        )}
-                                    </div>
-
-                                    {/* Name */}
-                                    <h3 className={`text-sm sm:text-base font-semibold text-center mb-1 ${isUnlocked ? 'text-foreground' : 'text-muted-foreground'
-                                        }`}>
-                                        {achievement.name}
-                                    </h3>
-
-                                    {/* Description */}
-                                    <p className={`text-xs text-center mb-3 h-10 line-clamp-2 overflow-hidden flex items-center justify-center px-1 ${isUnlocked ? 'text-muted-foreground' : 'text-muted-foreground/60'
-                                        }`}>
-                                        {achievement.description}
-                                    </p>
-
-                                    {/* Progress or Unlocked */}
-                                    <div className="w-full mt-auto">
-                                        {!isUnlocked && status && 'progress' in status && status.total > 0 ? (
-                                            <div className="space-y-1">
-                                                <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
-                                                    <div
-                                                        className="h-full bg-primary/60 rounded-full transition-all duration-500"
-                                                        style={{ width: `${Math.min(100, (status.progress / status.total) * 100)}%` }}
-                                                    />
+                                            {isUnlocked && (
+                                                <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-primary rounded-full flex items-center justify-center">
+                                                    <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                    </svg>
                                                 </div>
-                                                <p className="text-[10px] text-muted-foreground text-center">
-                                                    {status.progress} / {status.total}
+                                            )}
+                                        </div>
+
+                                        {/* Name */}
+                                        <h3 className={`text-sm sm:text-base font-semibold text-center mb-1 ${isUnlocked ? 'text-foreground' : 'text-muted-foreground'
+                                            }`}>
+                                            {achievement.name}
+                                        </h3>
+
+                                        {/* Description */}
+                                        <p className={`text-xs text-center mb-3 h-10 line-clamp-2 overflow-hidden flex items-center justify-center px-1 ${isUnlocked ? 'text-muted-foreground' : 'text-muted-foreground/60'
+                                            }`}>
+                                            {achievement.description}
+                                        </p>
+
+                                        {/* Progress or Unlocked */}
+                                        <div className="w-full mt-auto">
+                                            {!isUnlocked && status && 'progress' in status && status.total > 0 ? (
+                                                <div className="space-y-1">
+                                                    <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
+                                                        <div
+                                                            className="h-full bg-primary/60 rounded-full transition-all duration-500"
+                                                            style={{ width: `${Math.min(100, (status.progress / status.total) * 100)}%` }}
+                                                        />
+                                                    </div>
+                                                    <p className="text-[10px] text-muted-foreground text-center">
+                                                        {status.progress} / {status.total}
+                                                    </p>
+                                                </div>
+                                            ) : isUnlocked ? (
+                                                <p className="text-[10px] text-primary font-medium text-center">
+                                                    Unlocked
                                                 </p>
-                                            </div>
-                                        ) : isUnlocked ? (
-                                            <p className="text-[10px] text-primary font-medium text-center">
-                                                Unlocked
-                                            </p>
-                                        ) : (
-                                            <div className="h-4" /> /* Spacer if no status to keep height */
-                                        )}
-                                    </div>
-                                </Card>
+                                            ) : (
+                                                <div className="h-4" /> /* Spacer if no status to keep height */
+                                            )}
+                                        </div>
+                                    </Card>
+                                </motion.div>
                             );
                         })}
                     </div>
@@ -188,7 +222,7 @@ const AchievementsPage = () => {
                 )}
 
                 {/* Reward System Section - Compact Cards Below Achievements */}
-                <div className="mt-8 pt-6 border-t border-border">
+                <motion.div variants={itemVariants} className="mt-8 pt-6 border-t border-border">
                     <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                         <Gift className="h-5 w-5 text-primary" />
                         Rewards
@@ -266,9 +300,9 @@ const AchievementsPage = () => {
                             )}
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

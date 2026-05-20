@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { motion, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase";
@@ -27,6 +28,29 @@ import { CreateProjectDialog } from "@/components/projects/CreateProjectDialog";
 import { getFileIconUrl } from "@/lib/project-utils";
 import { toast } from "sonner";
 import { useCustomSetByShortCode, useRecentPracticeRooms } from "@/hooks/customSets";
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { y: 15, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 260,
+      damping: 22,
+    },
+  },
+};
 
 const DashboardPage = () => {
   const [roomId, setRoomId] = useState("");
@@ -121,18 +145,23 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className="min-h-full">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="min-h-full"
+    >
       <div className="border-b border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
+            <motion.div variants={itemVariants}>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">{welcomeMessage}</h1>
               <p className="text-muted-foreground mt-1 text-sm sm:text-base">
                 {user ? "Continue coding or start something new." : "Sign in to start collaborating on code."}
               </p>
-            </div>
+            </motion.div>
             {user && (
-              <>
+              <motion.div variants={itemVariants}>
                 <Button className="w-full sm:w-auto" onClick={handleOpenCreateDialog}>
                   <Plus className="mr-2 h-4 w-4" />
                   New Project
@@ -144,7 +173,7 @@ const DashboardPage = () => {
                   currentCount={projectCount}
                   limit={limit}
                 />
-              </>
+              </motion.div>
             )}
           </div>
         </div>
@@ -155,7 +184,7 @@ const DashboardPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
             <div className="lg:col-span-8 space-y-6 lg:space-y-8">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="group border border-border bg-card p-5 sm:p-6 hover:border-primary/50 transition-colors rounded-lg flex flex-col h-full">
+                <motion.div variants={itemVariants} className="group border border-border bg-card p-5 sm:p-6 hover:border-primary/50 transition-colors rounded-lg flex flex-col h-full">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
                       <FolderPlus className="h-5 w-5 text-primary" />
@@ -168,9 +197,9 @@ const DashboardPage = () => {
                   <Button variant="outline" size="sm" onClick={handleOpenCreateDialog}>
                     New Project
                   </Button>
-                </div>
+                </motion.div>
 
-                <div className="group border border-border bg-card p-5 sm:p-6 hover:border-primary/50 transition-colors rounded-lg flex flex-col h-full">
+                <motion.div variants={itemVariants} className="group border border-border bg-card p-5 sm:p-6 hover:border-primary/50 transition-colors rounded-lg flex flex-col h-full">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
                       <LogIn className="h-5 w-5 text-primary" />
@@ -194,31 +223,31 @@ const DashboardPage = () => {
                       {isSearchingSet ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
                     </Button>
                   </form>
-                </div>
+                </motion.div>
               </div>
 
               <div className="grid grid-cols-3 gap-3 sm:gap-4">
-                <div className="border border-border bg-card p-4 sm:p-5 rounded-lg">
+                <motion.div variants={itemVariants} className="border border-border bg-card p-4 sm:p-5 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Projects</span>
                     <Folder className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="text-xl sm:text-2xl font-bold">{projects?.length || 0}</div>
-                </div>
-                <div className="border border-border bg-card p-4 sm:p-5 rounded-lg">
+                </motion.div>
+                <motion.div variants={itemVariants} className="border border-border bg-card p-4 sm:p-5 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Friends</span>
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="text-xl sm:text-2xl font-bold">{friends?.length || 0}</div>
-                </div>
-                <div className="border border-border bg-card p-4 sm:p-5 rounded-lg">
+                </motion.div>
+                <motion.div variants={itemVariants} className="border border-border bg-card p-4 sm:p-5 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Commits</span>
                     <GitCommit className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="text-xl sm:text-2xl font-bold">{totalCommits || 0}</div>
-                </div>
+                </motion.div>
               </div>
 
               {isLoadingRecent || isLoadingPractice ? (
@@ -227,7 +256,7 @@ const DashboardPage = () => {
                 </div>
               ) : (
                 <div className="space-y-6 lg:space-y-8">
-                  <div>
+                  <motion.div variants={itemVariants}>
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-lg font-semibold">Recent Projects</h2>
                       <Link to="/projects" className="text-sm text-primary hover:underline">
@@ -275,10 +304,10 @@ const DashboardPage = () => {
                         </Button>
                       </div>
                     )}
-                  </div>
+                  </motion.div>
 
                   {/* Recent Practice Section */}
-                  <div>
+                  <motion.div variants={itemVariants}>
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-lg font-semibold">Recent Practice</h2>
                       <Link to="/practice/sets" className="text-sm text-primary hover:underline">
@@ -328,18 +357,22 @@ const DashboardPage = () => {
                         </Button>
                       </div>
                     )}
-                  </div>
+                  </motion.div>
                 </div>
               )}
             </div>
 
             <div className="lg:col-span-4 space-y-6">
-              <ActivityChart />
-              <OnlineFriends />
+              <motion.div variants={itemVariants}>
+                <ActivityChart />
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <OnlineFriends />
+              </motion.div>
             </div>
           </div>
         ) : (
-          <div className="max-w-lg mx-auto text-center py-12 sm:py-16">
+          <motion.div variants={itemVariants} className="max-w-lg mx-auto text-center py-12 sm:py-16">
             <div className="border border-border bg-card p-6 sm:p-8 rounded-lg">
               <Code2 className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-4" />
               <h2 className="text-xl font-semibold mb-2">Start Collaborating</h2>
@@ -355,10 +388,10 @@ const DashboardPage = () => {
                 </Button>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

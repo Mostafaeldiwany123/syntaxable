@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,29 @@ import { ProjectCard } from "@/components/projects/ProjectCard";
 import { UpgradeDialog } from "@/components/projects/UpgradeDialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateProjectDialog } from "@/components/projects/CreateProjectDialog";
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { y: 15, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 260,
+      damping: 22,
+    },
+  },
+};
 
 const ProjectsPage = () => {
   const navigate = useNavigate();
@@ -104,24 +128,31 @@ const ProjectsPage = () => {
   }
 
   return (
-    <div className="min-h-full">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="min-h-full"
+    >
       <div className="border-b border-border/30 bg-background/25 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
+            <motion.div variants={itemVariants}>
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground via-foreground/90 to-foreground/75 bg-clip-text text-transparent">
                 Your Projects
               </h1>
               <p className="text-muted-foreground mt-1 text-sm sm:text-base">
                 Manage all your collaborative projects here.
               </p>
-            </div>
-            <Button 
-              onClick={handleOpenCreateDialog} 
-              className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 font-medium"
-            >
-              <Plus className="mr-2 h-4 w-4" /> New Project
-            </Button>
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <Button 
+                onClick={handleOpenCreateDialog} 
+                className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 font-medium"
+              >
+                <Plus className="mr-2 h-4 w-4" /> New Project
+              </Button>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -131,9 +162,9 @@ const ProjectsPage = () => {
           <CreateProjectDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
         </div>
 
-        <div className="mb-6 mt-2 flex flex-col sm:flex-row gap-4">
+        <motion.div variants={itemVariants} className="mb-6 mt-2 flex flex-col sm:flex-row gap-4">
           <div className="relative flex-grow">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70 pointer-events-none z-10" />
             <Input 
               placeholder="Search projects..." 
               className="pl-10 bg-card/40 border-border/40 backdrop-blur-sm focus-visible:border-primary/50 transition-colors"
@@ -153,10 +184,10 @@ const ProjectsPage = () => {
               </SelectContent>
             </Select>
           </div>
-        </div>
+        </motion.div>
 
         {sortedAndFilteredProjects.length === 0 ? (
-          <div className="text-center py-16 border border-dashed border-border/40 rounded-xl bg-card/20 backdrop-blur-sm">
+          <motion.div variants={itemVariants} className="text-center py-16 border border-dashed border-border/40 rounded-xl bg-card/20 backdrop-blur-sm">
             <Folder className="h-12 w-12 text-muted-foreground/45 mx-auto mb-4" />
             <p className="text-muted-foreground">{searchTerm ? "No projects match your search." : "You don't have any projects yet."}</p>
             {!searchTerm && (
@@ -167,19 +198,20 @@ const ProjectsPage = () => {
                 Create a New Project
               </Button>
             )}
-          </div>
+          </motion.div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {sortedAndFilteredProjects.map((project) => {
               const isOwner = user?.id === project.owner_id;
               return (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  isOwner={isOwner}
-                  onRename={openRenameDialog}
-                  onDelete={openDeleteDialog}
-                />
+                <motion.div variants={itemVariants} key={project.id}>
+                  <ProjectCard
+                    project={project}
+                    isOwner={isOwner}
+                    onRename={openRenameDialog}
+                    onDelete={openDeleteDialog}
+                  />
+                </motion.div>
               );
             })}
           </div>
@@ -238,7 +270,7 @@ const ProjectsPage = () => {
           limit={limit}
         />
       </div>
-    </div>
+    </motion.div>
   );
 };
 
