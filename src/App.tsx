@@ -34,6 +34,7 @@ import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import TermsOfServicePage from "./pages/TermsOfServicePage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import AchievementsPage from "./pages/AchievementsPage";
+import DuelPage from "./pages/DuelPage";
 import { RewardPopup } from "./components/achievements/RewardPopup";
 import { cppCourse, csharpCourse, pythonCourse, javaCourse, javascriptCourse, typescriptCourse } from './data/practiceProblems';
 
@@ -112,6 +113,7 @@ const AppRoutes = () => {
           <Route path="/friends" element={user ? <FriendsPage /> : <Navigate to="/" replace />} />
           <Route path="/leaderboard" element={user ? <LeaderboardPage /> : <Navigate to="/" replace />} />
           <Route path="/achievements" element={user ? <AchievementsPage /> : <Navigate to="/" replace />} />
+          <Route path="/duel" element={user ? <DuelPage /> : <Navigate to="/" replace />} />
           <Route path="/room/:roomId" element={user ? <RoomPage /> : <Navigate to="/" replace />} />
           <Route path="/profile/:userId" element={user ? <ProfilePage /> : <Navigate to="/" replace />} />
           <Route path="/pricing" element={user ? <PricingPage /> : <Navigate to="/" replace />} />

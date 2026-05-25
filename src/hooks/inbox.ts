@@ -5,7 +5,7 @@ import { toast } from "sonner";
 // --- Types ---
 export interface InboxItem {
     id: string;
-    type: 'FRIEND_REQUEST' | 'PROJECT_INVITE';
+    type: 'FRIEND_REQUEST' | 'PROJECT_INVITE' | 'DUEL_CHALLENGE';
     actor_id: string;
     actor_username: string;
     actor_avatar_url: string;
@@ -14,12 +14,54 @@ export interface InboxItem {
         project_id?: string;
         project_name?: string;
         room_id?: string;
+        duel_id?: string;
+        language?: string;
+        scoreTarget?: number;
     };
     created_at: string;
 }
 
+import { useEffect } from "react";
+
 // --- Hooks ---
 export const useInbox = () => {
+    const queryClient = useQueryClient();
+
+    useEffect(() => {
+        let isMounted = true;
+        let subscription: any = null;
+
+        const setupSubscription = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user || !isMounted) return;
+
+            subscription = supabase
+                .channel(`notifications-realtime:${user.id}`)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'notifications',
+                        filter: `user_id=eq.${user.id}`,
+                    },
+                    () => {
+                        queryClient.invalidateQueries({ queryKey: ['inbox'] });
+                    }
+                )
+                .subscribe();
+        };
+
+        setupSubscription();
+
+        return () => {
+            isMounted = false;
+            if (subscription) {
+                subscription.unsubscribe();
+            }
+        };
+    }, [queryClient]);
+
     return useQuery<InboxItem[], Error>({
         queryKey: ['inbox'],
         queryFn: async () => {

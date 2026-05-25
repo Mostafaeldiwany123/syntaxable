@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, FolderKanban, LogOut, Users, Mail, UserCheck, Dumbbell, ChevronLeft, ChevronRight, CreditCard, Paintbrush, Lock, Trophy, Award, Github, Instagram, Linkedin, GraduationCap, ArrowLeft, CheckCircle2, Circle, ChevronDown } from "lucide-react";
+import { LayoutDashboard, FolderKanban, LogOut, Users, Mail, UserCheck, Dumbbell, ChevronLeft, ChevronRight, CreditCard, Paintbrush, Lock, Trophy, Award, Github, Instagram, Linkedin, GraduationCap, ArrowLeft, CheckCircle2, Circle, ChevronDown, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -173,7 +173,7 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                       const completedCount = lesson.problems.filter(p => practiceData.completedProblems.has(p.id)).length;
                       const totalCount = lesson.problems.length;
                       const percent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
-                      
+
                       // SVG Circular progress configs
                       const radius = 13;
                       const strokeWidth = 2.5;
@@ -331,7 +331,7 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                                   {sortedProblems.map(problem => {
                                     const isCompleted = practiceData.completedProblems.has(problem.id);
                                     const isSelected = practiceData.currentProblemId === problem.id;
-                                    
+
                                     return (
                                       <button
                                         key={problem.id}
@@ -339,11 +339,10 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                                           practiceData.onSelectProblem(problem);
                                           onNavigate?.(); // Close mobile drawer
                                         }}
-                                        className={`w-full text-left px-2.5 py-1.5 rounded transition-colors group/item flex items-center gap-2 ${
-                                          isSelected
+                                        className={`w-full text-left px-2.5 py-1.5 rounded transition-colors group/item flex items-center gap-2 ${isSelected
                                             ? 'bg-primary/10 text-primary'
                                             : 'hover:bg-secondary/40 text-muted-foreground hover:text-foreground'
-                                        }`}
+                                          }`}
                                       >
                                         {isCompleted ? (
                                           <CheckCircle2 size={13} className="text-green-500 shrink-0" />
@@ -352,13 +351,12 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                                         )}
                                         <span className="text-xs truncate flex-1 font-medium">{problem.title}</span>
                                         {/* Status dots or mini difficulty badges */}
-                                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider shrink-0 select-none border ${
-                                          problem.difficulty === 'easy'
+                                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider shrink-0 select-none border ${problem.difficulty === 'easy'
                                             ? 'bg-green-500/10 text-green-500 border-green-500/10'
                                             : problem.difficulty === 'medium'
-                                            ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/10'
-                                            : 'bg-red-500/10 text-red-500 border-red-500/10'
-                                        }`}>
+                                              ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/10'
+                                              : 'bg-red-500/10 text-red-500 border-red-500/10'
+                                          }`}>
                                           {problem.difficulty}
                                         </span>
                                       </button>
@@ -433,8 +431,8 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                       `relative flex items-center text-sm font-medium transition-colors duration-200 rounded-lg ${isCollapsed && !isMobile
                         ? "justify-center p-2.5"
                         : "px-3 py-2"
-                      } ${isActive 
-                        ? "text-primary" 
+                      } ${isActive
+                        ? "text-primary"
                         : "text-muted-foreground hover:text-foreground hover:bg-secondary/35"
                       }`
                     }
@@ -468,10 +466,10 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                       className={`relative flex items-center text-sm font-medium transition-colors duration-200 rounded-lg w-full ${isCollapsed && !isMobile
                         ? "justify-center p-2.5"
                         : "px-3 py-2"
-                      } ${isPracticeActive 
-                        ? "text-primary" 
-                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/35"
-                      }`}
+                        } ${isPracticeActive
+                          ? "text-primary"
+                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/35"
+                        }`}
                     >
                       {isPracticeActive && (
                         <motion.div
@@ -487,6 +485,38 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                     </button>
                   );
                 })()}
+
+                {/* Duels */}
+                <NavLink
+                  to="/duel"
+                  onClick={handleNavClick}
+                  className={({ isActive }) =>
+                    `relative flex items-center text-sm font-medium transition-colors duration-200 rounded-lg ${isCollapsed && !isMobile
+                      ? "justify-center p-2.5"
+                      : "px-3 py-2"
+                    } ${isActive
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/35"
+                    }`
+                  }
+                  title={isCollapsed && !isMobile ? "Duels" : undefined}
+                >
+                  {({ isActive }) => (
+                    <>
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeTabIndicator"
+                          className="absolute inset-0 bg-primary/10 rounded-lg"
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      <span className={`relative z-10 flex items-center w-full ${isCollapsed && !isMobile ? 'justify-center' : ''}`}>
+                        <Swords className={`${isCollapsed && !isMobile ? '' : 'mr-3'} h-4 w-4 shrink-0`} />
+                        {(!isCollapsed || isMobile) && <span className="whitespace-nowrap">Duels</span>}
+                      </span>
+                    </>
+                  )}
+                </NavLink>
 
                 {/* Social Section Spacer */}
                 {(!isCollapsed || isMobile) && (
@@ -517,8 +547,8 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                       `relative flex items-center text-sm font-medium transition-colors duration-200 rounded-lg ${isCollapsed && !isMobile
                         ? "justify-center p-2.5"
                         : "px-3 py-2"
-                      } ${isActive 
-                        ? "text-primary" 
+                      } ${isActive
+                        ? "text-primary"
                         : "text-muted-foreground hover:text-foreground hover:bg-secondary/35"
                       }`
                     }

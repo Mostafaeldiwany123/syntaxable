@@ -3,9 +3,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useInbox, useDismissNotification } from "@/hooks/inbox";
 import { useFriendshipActions } from "@/hooks/friends";
-import { Loader2, UserPlus, UserX, Eye, X } from "lucide-react";
+import { Loader2, UserPlus, UserX, Eye, X, Swords } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface InboxSheetProps {
   isOpen: boolean;
@@ -16,12 +16,19 @@ export const InboxSheet = ({ isOpen, onOpenChange }: InboxSheetProps) => {
   const { data: items, isLoading } = useInbox();
   const { acceptRequest, removeFriendship, isPending: isFriendActionPending } = useFriendshipActions();
   const { mutate: dismissNotification, isPending: isDismissing } = useDismissNotification();
+  const navigate = useNavigate();
 
   const isActionPending = isFriendActionPending || isDismissing;
 
   const handleViewProject = (notificationId: string) => {
     dismissNotification(notificationId);
     onOpenChange(false); // Close the sheet
+  };
+
+  const handleAcceptDuel = (item: any) => {
+    dismissNotification(item.id);
+    onOpenChange(false); // Close the sheet
+    navigate(`/duel?id=${item.metadata.duel_id}`);
   };
 
   return (
@@ -48,6 +55,7 @@ export const InboxSheet = ({ isOpen, onOpenChange }: InboxSheetProps) => {
                         <span className="font-semibold">{item.actor_username}</span>
                         {item.type === 'FRIEND_REQUEST' && ' sent you a friend request.'}
                         {item.type === 'PROJECT_INVITE' && ` invited you to join "${item.metadata.project_name}".`}
+                        {item.type === 'DUEL_CHALLENGE' && ` challenged you to a ${item.metadata.language?.toUpperCase() || ''} Duel (First to ${item.metadata.scoreTarget || 3}).`}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {formatDistanceToNow(new Date(item.created_at), { addSuffix: true })}
@@ -75,6 +83,17 @@ export const InboxSheet = ({ isOpen, onOpenChange }: InboxSheetProps) => {
                       </Button>
                       <Button size="sm" variant="outline" className="w-full" onClick={() => dismissNotification(item.id)} disabled={isActionPending}>
                         <X className="h-4 w-4 mr-2" /> Dismiss
+                      </Button>
+                    </div>
+                  )}
+
+                  {item.type === 'DUEL_CHALLENGE' && (
+                    <div className="flex gap-2">
+                      <Button size="sm" className="w-full" onClick={() => handleAcceptDuel(item)} disabled={isActionPending}>
+                        <Swords className="h-4 w-4 mr-2" /> Accept
+                      </Button>
+                      <Button size="sm" variant="outline" className="w-full" onClick={() => dismissNotification(item.id)} disabled={isActionPending}>
+                        <X className="h-4 w-4 mr-2" /> Decline
                       </Button>
                     </div>
                   )}
