@@ -8,7 +8,30 @@ import { Plus, BookOpen, Users, Search, X, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { motion, Variants } from 'framer-motion';
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { y: 15, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 260,
+      damping: 22,
+    },
+  },
+};
 
 const CDN_BASE = 'https://cdn.jsdelivr.net/gh/PKief/vscode-material-icon-theme@main/icons';
 
@@ -135,30 +158,39 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
   const hasPublicSets = publicSets && publicSets.length > 0;
 
   return (
-    <div className="h-full flex flex-col">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="h-full flex flex-col"
+    >
       <div className="border-b border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
+            <motion.div variants={itemVariants}>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">Practice Coding</h1>
               <p className="text-muted-foreground mt-1 text-sm sm:text-base">
                 Choose a programming language to start practicing.
               </p>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-lg font-semibold mb-4">Languages</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          <motion.h2 variants={itemVariants} className="text-lg font-semibold mb-4">Languages</motion.h2>
+          <motion.div
+            variants={containerVariants}
+            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
+          >
             {languageCards.map((card) => (
-              <button
+              <motion.button
+                variants={itemVariants}
                 key={card.id}
                 onClick={() => card.isAvailable && card.course && onSelectCourse(card.course)}
                 disabled={!card.isAvailable}
-                className={`group relative overflow-hidden rounded-lg border border-border bg-card p-7 text-left transition-all ${card.isAvailable
+                className={`group relative overflow-hidden rounded-lg border border-border bg-card p-7 text-left transition-colors ${card.isAvailable
                     ? 'hover:border-primary/50 hover:shadow-sm cursor-pointer'
                     : 'opacity-50 cursor-not-allowed'
                   }`}
@@ -174,13 +206,14 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
                     </span>
                   </div>
                 </div>
-              </button>
+              </motion.button>
             ))}
 
             {/* Create Custom Set Card */}
-            <button
+            <motion.button
+              variants={itemVariants}
               onClick={handleCreateSet}
-              className="group relative overflow-hidden rounded-lg border border-dashed border-primary/50 bg-card/50 p-7 text-left transition-all hover:border-primary hover:bg-primary/5 cursor-pointer"
+              className="group relative overflow-hidden rounded-lg border border-dashed border-primary/50 bg-card/50 p-7 text-left transition-colors hover:border-primary hover:bg-primary/5 cursor-pointer"
             >
               <div className="flex flex-col items-center text-center h-full">
                 <div className="mb-3 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -193,13 +226,14 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
                   </span>
                 </div>
               </div>
-            </button>
+            </motion.button>
 
             {/* My Sets Card */}
             {hasCustomSets && (
-              <button
+              <motion.button
+                variants={itemVariants}
                 onClick={handleViewMySets}
-                className="group relative overflow-hidden rounded-lg border border-border bg-card p-7 text-left transition-all hover:border-primary/50 hover:shadow-sm cursor-pointer"
+                className="group relative overflow-hidden rounded-lg border border-border bg-card p-7 text-left transition-colors hover:border-primary/50 hover:shadow-sm cursor-pointer"
               >
                 <div className="flex flex-col items-center text-center h-full">
                   <div className="mb-3 w-12 h-12 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
@@ -212,14 +246,14 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
                     </span>
                   </div>
                 </div>
-              </button>
+              </motion.button>
             )}
-          </div>
+          </motion.div>
         </div>
 
         {/* Public Sets Section */}
         {hasPublicSets && (
-          <div className="mt-8 max-w-6xl mx-auto">
+          <motion.div variants={itemVariants} className="mt-8 max-w-6xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
               <h2 className="text-lg font-semibold">Public Sets</h2>
               <div className="flex flex-col sm:flex-row gap-2">
@@ -281,12 +315,16 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
                 {searchQuery || selectedLanguage ? 'No sets match your search criteria.' : 'No public sets available.'}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <motion.div
+                variants={containerVariants}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+              >
                 {filteredAndSortedPublicSets.map((set) => (
-                  <button
+                  <motion.button
+                    variants={itemVariants}
                     key={set.id}
                     onClick={() => navigate(`/practice/custom/${set.id}`)}
-                    className="group relative overflow-hidden rounded-lg border border-border bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-sm cursor-pointer"
+                    className="group relative overflow-hidden rounded-lg border border-border bg-card p-4 text-left transition-colors hover:border-primary/50 hover:shadow-sm cursor-pointer"
                   >
                     <div className="flex items-start gap-3">
                       <div className="p-2 bg-primary/10 rounded-lg shrink-0">
@@ -316,14 +354,14 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({ courses, onSel
                         </div>
                       </div>
                     </div>
-                  </button>
+                  </motion.button>
                 ))}
-              </div>
+              </motion.div>
             )}
-          </div>
+          </motion.div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

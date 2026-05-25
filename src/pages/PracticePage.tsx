@@ -111,7 +111,7 @@ const PracticePage: React.FC<PracticePageProps> = ({ initialLanguage, initialPro
 
   if (viewState.type === 'landing') {
     return (
-      <div className="h-dvh w-full bg-background flex flex-col overflow-hidden text-foreground font-sans">
+      <div className="h-dvh w-full bg-transparent flex flex-col overflow-hidden text-foreground font-sans">
         <PracticeLanding
           courses={courses}
           onSelectCourse={handleSelectCourse}
@@ -122,7 +122,7 @@ const PracticePage: React.FC<PracticePageProps> = ({ initialLanguage, initialPro
 
   if (viewState.type === 'categories') {
     return (
-      <div className="h-dvh w-full bg-background flex flex-col overflow-hidden text-foreground font-sans">
+      <div className="h-dvh w-full bg-transparent flex flex-col overflow-hidden text-foreground font-sans">
         <LanguageView
           course={viewState.course}
           onBack={handleBackToLanding}

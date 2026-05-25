@@ -229,7 +229,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
   }, [activeLesson]);
 
   return (
-    <div className="h-full flex flex-col bg-background select-none">
+    <div className="h-full flex flex-col bg-transparent select-none">
       {/* Header */}
       <div className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0 gap-2">
         <div className="flex items-center gap-3 min-w-0">
