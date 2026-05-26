@@ -40,55 +40,63 @@ export const DuelOpponentSelector: React.FC<DuelOpponentSelectorProps> = ({ onSe
       animate="visible"
       className="flex-1 flex items-center justify-center p-6"
     >
-      <div className="w-full max-w-2xl">
-        <motion.div variants={itemVariants} className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 mb-4">
-            <UserCheck className="w-8 h-8 text-primary" />
+      <div className="w-full max-w-xl">
+        <motion.div variants={itemVariants} className="mb-6 flex items-center justify-between border-b border-border/40 pb-4">
+          <div>
+            <h2 className="text-xl font-semibold text-foreground tracking-tight flex items-center gap-2">
+              <UserCheck className="w-5 h-5 text-primary shrink-0" />
+              Choose Opponent
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Select an online friend to challenge for a coding duel.
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">Choose Opponent</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            Select an online friend to challenge
-          </p>
+          <span className="text-[10px] font-semibold bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full border border-green-500/20">
+            {onlineFriends.length} Online
+          </span>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+        <motion.div 
+          variants={itemVariants} 
+          className="space-y-2 max-h-[360px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-border"
+        >
           {isLoading ? (
-            <div className="text-center text-muted-foreground p-8">Loading friends...</div>
+            <div className="text-center text-muted-foreground py-12 text-sm">Loading friends...</div>
           ) : onlineFriends.length === 0 ? (
-            <div className="text-center text-muted-foreground p-8 bg-card border border-border rounded-xl">
-              No friends are currently online to duel.
+            <div className="text-center text-muted-foreground py-12 px-4 bg-card/20 border border-dashed border-border/40 rounded-xl">
+              <p className="text-sm">No friends are currently online.</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">Challenge them when they log in.</p>
             </div>
           ) : (
             onlineFriends.map(opponent => (
-              <motion.button
+              <button
                 key={opponent.id}
-                variants={itemVariants}
                 onClick={() => onSelect(opponent.id, opponent.username, opponent.avatar_url)}
-                className="w-full text-left p-4 rounded-xl border border-border bg-card hover:border-primary/50 transition-colors flex items-center gap-4 group"
+                className="w-full text-left p-3.5 rounded-xl border border-border bg-card/45 hover:bg-card/85 hover:border-primary/50 transition-all duration-205 flex items-center gap-3.5 group cursor-pointer"
               >
                 <div className="relative">
-                  <Avatar className="h-12 w-12 border-2 border-transparent group-hover:border-primary/20 transition-colors">
+                  <Avatar className="h-10 w-10 border border-border/60 transition-colors group-hover:border-primary/30">
                     <AvatarImage src={opponent.avatar_url} />
-                    <AvatarFallback seed={opponent.username} className="text-lg">
+                    <AvatarFallback seed={opponent.username} className="text-sm font-medium">
                       {opponent.username.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-card rounded-full" />
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-background rounded-full ring-1 ring-green-500/20 animate-pulse" />
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                  <h3 className="font-medium text-sm text-foreground group-hover:text-primary transition-colors truncate">
                     {opponent.username}
                   </h3>
-                  <p className="text-xs text-muted-foreground truncate mt-0.5">
-                    {opponent.status || 'Online'}
+                  <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                    {opponent.status || 'Active now'}
                   </p>
                 </div>
                 
-                <div className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary opacity-0 group-hover:opacity-100 transition-all transform scale-75 group-hover:scale-100">
-                  <Swords className="w-5 h-5" />
+                <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0 duration-200">
+                  <Swords className="w-4 h-4" />
                 </div>
-              </motion.button>
+              </button>
             ))
           )}
         </motion.div>
@@ -98,3 +106,4 @@ export const DuelOpponentSelector: React.FC<DuelOpponentSelectorProps> = ({ onSe
 };
 
 export default DuelOpponentSelector;
+

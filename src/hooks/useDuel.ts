@@ -349,6 +349,70 @@ export function useDuel(currentUser: { id: string; username: string; avatar_url?
     }
   };
 
+  const playAgain = async () => {
+    if (!currentUser || !state.config) return;
+    const opponent = state.players.find(p => p.id !== currentUser.id);
+    if (!opponent || !opponent.id) return;
+    
+    try {
+      const { data: duel, error: duelError } = await supabase.from('duels').insert({
+        status: 'active',
+        config: state.config
+      }).select().single();
+
+      if (duelError) throw duelError;
+
+      // Insert both participants
+      await supabase.from('duel_participants').insert([
+        { duel_id: duel.id, user_id: currentUser.id, score: 0 },
+        { duel_id: duel.id, user_id: opponent.id, score: 0 }
+      ]);
+
+      // Send invite notification
+      await supabase.from('notifications').insert({
+        user_id: opponent.id,
+        actor_id: currentUser.id,
+        type: 'DUEL_CHALLENGE',
+        metadata: {
+          duel_id: duel.id,
+          language: state.config.language,
+          scoreTarget: state.config.scoreTarget
+        }
+      });
+
+      toast.success(`Rematch challenge sent to ${opponent.username}!`);
+
+      // Get problems ready
+      const course = allCourses.find(c => c.language === state.config!.language);
+      if (!course) return;
+
+      const problems: Problem[] = [];
+      for (const lesson of course.lessons) {
+        if (state.config!.lessonIds.includes(lesson.id)) {
+          problems.push(...lesson.problems);
+        }
+      }
+
+      const firstProblem = problems[Math.floor(Math.random() * problems.length)];
+
+      setState(prev => ({
+        ...prev,
+        phase: 'waiting_for_accept',
+        duelId: duel.id,
+        roundNum: 1,
+        currentProblem: firstProblem,
+        usedProblemIds: [firstProblem.id],
+        availableProblems: problems,
+        players: [
+          { ...prev.players.find(p => p.id === currentUser.id)!, score: 0, solvedCurrent: false },
+          { ...opponent, score: 0, solvedCurrent: false }
+        ]
+      }));
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to send rematch challenge');
+    }
+  };
+
   const handleOpponentSolved = useCallback((opponentId: string) => {
     setState(prev => {
       if (prev.phase !== 'playing') return prev;
@@ -523,6 +587,7 @@ export function useDuel(currentUser: { id: string; username: string; avatar_url?
     handlePlayerSolved,
     nextRound,
     resetDuel,
+    playAgain,
     startNewMatch,
     goToLanding,
   };

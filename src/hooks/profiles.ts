@@ -42,7 +42,7 @@ export const useUpdateProfile = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (updates: { id: string, username?: string, status?: string, description?: string }) => {
+        mutationFn: async (updates: { id: string, username?: string, status?: string, description?: string, avatar_url?: string }) => {
             const { id, ...updateData } = updates;
             const { error } = await supabase
                 .from('profiles')
