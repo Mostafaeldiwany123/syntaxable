@@ -37,6 +37,7 @@
   <link rel="icon" type="image/png" href="/syntaxable.png" />
   <link rel="apple-touch-icon" href="/syntaxable.png" />
   <link rel="canonical" href="https://syntaxable.com/" />
+  <link rel="manifest" href="/manifest.json" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -192,6 +193,15 @@
   </script>
   
   <script type="module" src="/src/main.tsx"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((reg) => console.log('Service Worker registered successfully:', reg.scope))
+          .catch((err) => console.error('Service Worker registration failed:', err));
+      });
+    }
+  </script>
 </body>
 
 </html>
