@@ -501,6 +501,137 @@ int main() {
         'This is mostly a typing exercise to understand syntax. Ensure the House constructor uses the initializer list: House(int roomArea) : livingRoom(roomArea) {}'
       ],
       topics: ['Aggregation']
+    },
+    {
+      id: 'aggregation-point-line',
+      title: 'Point and Line Aggregation',
+      difficulty: 'medium',
+      description: `Write classes \`Point\` and \`Line\` to demonstrate aggregation:
+- Class \`Point\`: Private data members \`x\` (\`int\`) and \`y\` (\`int\`). Parameterized constructor \`Point(int xVal, int yVal)\` and getter functions \`getX()\` and \`getY()\`.
+- Class \`Line\`: Private data members \`p1\` (\`Point\`) and \`p2\` (\`Point\`). Constructor \`Line(Point pt1, Point pt2)\` using initializer list, and a public method \`double getLength()\` returning the Euclidean distance between the two points: \`\\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}\`.
+
+In \`main\`, read the coordinates of two points, instantiate a \`Line\` object, and print its length with 2 decimal places.`,
+      inputFormat: 'Four space-separated integers: x1 y1 x2 y2.',
+      outputFormat: 'Print the length of the line with 2 decimal places.',
+      constraints: '-1000 ≤ coordinates ≤ 1000',
+      sampleInput: '0 0 3 4',
+      sampleOutput: '5.00',
+      testCases: [
+        { input: '0 0 3 4', expectedOutput: '5.00' },
+        { input: '1 1 4 5', expectedOutput: '5.00' },
+        { input: '-1 -1 2 3', expectedOutput: '5.00' },
+        { input: '0 0 1 1', expectedOutput: '1.41', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+
+// Define Point and Line classes here
+
+int main() {
+    int x1, y1, x2, y2;
+    if (cin >> x1 >> y1 >> x2 >> y2) {
+        Point pt1(x1, y1);
+        Point pt2(x2, y2);
+        Line line(pt1, pt2);
+        cout << fixed << setprecision(2) << line.getLength() << endl;
+    }
+    return 0;
+}`,
+      hints: [
+        'Use the sqrt() and pow() functions from <cmath>.',
+        'Line constructor should look like: Line(Point pt1, Point pt2) : p1(pt1), p2(pt2) {}'
+      ],
+      topics: ['Aggregation', 'Classes and Objects']
+    },
+    {
+      id: 'operator-overloading-dayofyear',
+      title: 'DayOfYear Operator Overloading',
+      difficulty: 'hard',
+      description: `Define a class \`DayOfYear\` with private members \`month\` (\`int\`) and \`day\` (\`int\`):
+- A default constructor that initializes month and day to \`1\` and \`1\` respectively.
+- A parameterized constructor \`DayOfYear(int m, int d)\`.
+- Overload the stream extraction operator \`>>\` as a friend function to read month and day.
+- Overload the less-than operator \`<\` as a member function to compare two dates (assume they are in the same year). It returns \`true\` if the left date is chronologically before the right date.
+
+In \`main\`, read two dates using the overloaded \`>>\`, compare them using \`<\`, and print "Before" if date1 is before date2, or "Not Before" otherwise.`,
+      inputFormat: 'Four space-separated integers representing month1 day1 month2 day2.',
+      outputFormat: 'Print "Before" or "Not Before".',
+      constraints: '1 ≤ month ≤ 12, 1 ≤ day ≤ 31',
+      sampleInput: '3 20 3 21',
+      sampleOutput: 'Before',
+      testCases: [
+        { input: '3 20 3 21', expectedOutput: 'Before' },
+        { input: '5 15 4 15', expectedOutput: 'Not Before' },
+        { input: '12 31 12 31', expectedOutput: 'Not Before' },
+        { input: '1 1 12 31', expectedOutput: 'Before', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Define DayOfYear class and overload operator>> and operator< here
+
+int main() {
+    DayOfYear d1, d2;
+    if (cin >> d1 >> d2) {
+        if (d1 < d2) {
+            cout << "Before" << endl;
+        } else {
+            cout << "Not Before" << endl;
+        }
+    }
+    return 0;
+}`,
+      hints: [
+        'Friend declaration: friend istream& operator>>(istream& is, DayOfYear& date);',
+        'Inside operator>>: is >> date.month >> date.day; return is;',
+        'Inside operator<: if (month < other.month) return true; else if (month == other.month && day < other.day) return true; else return false;'
+      ],
+      topics: ['Operator Overloading', 'Friend Functions']
+    },
+    {
+      id: 'operator-overloading-point-distance',
+      title: 'Point Distance Subtraction Operator',
+      difficulty: 'medium',
+      description: `Define a class \`Point\` with private members \`x\` (\`int\`) and \`y\` (\`int\`):
+- A parameterized constructor \`Point(int xVal, int yVal)\`.
+- Overload the subtraction operator \`-\` as a member function that calculates and returns the Euclidean distance between two \`Point\` objects as a \`double\`.
+
+In \`main\`, read the coordinates of two points, subtract them, and print the distance with 2 decimal places.`,
+      inputFormat: 'Four space-separated integers: x1 y1 x2 y2.',
+      outputFormat: 'Print the distance with 2 decimal places.',
+      constraints: '-1000 ≤ coordinates ≤ 1000',
+      sampleInput: '3 4 2 7',
+      sampleOutput: '3.16',
+      testCases: [
+        { input: '3 4 2 7', expectedOutput: '3.16' },
+        { input: '0 0 0 0', expectedOutput: '0.00' },
+        { input: '1 1 4 5', expectedOutput: '5.00' },
+        { input: '-1 -2 3 4', expectedOutput: '7.21', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+
+// Define Point class and overload operator- here
+
+int main() {
+    int x1, y1, x2, y2;
+    if (cin >> x1 >> y1 >> x2 >> y2) {
+        Point p1(x1, y1);
+        Point p2(x2, y2);
+        double dist = p1 - p2;
+        cout << fixed << setprecision(2) << dist << endl;
+    }
+    return 0;
+}`,
+      hints: [
+        'Signature of operator-: double operator-(const Point& other) const',
+        'Use the distance formula: sqrt(pow(x - other.x, 2) + pow(y - other.y, 2))'
+      ],
+      topics: ['Operator Overloading', 'Classes and Objects']
     }
   ]
 };

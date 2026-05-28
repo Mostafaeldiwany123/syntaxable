@@ -505,6 +505,60 @@ int main() {
         'If you forget delete, "Destroyed" will never print!'
       ],
       topics: ['Destructors', 'Dynamic Objects', 'Heap vs Stack']
+    },
+    {
+      id: 'number-array-complete',
+      title: 'Complete Float Array Class',
+      difficulty: 'hard',
+      description: `Design a class \`FloatArray\` that manages a dynamically allocated array of floating-point numbers:
+- Private members: \`float* arr\` and \`int size\`.
+- A constructor that accepts an integer size, dynamically allocates the array, and initializes all elements to \`0\`.
+- A destructor that frees the dynamically allocated memory.
+- Public member functions:
+  1. \`void store(float val, int index)\`: Stores a value at the given index.
+  2. \`float retrieve(int index)\`: Retrieves the value at the given index.
+  3. \`float getHighest()\`: Returns the highest value in the array.
+  4. \`float getLowest()\`: Returns the lowest value in the array.
+  5. \`double getAverage()\`: Returns the average of all elements in the array.
+
+In \`main\`, read an integer \`N\` and \`N\` floats, store them in a \`FloatArray\`, and display the highest value, lowest value, and average on separate lines with 2 decimal places.`,
+      inputFormat: 'First line: N. Second line: N space-separated floats.',
+      outputFormat: 'Print highest, lowest, and average on separate lines (each with 2 decimal places).',
+      constraints: '1 ≤ N ≤ 1000',
+      sampleInput: '4\n1.2 5.5 3.3 -2.2',
+      sampleOutput: '5.50\n-2.20\n1.95',
+      testCases: [
+        { input: '4\n1.2 5.5 3.3 -2.2', expectedOutput: '5.50\n-2.20\n1.95' },
+        { input: '3\n10 20 30', expectedOutput: '30.00\n10.00\n20.00' },
+        { input: '1\n42', expectedOutput: '42.00\n42.00\n42.00', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+#include <iomanip>
+using namespace std;
+
+// Define FloatArray class here
+
+int main() {
+    int n;
+    if (cin >> n) {
+        FloatArray fa(n);
+        for (int i = 0; i < n; i++) {
+            float val;
+            cin >> val;
+            fa.store(val, i);
+        }
+        cout << fixed << setprecision(2) << fa.getHighest() << endl;
+        cout << fixed << setprecision(2) << fa.getLowest() << endl;
+        cout << fixed << setprecision(2) << fa.getAverage() << endl;
+    }
+    return 0;
+}`,
+      hints: [
+        'Initialize your array in constructor using: arr = new float[size];',
+        'Destructor must delete the array: delete[] arr;',
+        'Make sure to cast or sum as double to compute the average precisely.'
+      ],
+      topics: ['Classes', 'Dynamic Arrays', 'Destructors', 'Memory Management']
     }
   ]
 };

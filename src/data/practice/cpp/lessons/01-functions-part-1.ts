@@ -583,5 +583,49 @@ int main() {
       hints: ['Find all divisors from 1 to n/2.', 'Sum all divisors that divide n evenly.', 'Compare sum with n.', 'Optimize by only checking up to sqrt(n).'],
       topics: ['Perfect Numbers', 'Divisor Sum', 'Optimization']
     },
+    {
+      id: 'functions-absentee-average',
+      title: 'Employee Absence Average',
+      difficulty: 'medium',
+      description: `Write a program that calculates the average number of days a company's employees are absent. The program must use the following three functions:
+1. \`getNumEmployees()\`: Asks the user for the number of employees in the company. Returns this value as an \`int\`. It accepts no arguments. Do not accept a number less than 1 (re-prompt until valid).
+2. \`getTotalDaysAbsent(int numEmployees)\`: Accepts the number of employees as an argument. Asks the user for the number of days missed by each employee during the past year, and returns the total missed days as an \`int\`. Do not accept a negative number for days missed (re-prompt until valid).
+3. \`getAverageDaysAbsent(int numEmployees, int totalDays)\`: Takes the number of employees and total days absent as arguments and returns the average days absent as a \`double\`. This function must not perform any screen output or ask for input.`,
+      inputFormat: 'The first lines contain the number of employees (re-prompting if < 1). The next lines contain the days absent for each employee (re-prompting if negative).',
+      outputFormat: 'Print the average number of days absent with 1 decimal place.',
+      constraints: 'Number of employees ≥ 1, days missed ≥ 0.',
+      sampleInput: '0\n3\n2\n-1\n4\n0',
+      sampleOutput: '2.0',
+      explanation: 'The first input 0 is invalid for employees, so the program prompts again and gets 3. The days missed for the 3 employees are 2, then -1 (invalid, prompts again and gets 4), and 0. Total days = 6. Average = 6.0 / 3 = 2.0.',
+      testCases: [
+        { input: '3\n2\n4\n0', expectedOutput: '2.0' },
+        { input: '0\n3\n2\n-1\n4\n0', expectedOutput: '2.0' },
+        { input: '1\n5', expectedOutput: '5.0' },
+        { input: '-2\n0\n2\n1\n3', expectedOutput: '2.0', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+#include <iomanip>
+using namespace std;
+
+// Declare or define the three functions here:
+// 1. getNumEmployees()
+// 2. getTotalDaysAbsent()
+// 3. getAverageDaysAbsent()
+
+int main() {
+    int employees = getNumEmployees();
+    int totalDays = getTotalDaysAbsent(employees);
+    double average = getAverageDaysAbsent(employees, totalDays);
+    
+    cout << fixed << setprecision(1) << average << endl;
+    return 0;
+}`,
+      hints: [
+        'Use a while loop inside getNumEmployees to repeatedly ask for input if the entered value is less than 1.',
+        'Use a nested loop or while loop inside getTotalDaysAbsent to ensure no negative values are added.',
+        'Cast the division to double in getAverageDaysAbsent to get a fractional average.'
+      ],
+      topics: ['Functions', 'Input Validation', 'Reference Parameters']
+    }
   ]
 };

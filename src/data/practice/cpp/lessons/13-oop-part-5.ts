@@ -396,6 +396,61 @@ int main() {
         'Constructors go top-down (A -> B -> C), destructors go bottom-up (C -> B -> A).'
       ],
       topics: ['Inheritance', 'Constructors', 'Destructors', 'Multi-level Inheritance']
+    },
+    {
+      id: 'employee-inheritance-hierarchy',
+      title: 'Employee Inheritance Hierarchy',
+      difficulty: 'hard',
+      description: `Implement three classes representing different types of employees:
+1. Base class \`Employee\`:
+   - Protected member variable: \`name\` (\`string\`).
+   - A constructor \`Employee(string n)\` that initializes the name.
+   - Public getter \`string getName() const\`.
+2. Derived class \`HourlyEmployee\` (inherits from \`Employee\`):
+   - Private member variables: \`wageRate\` (\`double\`) and \`hours\` (\`double\`).
+   - A constructor \`HourlyEmployee(string n, double w, double h)\` that chains to the base constructor.
+   - Public method \`double getPay() const\` returning \`wageRate * hours\`.
+3. Derived class \`SalariedEmployee\` (inherits from \`Employee\`):
+   - Private member variable: \`salary\` (\`double\`).
+   - A constructor \`SalariedEmployee(string n, double s)\` that chains to the base constructor.
+   - Public method \`double getPay() const\` returning \`salary\`.
+
+In \`main\`, read the input for one hourly employee and one salaried employee, construct both objects, and print their names and calculated pay.`,
+      inputFormat: 'First line: hourly employee name, wage rate, and hours. Second line: salaried employee name and salary.',
+      outputFormat: 'Print details for the hourly employee, then the salaried employee (with 2 decimal places).',
+      constraints: 'Wage rate, hours, and salary are positive doubles. Names are single words.',
+      sampleInput: 'Alice 15.50 40\nBob 2500.00',
+      sampleOutput: 'Alice (Hourly): $620.00\nBob (Salaried): $2500.00',
+      testCases: [
+        { input: 'Alice 15.50 40\nBob 2500.00', expectedOutput: 'Alice (Hourly): $620.00\nBob (Salaried): $2500.00' },
+        { input: 'John 20.00 35.5\nJane 3000.00', expectedOutput: 'John (Hourly): $710.00\nJane (Salaried): $3000.00' },
+        { input: 'A 10.00 10\nB 100.00', expectedOutput: 'A (Hourly): $100.00\nB (Salaried): $100.00', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+#include <string>
+#include <iomanip>
+using namespace std;
+
+// Define Employee, HourlyEmployee, and SalariedEmployee here
+
+int main() {
+    string nameH, nameS;
+    double wage, hours, salary;
+    if (cin >> nameH >> wage >> hours >> nameS >> salary) {
+        HourlyEmployee hEmp(nameH, wage, hours);
+        SalariedEmployee sEmp(nameS, salary);
+        
+        cout << fixed << setprecision(2);
+        cout << hEmp.getName() << " (Hourly): $" << hEmp.getPay() << endl;
+        cout << sEmp.getName() << " (Salaried): $" << sEmp.getPay() << endl;
+    }
+    return 0;
+}`,
+      hints: [
+        'Use protected access modifier in Employee so children can access the name variable directly if needed.',
+        'Use initializer list in children constructors to call the parent constructor: HourlyEmployee(string n, double w, double h) : Employee(n), wageRate(w), hours(h) {}'
+      ],
+      topics: ['Inheritance', 'Constructor Chaining', 'Access Modifiers']
     }
   ]
 };

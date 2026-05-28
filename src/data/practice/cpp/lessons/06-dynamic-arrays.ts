@@ -560,5 +560,113 @@ int main() {
       hints: ['Check if element already exists before adding.', 'Keep track of unique count.', 'Allocate unique array with size n (worst case).'],
       topics: ['Dynamic Arrays', 'Duplicate Removal', 'Array Processing']
     },
+    {
+      id: 'dynamic-array-attach',
+      title: 'Attach Dynamic Arrays',
+      difficulty: 'medium',
+      description: `Write a function named \`attach\` that appends one array to another:
+- It takes four parameters: two integer arrays (\`arr1\` and \`arr2\`) and their respective sizes (\`n1\` and \`n2\`).
+- It dynamically allocates a new array of size \`n1 + n2\`.
+- It copies all elements of \`arr1\` followed by all elements of \`arr2\` into the new array.
+- It returns a pointer to the newly allocated array.`,
+      inputFormat: 'First line: size N1, followed by N1 elements. Second line: size N2, followed by N2 elements.',
+      outputFormat: 'Print the elements of the combined array separated by spaces.',
+      constraints: '1 ≤ N1, N2 ≤ 1000',
+      sampleInput: '3\n1 2 3\n2\n4 5',
+      sampleOutput: '1 2 3 4 5',
+      testCases: [
+        { input: '3\n1 2 3\n2\n4 5', expectedOutput: '1 2 3 4 5' },
+        { input: '1\n10\n1\n20', expectedOutput: '10 20' },
+        { input: '2\n-1 -2\n3\n0 1 2', expectedOutput: '-1 -2 0 1 2', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your attach() function here
+
+int main() {
+    int n1, n2;
+    if (cin >> n1) {
+        int* arr1 = new int[n1];
+        for (int i = 0; i < n1; i++) cin >> arr1[i];
+        
+        cin >> n2;
+        int* arr2 = new int[n2];
+        for (int i = 0; i < n2; i++) cin >> arr2[i];
+        
+        int* result = attach(arr1, n1, arr2, n2);
+        
+        for (int i = 0; i < n1 + n2; i++) {
+            cout << result[i] << (i == n1 + n2 - 1 ? "" : " ");
+        }
+        cout << endl;
+        
+        delete[] arr1;
+        delete[] arr2;
+        delete[] result;
+    }
+    return 0;
+}`,
+      hints: [
+        'Allocate the new array using: int* newArr = new int[n1 + n2];',
+        'Copy elements from arr1 using a loop up to n1, then elements from arr2 using a loop up to n2 starting at index n1 in newArr.'
+      ],
+      topics: ['Dynamic Memory', 'Arrays as Parameters', 'Functions']
+    },
+    {
+      id: 'dynamic-array-merge-sorted-function',
+      title: 'Merge Sorted Dynamic Arrays',
+      difficulty: 'hard',
+      description: `Write a function named \`merge\` that combines two sorted arrays:
+- It takes four parameters: two sorted integer arrays (\`arr1\` and \`arr2\`) and their respective sizes (\`n1\` and \`n2\`).
+- It dynamically allocates a new array of size \`n1 + n2\`.
+- It merges the two sorted arrays into the new array such that the resulting array remains sorted in ascending order.
+- It returns a pointer to the newly allocated array.`,
+      inputFormat: 'First line: size N1, followed by N1 sorted elements. Second line: size N2, followed by N2 sorted elements.',
+      outputFormat: 'Print the elements of the merged sorted array separated by spaces.',
+      constraints: '1 ≤ N1, N2 ≤ 1000',
+      sampleInput: '3\n1 3 5\n3\n2 4 6',
+      sampleOutput: '1 2 3 4 5 6',
+      testCases: [
+        { input: '3\n1 3 5\n3\n2 4 6', expectedOutput: '1 2 3 4 5 6' },
+        { input: '2\n1 2\n2\n3 4', expectedOutput: '1 2 3 4' },
+        { input: '1\n5\n1\n3', expectedOutput: '3 5' },
+        { input: '2\n1 10\n2\n5 20', expectedOutput: '1 5 10 20', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your merge() function here
+
+int main() {
+    int n1, n2;
+    if (cin >> n1) {
+        int* arr1 = new int[n1];
+        for (int i = 0; i < n1; i++) cin >> arr1[i];
+        
+        cin >> n2;
+        int* arr2 = new int[n2];
+        for (int i = 0; i < n2; i++) cin >> arr2[i];
+        
+        int* result = merge(arr1, n1, arr2, n2);
+        
+        for (int i = 0; i < n1 + n2; i++) {
+            cout << result[i] << (i == n1 + n2 - 1 ? "" : " ");
+        }
+        cout << endl;
+        
+        delete[] arr1;
+        delete[] arr2;
+        delete[] result;
+    }
+    return 0;
+}`,
+      hints: [
+        'Use three indices (pointers): one for each input array and one for the result array.',
+        'Compare elements at current indices of the input arrays, put the smaller one in the new array, and advance indices appropriately.',
+        'Once one array is exhausted, copy the remaining elements of the other array.'
+      ],
+      topics: ['Dynamic Memory', 'Two Pointers', 'Array Merging', 'Functions']
+    }
   ]
 };

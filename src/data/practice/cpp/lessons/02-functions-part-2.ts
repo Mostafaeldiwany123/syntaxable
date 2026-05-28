@@ -617,5 +617,48 @@ int main() {
       hints: ['Start from the rightmost digit.', 'Multiply each digit by 2^position.', 'Sum all the results.', 'Or use: result = result * 2 + digit.'],
       topics: ['Binary Conversion', 'String Processing', 'Number Systems']
     },
+    {
+      id: 'analyze-reference-parameters',
+      title: 'Analyze Numbers (Reference Parameters)',
+      difficulty: 'easy',
+      description: `Write a function named \`analyze\` that has 5 parameters:
+- The first two are input integer numbers.
+- The other three are reference parameters through which the function returns their sum, difference (first - second), and average.
+
+The main function must call this \`analyze\` function and display the results.`,
+      inputFormat: 'Two space-separated integers X and Y.',
+      outputFormat: 'Prompt string followed by Sum, Diff, and Average on separate lines.',
+      constraints: '-10⁶ ≤ X, Y ≤ 10⁶',
+      sampleInput: '5 10',
+      sampleOutput: 'Enter 2 integers:Sum:15\nDiff:-5\nAverage:7.5',
+      testCases: [
+        { input: '5 10', expectedOutput: 'Enter 2 integers:Sum:15\nDiff:-5\nAverage:7.5' },
+        { input: '10 20', expectedOutput: 'Enter 2 integers:Sum:30\nDiff:-10\nAverage:15' },
+        { input: '-5 5', expectedOutput: 'Enter 2 integers:Sum:0\nDiff:-10\nAverage:0' },
+        { input: '10 3', expectedOutput: 'Enter 2 integers:Sum:13\nDiff:7\nAverage:6.5', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your analyze() function here
+// Remember to use references for sum, diff, and avg so main can access their updated values.
+
+int main() {
+    int x, y, sum, diff;
+    double avg;
+    cout << "Enter 2 integers:";
+    cin >> x >> y;
+    analyze(x, y, sum, diff, avg);
+    cout << "Sum:" << sum << endl;
+    cout << "Diff:" << diff << endl;
+    cout << "Average:" << avg << endl;
+    return 0;
+}`,
+      hints: [
+        'The reference parameters should be declared with an ampersand: int &sum, int &diff, double &avg',
+        'Calculate sum = x + y, diff = x - y, and avg = (x + y) / 2.0'
+      ],
+      topics: ['Pass by Reference', 'Reference Parameters', 'Multiple Returns']
+    }
   ]
 };

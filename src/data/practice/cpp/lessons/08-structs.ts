@@ -500,5 +500,69 @@ int main() {
       hints: ['Calculate average: sum of 5 grades / 5.', 'Track topStudent index while iterating.', 'Class average = sum of all averages / N.'],
       topics: ['Struct Arrays', 'Nested Arrays', 'Grade Calculation']
     },
+    {
+      id: 'struct-moviedata',
+      title: 'MovieData Structured Data',
+      difficulty: 'easy',
+      description: `Define a struct named \`MovieData\` with the following members:
+- \`title\` (\`string\`)
+- \`director\` (\`string\`)
+- \`yearReleased\` (\`int\`)
+- \`runningTime\` (\`int\`, in minutes)
+
+Write a function \`void displayMovie(const MovieData& movie)\` that displays the information in the following format:
+\`\`\`
+Title: [title]
+Director: [director]
+Year Released: [yearReleased]
+Running Time: [runningTime] minutes
+\`\`\`
+
+Create two \`MovieData\` variables in main, read their values from input, and pass each one in turn to the \`displayMovie\` function.`,
+      inputFormat: 'Eight lines in total (four lines for movie 1, then four lines for movie 2): title, director, year, and running time.',
+      outputFormat: 'Formatted display output for both movies.',
+      constraints: 'Year > 1800, Running Time > 0. Movie title and director names are single words (or use underscores).',
+      sampleInput: 'Inception\nChristopher_Nolan\n2010\n148\nAvatar\nJames_Cameron\n2009\n162',
+      sampleOutput: 'Title: Inception\nDirector: Christopher_Nolan\nYear Released: 2010\nRunning Time: 148 minutes\nTitle: Avatar\nDirector: James_Cameron\nYear Released: 2009\nRunning Time: 162 minutes',
+      testCases: [
+        {
+          input: 'Inception\nChristopher_Nolan\n2010\n148\nAvatar\nJames_Cameron\n2009\n162',
+          expectedOutput: 'Title: Inception\nDirector: Christopher_Nolan\nYear Released: 2010\nRunning Time: 148 minutes\nTitle: Avatar\nDirector: James_Cameron\nYear Released: 2009\nRunning Time: 162 minutes'
+        },
+        {
+          input: 'Gladiator\nRidley_Scott\n2000\n155\nTitanic\nJames_Cameron\n1997\n194',
+          expectedOutput: 'Title: Gladiator\nDirector: Ridley_Scott\nYear Released: 2000\nRunning Time: 155 minutes\nTitle: Titanic\nDirector: James_Cameron\nYear Released: 1997\nRunning Time: 194 minutes'
+        },
+        {
+          input: 'Jaws\nSteven_Spielberg\n1975\n124\nPsycho\nAlfred_Hitchcock\n1960\n109',
+          expectedOutput: 'Title: Jaws\nDirector: Steven_Spielberg\nYear Released: 1975\nRunning Time: 124 minutes\nTitle: Psycho\nDirector: Alfred_Hitchcock\nYear Released: 1960\nRunning Time: 109 minutes',
+          isHidden: true
+        }
+      ],
+      starterCode: `#include <iostream>
+#include <string>
+using namespace std;
+
+// Define the MovieData struct here
+
+// Write the displayMovie() function here
+
+int main() {
+    MovieData m1, m2;
+    
+    cin >> m1.title >> m1.director >> m1.yearReleased >> m1.runningTime;
+    cin >> m2.title >> m2.director >> m2.yearReleased >> m2.runningTime;
+    
+    displayMovie(m1);
+    displayMovie(m2);
+    
+    return 0;
+}`,
+      hints: [
+        'Make sure the struct definition has a semicolon at the end.',
+        'Use const reference for the displayMovie parameter to prevent unnecessary copying.'
+      ],
+      topics: ['Struct Definition', 'Struct Parameters', 'Console Output']
+    }
   ]
 };

@@ -585,5 +585,137 @@ int main() {
       hints: ['First implement recursive gcd(a, b).', 'Then lcm(a, b) = (a * b) / gcd(a, b).', 'Use long long to avoid overflow in multiplication.'],
       topics: ['Recursion', 'LCM', 'GCD Helper']
     },
+    {
+      id: 'recursive-repeat-string',
+      title: 'Recursive Repeat String',
+      difficulty: 'easy',
+      description: `Write a recursive function named \`repeat\` that prints a string \`s\` exactly \`n\` times without using any loops.
+      
+For example, calling \`repeat("hello", 5)\` should print \`hello\` 5 times: \`hellohellohellohellohello\`.`,
+      inputFormat: 'A string S (one word) and an integer N.',
+      outputFormat: 'Print the string S repeated N times.',
+      constraints: '1 ≤ N ≤ 20, S length ≤ 20',
+      sampleInput: 'hello 5',
+      sampleOutput: 'hellohellohellohellohello',
+      testCases: [
+        { input: 'hello 5', expectedOutput: 'hellohellohellohellohello' },
+        { input: 'a 1', expectedOutput: 'a' },
+        { input: 'abc 3', expectedOutput: 'abcabcabc' },
+        { input: 'test 10', expectedOutput: 'testtesttesttesttesttesttesttesttesttest', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+#include <string>
+using namespace std;
+
+// Write your recursive repeat() function here
+// Do not use any loops!
+
+int main() {
+    string s;
+    int n;
+    if (cin >> s >> n) {
+        repeat(s, n);
+    }
+    cout << endl;
+    return 0;
+}`,
+      hints: [
+        'Base case: if n <= 0, simply return.',
+        'Recursive case: print the string s, then recursively call repeat(s, n - 1).'
+      ],
+      topics: ['Recursion', 'String Printing']
+    },
+    {
+      id: 'recursive-countdown-countup',
+      title: 'Recursive Countdown and Countup',
+      difficulty: 'medium',
+      description: `Write two recursive functions to print sequences:
+1. \`countdown(int n)\`: Receives an integer \`n\` and counts down from \`n\` to 1 by printing each count followed by a space.
+2. \`countup(int n)\`: Receives an integer \`n\` and counts up from 1 to \`n\` by printing each count followed by a space.
+
+Do not use any loops!`,
+      inputFormat: 'A single integer N.',
+      outputFormat: 'First line: countdown values separated by spaces. Second line: countup values separated by spaces.',
+      constraints: '1 ≤ N ≤ 100',
+      sampleInput: '5',
+      sampleOutput: '5 4 3 2 1 \n1 2 3 4 5 ',
+      testCases: [
+        { input: '5', expectedOutput: '5 4 3 2 1 \n1 2 3 4 5 ' },
+        { input: '1', expectedOutput: '1 \n1 ' },
+        { input: '10', expectedOutput: '10 9 8 7 6 5 4 3 2 1 \n1 2 3 4 5 6 7 8 9 10 ', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write recursive countdown(int n) and countup(int n) here
+
+int main() {
+    int n;
+    if (cin >> n) {
+        countdown(n);
+        cout << endl;
+        countup(n);
+        cout << endl;
+    }
+    return 0;
+}`,
+      hints: [
+        'For countdown: print n first, then recurse with n - 1.',
+        'For countup: recurse with n - 1 first, then print n.',
+        'Be sure to include the base case if n < 1.'
+      ],
+      topics: ['Recursion', 'Sequence Generation']
+    },
+    {
+      id: 'recursive-ismember',
+      title: 'Recursive isMember',
+      difficulty: 'medium',
+      description: `Write a recursive Boolean function named \`isMember\` that accepts three arguments:
+- An array of integers
+- The size of the array
+- A target value to search for
+
+The function should return \`true\` if the target value is found in the array, or \`false\` if it is not found. Do not use any loops!`,
+      inputFormat: 'First line: array size N and target value. Second line: N space-separated integers.',
+      outputFormat: 'Print "Found" or "Not Found".',
+      constraints: '1 ≤ N ≤ 1000',
+      sampleInput: '5 42\n10 20 30 42 50',
+      sampleOutput: 'Found',
+      testCases: [
+        { input: '5 42\n10 20 30 42 50', expectedOutput: 'Found' },
+        { input: '4 99\n10 20 30 40', expectedOutput: 'Not Found' },
+        { input: '1 5\n5', expectedOutput: 'Found' },
+        { input: '3 7\n1 2 3', expectedOutput: 'Not Found', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+// Write your recursive isMember() function here
+
+int main() {
+    int size, target;
+    if (cin >> size >> target) {
+        int* arr = new int[size];
+        for (int i = 0; i < size; i++) {
+            cin >> arr[i];
+        }
+        
+        if (isMember(arr, size, target)) {
+            cout << "Found" << endl;
+        } else {
+            cout << "Not Found" << endl;
+        }
+        
+        delete[] arr;
+    }
+    return 0;
+}`,
+      hints: [
+        'Base cases: if size <= 0, return false.',
+        'Check the last element: if arr[size - 1] == target, return true.',
+        'Otherwise, search recursively in the remaining elements of the array by decreasing size by 1.'
+      ],
+      topics: ['Recursion', 'Array Search', 'Boolean Functions']
+    }
   ]
 };

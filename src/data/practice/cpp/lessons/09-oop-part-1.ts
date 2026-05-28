@@ -554,5 +554,158 @@ int main() {
       hints: ['Operator +: Vector2D operator+(const Vector2D& other)', 'Operator *: Vector2D operator*(double scalar)', 'Return new Vector2D with computed values.'],
       topics: ['Operator Overloading', 'Vector Operations', 'Class Design']
     },
+    {
+      id: 'circle-class-basics',
+      title: 'Circle Class Basics',
+      difficulty: 'easy',
+      description: `Write a \`Circle\` class that represents a circle:
+- Private member: \`radius\` (\`double\`)
+- A constructor that accepts a double to initialize the radius.
+- Public method \`double getArea()\`: Returns the area of the circle using \`3.14159\` as PI.
+- Public method \`double getPerimeter()\`: Returns the perimeter (circumference) of the circle.
+
+In \`main\`, read a double value for radius, create a \`Circle\` object, and print the area and perimeter, each on a new line with 2 decimal places.`,
+      inputFormat: 'A single double representing the radius.',
+      outputFormat: 'Print the area, then the perimeter, each with 2 decimal places on a new line.',
+      constraints: '0 < radius ≤ 1000',
+      sampleInput: '5.0',
+      sampleOutput: '78.54\n31.42',
+      testCases: [
+        { input: '5.0', expectedOutput: '78.54\n31.42' },
+        { input: '1.0', expectedOutput: '3.14\n6.28' },
+        { input: '10.0', expectedOutput: '314.16\n62.83', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+#include <iomanip>
+using namespace std;
+
+// Define your Circle class here
+
+int main() {
+    double r;
+    if (cin >> r) {
+        Circle c(r);
+        cout << fixed << setprecision(2) << c.getArea() << endl;
+        cout << fixed << setprecision(2) << c.getPerimeter() << endl;
+    }
+    return 0;
+}`,
+      hints: [
+        'PI should be defined as 3.14159.',
+        'Area = PI * radius * radius',
+        'Perimeter = 2 * PI * radius'
+      ],
+      topics: ['Classes and Objects', 'Encapsulation', 'Geometry']
+    },
+    {
+      id: 'oop-date-class',
+      title: 'Date Class',
+      difficulty: 'medium',
+      description: `Design a class \`Date\` that stores month, day, and year:
+- Private members: \`month\` (\`int\`), \`day\` (\`int\`), and \`year\` (\`int\`).
+- A parameterized constructor to initialize these variables.
+- Public method \`void printFormat1()\`: Prints the date in the format \`MM/DD/YYYY\` (e.g., \`12/25/2018\`).
+- Public method \`void printFormat2()\`: Prints the date as \`[Month Name] [day], [year]\` (e.g., \`December 25, 2018\`).
+- Public method \`void printFormat3()\`: Prints the date as \`[day] [Month Name] [year]\` (e.g., \`25 December 2018\`).
+
+In \`main\`, read the month, day, and year, create a \`Date\` object, and call the three print functions in order.`,
+      inputFormat: 'Three space-separated integers: month, day, and year.',
+      outputFormat: 'Three lines showing the formatted date for each format.',
+      constraints: '1 ≤ month ≤ 12, 1 ≤ day ≤ 31, year > 0',
+      sampleInput: '12 25 2018',
+      sampleOutput: '12/25/2018\nDecember 25, 2018\n25 December 2018',
+      testCases: [
+        { input: '12 25 2018', expectedOutput: '12/25/2018\nDecember 25, 2018\n25 December 2018' },
+        { input: '1 1 2000', expectedOutput: '1/1/2000\nJanuary 1, 2000\n1 January 2000' },
+        { input: '7 4 1776', expectedOutput: '7/4/1776\nJuly 4, 1776\n4 July 1776', isHidden: true },
+      ],
+      starterCode: `#include <iostream>
+#include <string>
+using namespace std;
+
+// Define your Date class here
+
+int main() {
+    int m, d, y;
+    if (cin >> m >> d >> y) {
+        Date date(m, d, y);
+        date.printFormat1();
+        date.printFormat2();
+        date.printFormat3();
+    }
+    return 0;
+}`,
+      hints: [
+        'Use an array of strings in your class to map the month integer (1-12) to the month name.',
+        'Month names: January, February, March, April, May, June, July, August, September, October, November, December.'
+      ],
+      topics: ['Classes and Objects', 'String Manipulation']
+    },
+    {
+      id: 'oop-coin-class',
+      title: 'Coin Class Toss Simulator',
+      difficulty: 'medium',
+      description: `Design a class \`Coin\` that simulates the tossing of a coin:
+- Private member: \`sideUp\` (\`string\`, either "heads" or "tails").
+- A default constructor that randomly determines the side of the coin that is facing up (heads or tails) and initializes the \`sideUp\` variable.
+- A member function \`void toss()\` that generates a random number in the range of 1 through 2. If it is 1, \`sideUp\` becomes "heads". If 2, \`sideUp\` becomes "tails".
+- A member function \`string getSideUp()\` that returns the value of \`sideUp\`.
+
+To test the class deterministically:
+1. In \`main\`, read an integer seed and call \`srand(seed)\` first.
+2. Instantiate the \`Coin\` object, print the initial side facing up in the format: \`Initial: [side]\`.
+3. Toss the coin 20 times in a loop, displaying the result of each toss.
+4. Keep count of how many times heads and tails face up and print the totals at the end.`,
+      inputFormat: 'A single integer representing the random seed.',
+      outputFormat: 'Print the initial state, followed by 20 tosses, followed by the final totals.',
+      constraints: 'Seed is a valid positive integer.',
+      sampleInput: '42',
+      sampleOutput: 'Initial: heads\nToss 1: tails\nToss 2: heads\nToss 3: heads\nToss 4: tails\nToss 5: tails\nToss 6: heads\nToss 7: tails\nToss 8: heads\nToss 9: heads\nToss 10: tails\nToss 11: heads\nToss 12: heads\nToss 13: tails\nToss 14: tails\nToss 15: tails\nToss 16: heads\nToss 17: tails\nToss 18: tails\nToss 19: heads\nToss 20: heads\nHeads: 10\nTails: 10',
+      testCases: [
+        {
+          input: '42',
+          expectedOutput: 'Initial: heads\nToss 1: tails\nToss 2: heads\nToss 3: heads\nToss 4: tails\nToss 5: tails\nToss 6: heads\nToss 7: tails\nToss 8: heads\nToss 9: heads\nToss 10: tails\nToss 11: heads\nToss 12: heads\nToss 13: tails\nToss 14: tails\nToss 15: tails\nToss 16: heads\nToss 17: tails\nToss 18: tails\nToss 19: heads\nToss 20: heads\nHeads: 10\nTails: 10'
+        },
+        {
+          input: '100',
+          expectedOutput: 'Initial: tails\nToss 1: heads\nToss 2: tails\nToss 3: tails\nToss 4: heads\nToss 5: tails\nToss 6: heads\nToss 7: heads\nToss 8: tails\nToss 9: tails\nToss 10: tails\nToss 11: heads\nToss 12: tails\nToss 13: heads\nToss 14: tails\nToss 15: heads\nToss 16: heads\nToss 17: tails\nToss 18: tails\nToss 19: tails\nToss 20: tails\nHeads: 7\nTails: 13',
+          isHidden: true
+        }
+      ],
+      starterCode: `#include <iostream>
+#include <cstdlib>
+#include <string>
+using namespace std;
+
+// Define Coin class here
+
+int main() {
+    int seed;
+    if (cin >> seed) {
+        srand(seed);
+        Coin c;
+        cout << "Initial: " << c.getSideUp() << endl;
+        
+        int heads = 0, tails = 0;
+        for (int i = 1; i <= 20; i++) {
+            c.toss();
+            cout << "Toss " << i << ": " << c.getSideUp() << endl;
+            if (c.getSideUp() == "heads") {
+                heads++;
+            } else {
+                tails++;
+            }
+        }
+        cout << "Heads: " << heads << endl;
+        cout << "Tails: " << tails << endl;
+    }
+    return 0;
+}`,
+      hints: [
+        'The constructor should call toss() to randomly determine the initial side facing up.',
+        'Use rand() % 2 + 1 to pick between heads (1) and tails (2).'
+      ],
+      topics: ['Classes and Objects', 'Random Simulator', 'Constructors']
+    }
   ]
 };
