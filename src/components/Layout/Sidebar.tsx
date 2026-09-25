@@ -102,20 +102,13 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
     { to: "/projects", icon: FolderKanban, label: "Projects" },
   ];
 
-  const PRACTICE_URL_KEY = 'practice-last-url';
-
   const handlePracticeClick = () => {
     onNavigate?.();
-    const saved = sessionStorage.getItem(PRACTICE_URL_KEY);
-    navigate(saved && saved !== '/practice' ? saved : '/practice');
+    sessionStorage.removeItem('practice-last-url');
+    sessionStorage.removeItem('practice-active-track');
+    localStorage.removeItem('syntaxable_active_track');
+    navigate('/practice');
   };
-
-  // Whenever the user is on a practice sub-route, keep the saved URL updated
-  useEffect(() => {
-    if (location.pathname.startsWith('/practice') && location.pathname !== '/practice') {
-      sessionStorage.setItem(PRACTICE_URL_KEY, location.pathname);
-    }
-  }, [location.pathname]);
 
   const socialItems = [
     { to: "/leaderboard", icon: Trophy, label: "Leaderboard" },

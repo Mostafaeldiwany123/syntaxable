@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Course, Lesson, Problem } from '@/data/practiceProblems';
+import { TrackId, TRACK_LIST, getTracksForLanguage } from '@/data/practice/tracks';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSidebar } from '@/context/SidebarContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -33,6 +34,8 @@ interface LanguageViewProps {
   completedProblems: Set<string>;
   selectedCategory: string | null;
   onSelectCategory: (categoryId: string | null) => void;
+  currentTrackId?: TrackId | null;
+  onSelectTrack?: (trackId: TrackId) => void;
 }
 
 // CDN base for Material Icon Theme
@@ -101,11 +104,22 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
   onSelectProblem,
   selectedProblemId,
   completedProblems,
+  currentTrackId,
+  onSelectTrack,
 }) => {
   const { setPracticeData, setShowPracticeSidebar } = useSidebar();
   const isMobile = useIsMobile();
   const SESSION_SEARCH_KEY = `practice-search-${course.language}`;
   const SESSION_SCROLL_KEY = `practice-scroll-${course.language}`;
+
+  const availableTracks = useMemo(() => {
+    return getTracksForLanguage(course.language);
+  }, [course.language]);
+
+  const activeTrack = useMemo(() => {
+    if (!currentTrackId) return null;
+    return TRACK_LIST.find(t => t.id === currentTrackId) || null;
+  }, [currentTrackId]);
 
   // Register practice data to the sidebar context
   useEffect(() => {
@@ -248,6 +262,11 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
               {course.language === 'cpp' ? 'C++' : course.language === 'csharp' ? 'C#' : course.language.toUpperCase()}
             </span>
           </div>
+          {activeTrack && (
+            <Badge variant="outline" className="hidden sm:inline-flex text-xs px-2.5 py-1 font-medium bg-primary/10 text-primary border-primary/20">
+              {activeTrack.title}
+            </Badge>
+          )}
         </div>
         
         <div className="flex items-center gap-3 sm:gap-4 shrink-0">
@@ -376,9 +395,32 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
             {/* Timeline Left Panel */}
             <div className="w-full md:w-[380px] lg:w-[440px] flex flex-col shrink-0 overflow-hidden border-r border-border/30 bg-card/10">
               <div className="p-4 border-b border-border/30 shrink-0 flex flex-col gap-3">
-                <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                  {searchQuery ? `Search Results (${filteredLessons.length})` : 'Learning Track'}
-                </h2>
+                {availableTracks.length > 1 && onSelectTrack && (
+                  <div className="flex items-center gap-1 p-1 bg-secondary/40 rounded-lg border border-border/30">
+                    {availableTracks.map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => onSelectTrack(t.id)}
+                        className={`flex-1 py-1 px-2 text-[11px] font-medium rounded-md transition-all ${
+                          currentTrackId === t.id
+                            ? 'bg-card text-foreground shadow-sm font-semibold'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {t.shortTitle}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                    {searchQuery ? `Search Results (${filteredLessons.length})` : (activeTrack?.title || 'Learning Track')}
+                  </h2>
+                  <span className="text-xs text-muted-foreground">
+                    {filteredLessons.length} {filteredLessons.length === 1 ? 'lesson' : 'lessons'}
+                  </span>
+                </div>
                 
                 {/* Mobile Search - Visible only on small screens when details not open */}
                 <div className="relative w-full md:hidden">

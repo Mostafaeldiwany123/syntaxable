@@ -282,16 +282,16 @@ const LeaderboardPage = () => {
                                     className="flex flex-col items-center group relative z-10"
                                 >
                                     <div className="relative mb-3 flex flex-col items-center">
-                                        <div className="absolute -top-6 animate-bounce">
-                                            <Crown className="h-6 w-6 text-primary drop-shadow-[0_0_8px_hsl(var(--primary)/0.6)]" />
+                                        <div className="absolute -top-6">
+                                            <Crown className="h-6 w-6 text-amber-400 fill-amber-400 drop-shadow-[0_2px_8px_rgba(251,191,36,0.5)]" />
                                         </div>
-                                        <Avatar className="h-16 w-16 sm:h-20 sm:w-20 border-2 border-primary ring-4 ring-primary/20 shadow-[0_0_20px_hsl(var(--primary)/0.15)] group-hover:scale-105 transition-transform duration-300">
+                                        <Avatar className="h-16 w-16 sm:h-20 sm:w-20 border-2 border-amber-400/80 ring-4 ring-amber-400/20 shadow-[0_0_16px_rgba(251,191,36,0.18)] group-hover:scale-105 transition-transform duration-300">
                                             <AvatarImage src={topThree[0].avatar_url || undefined} />
                                             <AvatarFallback seed={topThree[0].username} className="text-base font-semibold">
                                                 {topThree[0].username?.charAt(0).toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
-                                        <div className="absolute -bottom-1 bg-primary text-primary-foreground text-[11px] font-extrabold px-2 py-0.5 rounded-full shadow-md">
+                                        <div className="absolute -bottom-1 bg-amber-400 text-amber-950 text-[11px] font-extrabold px-2 py-0.5 rounded-full shadow-md">
                                             #1
                                         </div>
                                     </div>
@@ -303,11 +303,11 @@ const LeaderboardPage = () => {
                                     </div>
 
                                     {/* Pedestal */}
-                                    <div className="w-full h-40 sm:h-44 bg-gradient-to-b from-primary/20 to-card/25 border-2 border-primary/40 rounded-t-2xl flex flex-col items-center justify-between p-3 sm:p-4 shadow-[0_4px_30px_hsl(var(--primary)/0.05)] gap-2">
-                                        <span className="text-4xl sm:text-5xl font-extrabold text-primary/30 select-none leading-none">1</span>
+                                    <div className="w-full h-40 sm:h-44 bg-gradient-to-b from-amber-400/15 via-card/50 to-card/25 border-2 border-amber-400/35 rounded-t-2xl flex flex-col items-center justify-between p-3 sm:p-4 shadow-[0_4px_20px_rgba(251,191,36,0.06)] gap-2">
+                                        <span className="text-4xl sm:text-5xl font-extrabold text-amber-400/30 select-none leading-none">1</span>
                                         <div className="text-center">
                                             <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                                                <Target className="h-3.5 w-3.5 text-primary" />
+                                                <Target className="h-3.5 w-3.5 text-amber-400" />
                                                 <span className="font-bold text-foreground">{topThree[0].problems_solved} Solved</span>
                                             </div>
                                         </div>

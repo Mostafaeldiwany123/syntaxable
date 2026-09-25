@@ -1,4 +1,5 @@
 export * from './types';
+export * from './tracks';
 export { cppCourse } from './cpp';
 export { csharpCourse } from './csharp';
 export { pythonCourse } from './python';

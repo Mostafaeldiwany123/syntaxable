@@ -36,24 +36,44 @@ import LeaderboardPage from "./pages/LeaderboardPage";
 import AchievementsPage from "./pages/AchievementsPage";
 import DuelPage from "./pages/DuelPage";
 import { RewardPopup } from "./components/achievements/RewardPopup";
+import { TrackId } from './data/practice/tracks';
 import { cppCourse, csharpCourse, pythonCourse, javaCourse, javascriptCourse, typescriptCourse } from './data/practiceProblems';
 
 const PracticeRoutes = () => {
-  const { language, problemId } = useParams();
-  const navigate = useNavigate();
+  const params = useParams();
 
-  const course = language === 'cpp' ? cppCourse : language === 'csharp' ? csharpCourse : language === 'python' ? pythonCourse : language === 'java' ? javaCourse : language === 'javascript' ? javascriptCourse : language === 'typescript' ? typescriptCourse : null;
-  const problem = course ? course.lessons.flatMap(l => l.problems).find(p => p.id === problemId) : null;
+  const validTracks = ['intro', 'fundamentals', 'data-structures'];
+  const validLanguages = ['cpp', 'csharp', 'python', 'java', 'javascript', 'typescript'];
 
-  useEffect(() => {
-    if (language && !course) {
-      navigate('/practice');
-    } else if (language && problemId && !problem) {
-      navigate(`/practice/${language}`);
+  let trackId: TrackId | null = null;
+  let language: string | null = null;
+  let problemId: string | null = null;
+
+  if (params.trackId && params.language) {
+    if (validTracks.includes(params.trackId)) {
+      trackId = params.trackId as TrackId;
     }
-  }, [language, problemId, course, problem, navigate]);
+    language = params.language;
+    problemId = params.problemId || null;
+  } else if (params.trackOrLang) {
+    if (validTracks.includes(params.trackOrLang)) {
+      trackId = params.trackOrLang as TrackId;
+    } else if (validLanguages.includes(params.trackOrLang)) {
+      language = params.trackOrLang;
+      problemId = params.problemId || null;
+    }
+  } else if (params.language) {
+    language = params.language;
+    problemId = params.problemId || null;
+  }
 
-  return <PracticePage initialLanguage={language} initialProblemId={problemId} />;
+  return (
+    <PracticePage
+      initialTrackId={trackId}
+      initialLanguage={language || undefined}
+      initialProblemId={problemId || undefined}
+    />
+  );
 };
 
 const LearnRoutes = () => {
@@ -81,9 +101,6 @@ const AppRoutes = () => {
           <Route path="/learn" element={user ? <LearnRoutes /> : <Navigate to="/" replace />} />
           <Route path="/learn/:language" element={user ? <LearnRoutes /> : <Navigate to="/" replace />} />
           <Route path="/learn/:language/:lessonId" element={user ? <LearnRoutes /> : <Navigate to="/" replace />} />
-          <Route path="/practice" element={user ? <PracticeRoutes /> : <Navigate to="/" replace />} />
-          <Route path="/practice/:language" element={user ? <PracticeRoutes /> : <Navigate to="/" replace />} />
-          <Route path="/practice/:language/problem/:problemId" element={user ? <PracticeRoutes /> : <Navigate to="/" replace />} />
 
           {/* Custom sets routes - Creating is a Pro feature, joining is free */}
           <Route path="/practice/custom/create" element={
@@ -108,6 +125,14 @@ const AppRoutes = () => {
               <CustomSetsPage />
             </PremiumGuard>
           } />
+
+          {/* Practice Routes with Track support */}
+          <Route path="/practice/sets" element={<Navigate to="/practice" replace />} />
+          <Route path="/practice" element={user ? <PracticeRoutes /> : <Navigate to="/" replace />} />
+          <Route path="/practice/:trackId/:language/problem/:problemId" element={user ? <PracticeRoutes /> : <Navigate to="/" replace />} />
+          <Route path="/practice/:trackId/:language" element={user ? <PracticeRoutes /> : <Navigate to="/" replace />} />
+          <Route path="/practice/:trackOrLang" element={user ? <PracticeRoutes /> : <Navigate to="/" replace />} />
+          <Route path="/practice/:language/problem/:problemId" element={user ? <PracticeRoutes /> : <Navigate to="/" replace />} />
 
           <Route path="/community" element={user ? <CommunityPage /> : <Navigate to="/" replace />} />
           <Route path="/friends" element={user ? <FriendsPage /> : <Navigate to="/" replace />} />
