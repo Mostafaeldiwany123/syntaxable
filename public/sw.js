@@ -1,5 +1,4 @@
-// Caching static assets for offline capability and faster loads
-const CACHE_NAME = 'syntaxable-v1';
+const CACHE_NAME = 'syntaxable-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -7,16 +6,15 @@ const ASSETS_TO_CACHE = [
   '/manifest.json'
 ];
 
-// Perform installation caching
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS_TO_CACHE);
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
-// Clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -31,17 +29,22 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Cache fallback and network-first fetch strategy
 self.addEventListener('fetch', (event) => {
-  // Only intercept HTTP/S GET requests (skip chrome extensions, websockets, and database API requests)
   if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) {
     return;
   }
 
   event.respondWith(
     fetch(event.request)
-      .catch(() => {
-        return caches.match(event.request);
+      .catch(async () => {
+        const cachedResponse = await caches.match(event.request);
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        return new Response('Network error and asset not cached', { 
+          status: 404, 
+          headers: { 'Content-Type': 'text/plain' }
+        });
       })
   );
 });

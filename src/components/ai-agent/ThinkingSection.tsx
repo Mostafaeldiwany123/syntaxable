@@ -25,7 +25,7 @@ export const ThinkingSection: React.FC<ThinkingSectionProps> = ({ content }) => 
           <ChevronRight className="h-3 w-3" />
         )}
       </button>
-      
+
       {isExpanded && (
         <div className="mt-2 pl-3 border-l-2 border-muted bg-muted/5 py-1 pr-1 opacity-80">
           <div className="text-sm text-muted-foreground mix-blend-luminosity">
