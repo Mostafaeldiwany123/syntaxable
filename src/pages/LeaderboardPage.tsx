@@ -118,6 +118,14 @@ const LeaderboardPage = () => {
         }
     };
 
+    // Format username on podium to show only the first 2 words
+    const formatPodiumName = (name?: string | null): string => {
+        if (!name) return 'Anonymous';
+        const words = name.trim().split(/\s+/);
+        if (words.length <= 2) return name;
+        return `${words[0]} ${words[1]}`;
+    };
+
     // Stagger animation settings
     const podiumVariants = {
         hidden: { opacity: 0, y: 30 },
@@ -253,8 +261,11 @@ const LeaderboardPage = () => {
                                     </div>
 
                                     <div className="text-center w-full px-1 mb-2">
-                                        <div className="font-semibold text-sm truncate max-w-[90px] sm:max-w-[130px] text-foreground/90 flex items-center justify-center gap-1 mx-auto">
-                                            {topThree[1].username}
+                                        <div
+                                            title={topThree[1].username || undefined}
+                                            className="font-semibold text-sm truncate max-w-[100px] sm:max-w-[140px] text-foreground/90 mx-auto"
+                                        >
+                                            {formatPodiumName(topThree[1].username)}
                                         </div>
                                     </div>
 
@@ -297,8 +308,11 @@ const LeaderboardPage = () => {
                                     </div>
 
                                     <div className="text-center w-full px-1 mb-2">
-                                        <div className="font-bold text-sm sm:text-base truncate max-w-[100px] sm:max-w-[150px] text-foreground flex items-center justify-center gap-1 mx-auto">
-                                            {topThree[0].username}
+                                        <div
+                                            title={topThree[0].username || undefined}
+                                            className="font-bold text-sm sm:text-base truncate max-w-[110px] sm:max-w-[160px] text-foreground mx-auto"
+                                        >
+                                            {formatPodiumName(topThree[0].username)}
                                         </div>
                                     </div>
 
@@ -338,8 +352,11 @@ const LeaderboardPage = () => {
                                     </div>
 
                                     <div className="text-center w-full px-1 mb-2">
-                                        <div className="font-semibold text-sm truncate max-w-[90px] sm:max-w-[130px] text-foreground/90 flex items-center justify-center gap-1 mx-auto">
-                                            {topThree[2].username}
+                                        <div
+                                            title={topThree[2].username || undefined}
+                                            className="font-semibold text-sm truncate max-w-[100px] sm:max-w-[140px] text-foreground/90 mx-auto"
+                                        >
+                                            {formatPodiumName(topThree[2].username)}
                                         </div>
                                     </div>
 
