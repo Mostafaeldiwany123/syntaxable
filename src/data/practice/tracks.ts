@@ -1,5 +1,14 @@
 import type { Course, Lesson } from './types';
 
+// C Lessons
+import { basics as cBasics } from './c/lessons/00-basics';
+import { conditionals as cConditionals } from './c/lessons/01-conditionals';
+import { loops as cLoops } from './c/lessons/02-loops';
+import { nestedLoops as cNestedLoops } from './c/lessons/03-nested-loops';
+import { arraysBasics as cArraysBasics } from './c/lessons/04-arrays-basics';
+import { arraysAdvanced as cArraysAdvanced } from './c/lessons/05-arrays-advanced';
+import { stringsBasics as cStringsBasics } from './c/lessons/06-strings-basics';
+
 // C++ Lessons
 import { basics as cppBasics } from './cpp/lessons/00-basics';
 import { conditionals as cppConditionals } from './cpp/lessons/01-conditionals';
@@ -123,6 +132,15 @@ const trackLessonMap: Record<TrackId, Record<string, Lesson[]>> = {
       cppArraysAdvanced,
       cppStringsBasics,
     ],
+    c: [
+      cBasics,
+      cConditionals,
+      cLoops,
+      cNestedLoops,
+      cArraysBasics,
+      cArraysAdvanced,
+      cStringsBasics,
+    ],
     python: [
       pyBasics1,
       pyBasics2,
@@ -218,6 +236,7 @@ const trackLessonMap: Record<TrackId, Record<string, Lesson[]>> = {
 
 const languageDisplayNames: Record<string, string> = {
   cpp: 'C++',
+  c: 'C',
   python: 'Python',
   java: 'Java',
   csharp: 'C#',

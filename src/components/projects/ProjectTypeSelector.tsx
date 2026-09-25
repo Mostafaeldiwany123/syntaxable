@@ -10,6 +10,7 @@ interface ProjectTypeSelectorProps {
 
 const projectTypes: { value: ProjectType; label: string; extension: string }[] = [
   { value: 'cpp', label: 'C++', extension: '.cpp' },
+  { value: 'c', label: 'C', extension: '.c' },
   { value: 'csharp', label: 'C#', extension: '.cs' },
   { value: 'html', label: 'HTML', extension: '.html' },
   { value: 'react', label: 'React', extension: '.tsx' },

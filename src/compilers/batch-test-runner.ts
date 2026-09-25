@@ -1,12 +1,13 @@
 import { FileData } from './types';
 import { cppCompiler } from './cpp-compiler';
+import { cCompiler } from './c-compiler';
 import { csharpCompiler } from './csharp-compiler';
 import { pythonCompiler } from './python-compiler';
 import { javaCompiler } from './java-compiler';
 import { javascriptCompiler } from './javascript-compiler';
 import { typescriptCompiler } from './typescript-compiler';
 
-export type LanguageType = 'cpp' | 'csharp' | 'python' | 'java' | 'javascript' | 'typescript';
+export type LanguageType = 'cpp' | 'c' | 'csharp' | 'python' | 'java' | 'javascript' | 'typescript';
 
 export interface BatchTestCase {
   input: string;
@@ -251,26 +252,30 @@ int main() {
 async function runSingleTest(
   code: string,
   testCase: BatchTestCase,
-  language: 'csharp' | 'python' | 'java' | 'javascript' | 'typescript'
+  language: 'c' | 'csharp' | 'python' | 'java' | 'javascript' | 'typescript'
 ): Promise<BatchTestResult> {
-  const compiler = language === 'csharp'
-    ? csharpCompiler
-    : language === 'python'
-      ? pythonCompiler
-      : language === 'java'
-        ? javaCompiler
-        : language === 'javascript'
-          ? javascriptCompiler
-          : typescriptCompiler;
-  const entryFile = language === 'csharp'
-    ? 'Program.cs'
-    : language === 'python'
-      ? 'main.py'
-      : language === 'java'
-        ? 'Main.java'
-        : language === 'javascript'
-          ? 'main.js'
-          : 'main.ts';
+  const compiler = language === 'c'
+    ? cCompiler
+    : language === 'csharp'
+      ? csharpCompiler
+      : language === 'python'
+        ? pythonCompiler
+        : language === 'java'
+          ? javaCompiler
+          : language === 'javascript'
+            ? javascriptCompiler
+            : typescriptCompiler;
+  const entryFile = language === 'c'
+    ? 'main.c'
+    : language === 'csharp'
+      ? 'Program.cs'
+      : language === 'python'
+        ? 'main.py'
+        : language === 'java'
+          ? 'Main.java'
+          : language === 'javascript'
+            ? 'main.js'
+            : 'main.ts';
 
   try {
     const result = await compiler.compileWithStdin!(
@@ -279,7 +284,7 @@ async function runSingleTest(
       testCase.input
     );
 
-    if (result.error) {
+    if (!result.success && result.error) {
       return {
         passed: false,
         input: testCase.input || '(empty)',
@@ -317,7 +322,7 @@ async function runSingleTest(
 async function runIndividualTests(
   code: string,
   testCases: BatchTestCase[],
-  language: 'csharp' | 'python' | 'java' | 'javascript' | 'typescript'
+  language: 'c' | 'csharp' | 'python' | 'java' | 'javascript' | 'typescript'
 ): Promise<BatchTestResult[]> {
   // Run all tests in parallel
   const results = await Promise.all(
@@ -433,6 +438,7 @@ export async function runBatchTests(
   switch (language) {
     case 'cpp':
       return runCppBatchTests(code, testCases);
+    case 'c':
     case 'csharp':
     case 'python':
     case 'java':

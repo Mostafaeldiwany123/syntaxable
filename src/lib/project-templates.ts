@@ -7,6 +7,11 @@ export interface TemplateInfo {
 
 export const getProjectTemplate = (projectType: ProjectType): TemplateInfo => {
   switch (projectType) {
+    case 'c':
+      return {
+        filename: 'main.c',
+        content: '#include <stdio.h>\n\nint main() {\n    printf("Hello from Syntaxable!\\n");\n    return 0;\n}',
+      };
     case 'cpp':
       return {
         filename: 'main.cpp',
@@ -71,6 +76,8 @@ export const getFileTemplate = (fileName: string): string => {
       return '/* Styles */\nbody {\n  margin: 0;\n}';
     case 'py':
       return 'def main():\n    print("Hello from Syntaxable!")\n\nif __name__ == "__main__":\n    main()';
+    case 'c':
+      return '#include <stdio.h>\n\nint main() {\n    printf("Hello from Syntaxable!\\n");\n    return 0;\n}';
     case 'cpp':
     case 'h':
       return '#include <iostream>\n\nusing namespace std;\n\nint main() {\n    cout << "Hello from Syntaxable!" << endl;\n    return 0;\n}';

@@ -37,13 +37,13 @@ import AchievementsPage from "./pages/AchievementsPage";
 import DuelPage from "./pages/DuelPage";
 import { RewardPopup } from "./components/achievements/RewardPopup";
 import { TrackId } from './data/practice/tracks';
-import { cppCourse, csharpCourse, pythonCourse, javaCourse, javascriptCourse, typescriptCourse } from './data/practiceProblems';
+import { cppCourse, cCourse, csharpCourse, pythonCourse, javaCourse, javascriptCourse, typescriptCourse } from './data/practiceProblems';
 
 const PracticeRoutes = () => {
   const params = useParams();
 
   const validTracks = ['intro', 'fundamentals', 'data-structures'];
-  const validLanguages = ['cpp', 'csharp', 'python', 'java', 'javascript', 'typescript'];
+  const validLanguages = ['cpp', 'c', 'csharp', 'python', 'java', 'javascript', 'typescript'];
 
   let trackId: TrackId | null = null;
   let language: string | null = null;

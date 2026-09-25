@@ -38,6 +38,7 @@ const CDN_BASE = 'https://cdn.jsdelivr.net/gh/PKief/vscode-material-icon-theme@m
 
 const allLanguages = [
   { id: 'cpp', label: 'C++', icon: `${CDN_BASE}/cpp.svg` },
+  { id: 'c', label: 'C', icon: `${CDN_BASE}/c.svg` },
   { id: 'csharp', label: 'C#', icon: `${CDN_BASE}/csharp.svg` },
   { id: 'python', label: 'Python', icon: `${CDN_BASE}/python.svg` },
   { id: 'java', label: 'Java', icon: `${CDN_BASE}/java.svg` },
@@ -48,6 +49,7 @@ const allLanguages = [
 const languageFilterOptions = [
   { value: '', label: 'All Languages' },
   { value: 'cpp', label: 'C++' },
+  { value: 'c', label: 'C' },
   { value: 'csharp', label: 'C#' },
   { value: 'python', label: 'Python' },
   { value: 'java', label: 'Java' },
@@ -434,7 +436,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
                             <div className="flex items-start gap-3">
                               <div className="p-2 bg-primary/10 rounded-lg shrink-0">
                                 <img
-                                  src={`${CDN_BASE}/${set.language === 'csharp' ? 'csharp' : set.language === 'cpp' ? 'cpp' : set.language === 'java' ? 'java' : set.language === 'javascript' ? 'javascript' : set.language === 'typescript' ? 'typescript' : 'python'}.svg`}
+                                  src={`${CDN_BASE}/${set.language === 'c' ? 'c' : set.language === 'csharp' ? 'csharp' : set.language === 'cpp' ? 'cpp' : set.language === 'java' ? 'java' : set.language === 'javascript' ? 'javascript' : set.language === 'typescript' ? 'typescript' : 'python'}.svg`}
                                   alt=""
                                   className="w-5 h-5"
                                 />

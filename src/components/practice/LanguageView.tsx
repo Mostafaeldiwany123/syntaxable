@@ -254,12 +254,12 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
           <div className="h-6 w-px bg-border hidden sm:block shrink-0" />
           <div className="flex items-center min-w-0 shrink-0 bg-secondary/40 px-3 py-1.5 rounded-lg border border-border/30">
             <img
-              src={`${CDN_BASE}/${course.language === 'csharp' ? 'csharp' : course.language === 'cpp' ? 'cpp' : course.language === 'java' ? 'java' : course.language === 'javascript' ? 'javascript' : course.language === 'typescript' ? 'typescript' : 'python'}.svg`}
+              src={`${CDN_BASE}/${course.language === 'c' ? 'c' : course.language === 'csharp' ? 'csharp' : course.language === 'cpp' ? 'cpp' : course.language === 'java' ? 'java' : course.language === 'javascript' ? 'javascript' : course.language === 'typescript' ? 'typescript' : 'python'}.svg`}
               alt=""
               className="w-4 h-4 sm:w-5 sm:h-5 ml-1"
             />
             <span className="font-semibold ml-2 text-sm sm:text-base tracking-tight truncate">
-              {course.language === 'cpp' ? 'C++' : course.language === 'csharp' ? 'C#' : course.language.toUpperCase()}
+              {course.language === 'c' ? 'C' : course.language === 'cpp' ? 'C++' : course.language === 'csharp' ? 'C#' : course.language.toUpperCase()}
             </span>
           </div>
           {activeTrack && (

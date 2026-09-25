@@ -143,6 +143,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
   // Get file extension and name based on language
   const getFileExtension = (lang: string): string => {
     switch (lang) {
+      case 'c': return 'c';
       case 'python': return 'py';
       case 'csharp': return 'cs';
       case 'java': return 'java';

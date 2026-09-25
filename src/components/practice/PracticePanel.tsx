@@ -27,7 +27,7 @@ interface PracticePanelProps {
   language?: CourseLanguage;
 }
 
-const VALID_LANGUAGES: LanguageType[] = ['cpp', 'csharp', 'python', 'java', 'javascript', 'typescript'];
+const VALID_LANGUAGES: LanguageType[] = ['cpp', 'c', 'csharp', 'python', 'java', 'javascript', 'typescript'];
 
 function isValidLanguage(lang: string): lang is LanguageType {
   return VALID_LANGUAGES.includes(lang as LanguageType);

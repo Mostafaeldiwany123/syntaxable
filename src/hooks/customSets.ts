@@ -6,7 +6,7 @@ export interface CustomSet {
   id: string;
   title: string;
   description: string | null;
-  language: 'cpp' | 'csharp' | 'python' | 'java' | 'javascript' | 'typescript';
+  language: 'cpp' | 'c' | 'csharp' | 'python' | 'java' | 'javascript' | 'typescript';
   owner_id: string;
   owner_username: string | null;
   owner_avatar_url: string | null;
@@ -21,7 +21,7 @@ export interface PublicCustomSet {
   id: string;
   title: string;
   description: string | null;
-  language: 'cpp' | 'csharp' | 'python' | 'java' | 'javascript' | 'typescript';
+  language: 'cpp' | 'c' | 'csharp' | 'python' | 'java' | 'javascript' | 'typescript';
   owner_id: string;
   owner_username: string | null;
   owner_avatar_url: string | null;
