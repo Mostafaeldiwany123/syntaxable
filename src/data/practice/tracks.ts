@@ -1,4 +1,5 @@
 import type { Course, Lesson } from './types';
+import { sortProblems } from './sortUtils';
 
 // C Lessons
 import { basics as cBasics } from './c/lessons/00-basics';
@@ -252,10 +253,11 @@ export function getTrackCourse(trackId: TrackId, language: string): Course | nul
   const track = TRACK_LIST.find(t => t.id === trackId);
   const langName = languageDisplayNames[language] || language.toUpperCase();
 
-  // Return course with re-indexed order within track
+  // Return course with re-indexed order within track and canonically sorted problems
   const orderedLessons = lessons.map((l, idx) => ({
     ...l,
     order: idx + 1,
+    problems: sortProblems(l.problems),
   }));
 
   return {

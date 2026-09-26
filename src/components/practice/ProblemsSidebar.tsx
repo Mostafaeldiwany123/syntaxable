@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronRight, CheckCircle2, Circle, X } from 'lucide-react';
-import { Lesson, Problem } from '@/data/practiceProblems';
+import { Lesson, Problem, sortProblems } from '@/data/practiceProblems';
 
 interface ProblemsSidebarProps {
   lessons: Lesson[];
@@ -66,13 +66,7 @@ const LessonSection: React.FC<{
   const totalCount = lesson.problems.length;
 
   const sortedProblems = React.useMemo(() => {
-    const difficultyPriority = { easy: 1, medium: 2, hard: 3 };
-    return [...lesson.problems].sort((a, b) => {
-      const diffA = difficultyPriority[a.difficulty] || 0;
-      const diffB = difficultyPriority[b.difficulty] || 0;
-      if (diffA !== diffB) return diffA - diffB;
-      return a.title.localeCompare(b.title);
-    });
+    return sortProblems(lesson.problems);
   }, [lesson.problems]);
 
   return (

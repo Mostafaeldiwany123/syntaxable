@@ -14,7 +14,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSidebar } from "@/context/SidebarContext";
-import { Course, Lesson, Problem } from "@/data/practiceProblems";
+import { Course, Lesson, Problem, sortProblems } from "@/data/practiceProblems";
 
 interface SidebarProps {
   onNavigate?: () => void;
@@ -162,7 +162,9 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
 
                   {/* Lesson Circular Progress Stack */}
                   <div className="flex-grow overflow-y-auto py-4 flex flex-col items-center gap-4 select-none">
-                    {practiceData.lessons.map((lesson, index) => {
+                    {[...practiceData.lessons]
+                      .sort((a, b) => (a.order || 0) - (b.order || 0))
+                      .map((lesson, index) => {
                       const completedCount = lesson.problems.filter(p => practiceData.completedProblems.has(p.id)).length;
                       const totalCount = lesson.problems.length;
                       const percent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
@@ -261,16 +263,15 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
 
                   {/* Lessons Accordion */}
                   <div className="flex-grow overflow-y-auto px-2 py-3 space-y-1 select-none">
-                    {practiceData.lessons.map((lesson) => {
+                    {[...practiceData.lessons]
+                      .sort((a, b) => (a.order || 0) - (b.order || 0))
+                      .map((lesson) => {
                       const completedCount = lesson.problems.filter(p => practiceData.completedProblems.has(p.id)).length;
                       const totalCount = lesson.problems.length;
                       const isExpanded = expandedLessons.has(lesson.id);
 
-                      // Sort problems by difficulty
-                      const sortedProblems = [...lesson.problems].sort((a, b) => {
-                        const difficultyPriority = { easy: 1, medium: 2, hard: 3 };
-                        return (difficultyPriority[a.difficulty] || 0) - (difficultyPriority[b.difficulty] || 0);
-                      });
+                      // Sort problems canonically by difficulty then title
+                      const sortedProblems = sortProblems(lesson.problems);
 
                       return (
                         <div key={lesson.id} className="border border-border/30 rounded-lg overflow-hidden bg-secondary/5">

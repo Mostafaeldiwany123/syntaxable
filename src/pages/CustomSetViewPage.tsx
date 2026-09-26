@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getFileIconUrl } from "@/lib/project-utils";
 import { formatDistanceToNow } from "date-fns";
 import { ProblemSolvingView } from "@/components/practice/ProblemSolvingView";
-import { Course, Problem, Lesson } from "@/data/practiceProblems";
+import { Course, Problem, Lesson, sortProblems } from "@/data/practiceProblems";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useSearchUsers } from "@/hooks/permissions";
@@ -60,7 +60,7 @@ const CustomSetViewPage = () => {
 
   const convertedProblems: Problem[] = useMemo(() => {
     if (!problems) return [];
-    return problems.map((p) => ({
+    const mapped: Problem[] = problems.map((p) => ({
       id: p.id,
       title: p.problem_data.title,
       difficulty: p.problem_data.difficulty,
@@ -76,6 +76,7 @@ const CustomSetViewPage = () => {
       hints: p.problem_data.hints,
       topics: p.problem_data.topics,
     }));
+    return sortProblems(mapped);
   }, [problems]);
 
   const mockCourse: Course = useMemo(() => ({

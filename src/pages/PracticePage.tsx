@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { PracticeLanding } from '@/components/practice/PracticeLanding';
 import { LanguageView } from '@/components/practice/LanguageView';
 import { ProblemSolvingView } from '@/components/practice/ProblemSolvingView';
-import { Course, Problem, cppCourse, cCourse, csharpCourse, pythonCourse, javaCourse, javascriptCourse, typescriptCourse } from '@/data/practiceProblems';
+import { Course, Problem, cppCourse, cCourse, csharpCourse, pythonCourse, javaCourse, javascriptCourse, typescriptCourse, sortCourse, getAllSortedCourseProblems } from '@/data/practiceProblems';
 import { TrackId, getTrackCourse, findTrackForProblem, isDataStructuresProblem } from '@/data/practice/tracks';
 import { usePracticeProgress, useMarkProblemComplete } from '@/hooks/practice';
 import { useAuth } from '@/hooks/useAuth';
@@ -33,7 +33,15 @@ const PracticePage: React.FC<PracticePageProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const courses: Course[] = useMemo(() => [cppCourse, cCourse, csharpCourse, pythonCourse, javaCourse, javascriptCourse, typescriptCourse], []);
+  const courses: Course[] = useMemo(() => [
+    cppCourse,
+    cCourse,
+    csharpCourse,
+    pythonCourse,
+    javaCourse,
+    javascriptCourse,
+    typescriptCourse,
+  ].map(sortCourse), []);
 
   const [selectedTrack, setSelectedTrack] = useState<TrackId | null>(() => {
     return initialTrackId || null;
@@ -47,29 +55,41 @@ const PracticePage: React.FC<PracticePageProps> = ({
     if (initialLanguage && initialProblemId) {
       const trackMatch = findTrackForProblem(initialProblemId, initialTrackId || selectedTrack || savedTrack);
       if (trackMatch) {
-        const problem = trackMatch.course.lessons.flatMap(l => l.problems).find(p => p.id === initialProblemId);
+        const sortedCourse = sortCourse(trackMatch.course);
+        const allProblems = getAllSortedCourseProblems(sortedCourse);
+        const problem = allProblems.find(p => p.id === initialProblemId);
         if (problem) {
-          return { type: 'solving', course: trackMatch.course, currentProblem: problem, trackId: trackMatch.trackId };
+          const parentLesson = sortedCourse.lessons.find(l => l.problems.some(p => p.id === problem.id));
+          if (parentLesson) {
+            sessionStorage.setItem(`practice-active-lesson-${sortedCourse.language}`, parentLesson.id);
+          }
+          return { type: 'solving', course: sortedCourse, currentProblem: problem, trackId: trackMatch.trackId };
         }
       }
 
       const course = courses.find(c => c.language === initialLanguage);
       if (course) {
-        const problem = course.lessons.flatMap(l => l.problems).find(p => p.id === initialProblemId);
+        const sortedCourse = sortCourse(course);
+        const allProblems = getAllSortedCourseProblems(sortedCourse);
+        const problem = allProblems.find(p => p.id === initialProblemId);
         if (problem) {
-          return { type: 'solving', course, currentProblem: problem, trackId: initialTrackId || savedTrack || undefined };
+          const parentLesson = sortedCourse.lessons.find(l => l.problems.some(p => p.id === problem.id));
+          if (parentLesson) {
+            sessionStorage.setItem(`practice-active-lesson-${sortedCourse.language}`, parentLesson.id);
+          }
+          return { type: 'solving', course: sortedCourse, currentProblem: problem, trackId: initialTrackId || savedTrack || undefined };
         }
       }
     } else if (initialLanguage) {
       const activeTrack = initialTrackId || selectedTrack || savedTrack || 'intro';
       const trackCourse = getTrackCourse(activeTrack, initialLanguage);
       if (trackCourse) {
-        return { type: 'categories', course: trackCourse, trackId: activeTrack };
+        return { type: 'categories', course: sortCourse(trackCourse), trackId: activeTrack };
       }
 
       const course = courses.find(c => c.language === initialLanguage);
       if (course) {
-        return { type: 'categories', course, trackId: activeTrack };
+        return { type: 'categories', course: sortCourse(course), trackId: activeTrack };
       }
     }
     return { type: 'landing' };
@@ -93,18 +113,30 @@ const PracticePage: React.FC<PracticePageProps> = ({
       const track = initialTrackId || selectedTrack || savedTrack || 'intro';
       const trackCourse = getTrackCourse(track, initialLanguage) || courses.find(c => c.language === initialLanguage);
       if (trackCourse) {
-        const problem = trackCourse.lessons.flatMap(l => l.problems).find(p => p.id === initialProblemId);
+        const sortedCourse = sortCourse(trackCourse);
+        const allProblems = getAllSortedCourseProblems(sortedCourse);
+        const problem = allProblems.find(p => p.id === initialProblemId);
         if (problem) {
-          setViewState({ type: 'solving', course: trackCourse, currentProblem: problem, trackId: track });
+          const parentLesson = sortedCourse.lessons.find(l => l.problems.some(p => p.id === problem.id));
+          if (parentLesson) {
+            sessionStorage.setItem(`practice-active-lesson-${sortedCourse.language}`, parentLesson.id);
+          }
+          setViewState({ type: 'solving', course: sortedCourse, currentProblem: problem, trackId: track });
           setSelectedTrack(track);
           return;
         }
       }
       const match = findTrackForProblem(initialProblemId, track);
       if (match) {
-        const problem = match.course.lessons.flatMap(l => l.problems).find(p => p.id === initialProblemId);
+        const sortedCourse = sortCourse(match.course);
+        const allProblems = getAllSortedCourseProblems(sortedCourse);
+        const problem = allProblems.find(p => p.id === initialProblemId);
         if (problem) {
-          setViewState({ type: 'solving', course: match.course, currentProblem: problem, trackId: match.trackId });
+          const parentLesson = sortedCourse.lessons.find(l => l.problems.some(p => p.id === problem.id));
+          if (parentLesson) {
+            sessionStorage.setItem(`practice-active-lesson-${sortedCourse.language}`, parentLesson.id);
+          }
+          setViewState({ type: 'solving', course: sortedCourse, currentProblem: problem, trackId: match.trackId });
           setSelectedTrack(match.trackId);
           return;
         }
@@ -113,7 +145,7 @@ const PracticePage: React.FC<PracticePageProps> = ({
       const track = initialTrackId || selectedTrack || savedTrack || 'intro';
       const trackCourse = getTrackCourse(track, initialLanguage) || courses.find(c => c.language === initialLanguage);
       if (trackCourse) {
-        setViewState({ type: 'categories', course: trackCourse, trackId: track });
+        setViewState({ type: 'categories', course: sortCourse(trackCourse), trackId: track });
         setSelectedTrack(track);
         return;
       }
@@ -168,11 +200,12 @@ const PracticePage: React.FC<PracticePageProps> = ({
                        'intro';
     const effectiveTrack = trackId || selectedTrack || savedTrack;
     const trackCourse = getTrackCourse(effectiveTrack, course.language) || course;
+    const sortedCourse = sortCourse(trackCourse);
     setSelectedTrack(effectiveTrack);
     localStorage.setItem('syntaxable_active_track', effectiveTrack);
     sessionStorage.setItem('practice-active-track', effectiveTrack);
     sessionStorage.setItem('practice-last-url', `/practice/${effectiveTrack}/${course.language}`);
-    const nextState: ViewState = { type: 'categories', course: trackCourse, trackId: effectiveTrack };
+    const nextState: ViewState = { type: 'categories', course: sortedCourse, trackId: effectiveTrack };
     setViewState(nextState);
     syncUrl(nextState, effectiveTrack);
   }, [selectedTrack, syncUrl]);
@@ -184,7 +217,7 @@ const PracticePage: React.FC<PracticePageProps> = ({
   }, [selectedTrack, syncUrl]);
 
   const handleSelectCategory = useCallback((course: Course, categoryId: string | null) => {
-    setViewState({ type: 'categories', course });
+    setViewState({ type: 'categories', course: sortCourse(course) });
   }, []);
 
   const handleSwitchTrackInView = useCallback((newTrackId: TrackId) => {
@@ -194,10 +227,11 @@ const PracticePage: React.FC<PracticePageProps> = ({
     if (viewState.type === 'categories') {
       const newCourse = getTrackCourse(newTrackId, viewState.course.language);
       if (newCourse) {
+        const sortedCourse = sortCourse(newCourse);
         sessionStorage.setItem('practice-last-url', `/practice/${newTrackId}/${viewState.course.language}`);
         const nextState: ViewState = {
           type: 'categories',
-          course: newCourse,
+          course: sortedCourse,
           trackId: newTrackId,
         };
         setViewState(nextState);
@@ -208,9 +242,14 @@ const PracticePage: React.FC<PracticePageProps> = ({
 
   const handleSelectProblem = useCallback((course: Course, problem: Problem) => {
     const trackId = ('trackId' in viewState && viewState.trackId) ? viewState.trackId : selectedTrack || 'intro';
+    const sortedCourse = sortCourse(course);
+    const parentLesson = sortedCourse.lessons.find(l => l.problems.some(p => p.id === problem.id));
+    if (parentLesson) {
+      sessionStorage.setItem(`practice-active-lesson-${sortedCourse.language}`, parentLesson.id);
+    }
     const nextState: ViewState = {
       type: 'solving',
-      course,
+      course: sortedCourse,
       currentProblem: problem,
       trackId,
     };
@@ -221,7 +260,8 @@ const PracticePage: React.FC<PracticePageProps> = ({
   const handleBackFromSolving = useCallback(() => {
     if (viewState.type === 'solving') {
       const trackId = viewState.trackId || selectedTrack || 'intro';
-      const nextState: ViewState = { type: 'categories', course: viewState.course, trackId };
+      const sortedCourse = sortCourse(viewState.course);
+      const nextState: ViewState = { type: 'categories', course: sortedCourse, trackId };
       setViewState(nextState);
       syncUrl(nextState, trackId);
     }
@@ -231,13 +271,19 @@ const PracticePage: React.FC<PracticePageProps> = ({
     if (viewState.type !== 'solving') return;
 
     const { course, currentProblem, trackId } = viewState;
-    const allProblems = course.lessons.flatMap(l => l.problems);
+    const sortedCourse = sortCourse(course);
+    const allProblems = getAllSortedCourseProblems(sortedCourse);
     const currentIndex = allProblems.findIndex(p => p.id === currentProblem.id);
 
-    if (currentIndex < allProblems.length - 1) {
+    if (currentIndex !== -1 && currentIndex < allProblems.length - 1) {
       const nextProblem = allProblems[currentIndex + 1];
+      const parentLesson = sortedCourse.lessons.find(l => l.problems.some(p => p.id === nextProblem.id));
+      if (parentLesson) {
+        sessionStorage.setItem(`practice-active-lesson-${sortedCourse.language}`, parentLesson.id);
+      }
       const nextState: ViewState = {
         ...viewState,
+        course: sortedCourse,
         currentProblem: nextProblem,
         trackId,
       };
@@ -250,13 +296,19 @@ const PracticePage: React.FC<PracticePageProps> = ({
     if (viewState.type !== 'solving') return;
 
     const { course, currentProblem, trackId } = viewState;
-    const allProblems = course.lessons.flatMap(l => l.problems);
+    const sortedCourse = sortCourse(course);
+    const allProblems = getAllSortedCourseProblems(sortedCourse);
     const currentIndex = allProblems.findIndex(p => p.id === currentProblem.id);
 
     if (currentIndex > 0) {
       const prevProblem = allProblems[currentIndex - 1];
+      const parentLesson = sortedCourse.lessons.find(l => l.problems.some(p => p.id === prevProblem.id));
+      if (parentLesson) {
+        sessionStorage.setItem(`practice-active-lesson-${sortedCourse.language}`, parentLesson.id);
+      }
       const nextState: ViewState = {
         ...viewState,
+        course: sortedCourse,
         currentProblem: prevProblem,
         trackId,
       };
@@ -283,16 +335,17 @@ const PracticePage: React.FC<PracticePageProps> = ({
   }
 
   if (viewState.type === 'categories') {
+    const sortedCourse = sortCourse(viewState.course);
     return (
       <div className="h-dvh w-full bg-transparent flex flex-col overflow-hidden text-foreground font-sans">
         <LanguageView
-          course={viewState.course}
+          course={sortedCourse}
           onBack={handleBackToLanding}
-          onSelectProblem={(problem) => handleSelectProblem(viewState.course, problem)}
+          onSelectProblem={(problem) => handleSelectProblem(sortedCourse, problem)}
           selectedProblemId={null}
           completedProblems={completedProblems}
           selectedCategory={null}
-          onSelectCategory={(categoryId) => handleSelectCategory(viewState.course, categoryId)}
+          onSelectCategory={(categoryId) => handleSelectCategory(sortedCourse, categoryId)}
           currentTrackId={'trackId' in viewState ? viewState.trackId : selectedTrack}
           onSelectTrack={handleSwitchTrackInView}
         />
@@ -301,26 +354,27 @@ const PracticePage: React.FC<PracticePageProps> = ({
   }
 
   if (viewState.type === 'solving') {
-    const { course, currentProblem } = viewState;
-    const allProblems = course.lessons.flatMap(l => l.problems);
+    const sortedCourse = sortCourse(viewState.course);
+    const { currentProblem } = viewState;
+    const allProblems = getAllSortedCourseProblems(sortedCourse);
     const currentIndex = allProblems.findIndex(p => p.id === currentProblem.id);
-    const hasNext = currentIndex < allProblems.length - 1;
+    const hasNext = currentIndex !== -1 && currentIndex < allProblems.length - 1;
     const hasPrev = currentIndex > 0;
     const isDataStructures = viewState.trackId === 'data-structures' || isDataStructuresProblem(currentProblem.id, viewState.trackId);
 
     return (
       <div className="h-dvh w-full bg-background flex flex-col overflow-hidden text-foreground font-sans">
         <ProblemSolvingView
-          course={course}
+          course={sortedCourse}
           currentProblem={currentProblem}
-          lessons={course.lessons}
+          lessons={sortedCourse.lessons}
           onBack={handleBackFromSolving}
           onProblemComplete={handleProblemComplete}
           onNextProblem={handleNextProblem}
           onPrevProblem={handlePrevProblem}
           hasNext={hasNext}
           hasPrev={hasPrev}
-          onSelectProblem={(problem) => handleSelectProblem(course, problem)}
+          onSelectProblem={(problem) => handleSelectProblem(sortedCourse, problem)}
         />
       </div>
     );

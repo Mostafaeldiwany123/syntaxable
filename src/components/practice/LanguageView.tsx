@@ -23,7 +23,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Course, Lesson, Problem } from '@/data/practiceProblems';
+import { Course, Lesson, Problem, sortProblems, sortLessons } from '@/data/practiceProblems';
 import { TrackId, TRACK_LIST, getTracksForLanguage } from '@/data/practice/tracks';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSidebar } from '@/context/SidebarContext';
@@ -135,7 +135,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
   // Register practice data to the sidebar context
   useEffect(() => {
     setPracticeData({
-      lessons: course.lessons,
+      lessons: sortLessons(course.lessons),
       course,
       currentProblemId: selectedProblemId,
       completedProblems,
@@ -147,7 +147,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
       setPracticeData(null);
       setShowPracticeSidebar(false);
     };
-  }, [course, course.lessons, selectedProblemId, completedProblems, onSelectProblem, setPracticeData, setShowPracticeSidebar]);
+  }, [course, selectedProblemId, completedProblems, onSelectProblem, setPracticeData, setShowPracticeSidebar]);
 
   const [searchQuery, setSearchQuery] = useState(() =>
     sessionStorage.getItem(SESSION_SEARCH_KEY) || ''
@@ -183,9 +183,10 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
 
   const filteredLessons = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
-    if (!query) return course.lessons;
+    const sorted = [...course.lessons].sort((a, b) => (a.order || 0) - (b.order || 0));
+    if (!query) return sorted;
     
-    return course.lessons.filter(lesson => 
+    return sorted.filter(lesson => 
       lesson.title.toLowerCase().includes(query) || 
       lesson.description.toLowerCase().includes(query) ||
       (lesson.topics && lesson.topics.some(t => t.toLowerCase().includes(query)))
@@ -207,10 +208,11 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
     if (savedExists) {
       setSelectedLessonId(saved);
     } else if (course.lessons.length > 0) {
-      const firstUnsolved = course.lessons.find(lesson => 
+      const sorted = [...course.lessons].sort((a, b) => (a.order || 0) - (b.order || 0));
+      const firstUnsolved = sorted.find(lesson => 
         lesson.problems.some(p => !completedProblems.has(p.id))
       );
-      setSelectedLessonId(firstUnsolved?.id || course.lessons[0].id);
+      setSelectedLessonId(firstUnsolved?.id || sorted[0].id);
     } else {
       setSelectedLessonId(null);
     }
@@ -244,13 +246,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
 
   const sortedProblems = useMemo(() => {
     if (!activeLesson) return [];
-    const difficultyPriority = { easy: 1, medium: 2, hard: 3 };
-    return [...activeLesson.problems].sort((a, b) => {
-      const diffA = difficultyPriority[a.difficulty] || 0;
-      const diffB = difficultyPriority[b.difficulty] || 0;
-      if (diffA !== diffB) return diffA - diffB;
-      return a.title.localeCompare(b.title);
-    });
+    return sortProblems(activeLesson.problems);
   }, [activeLesson]);
 
   return (
