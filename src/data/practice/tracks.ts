@@ -32,6 +32,7 @@ import { oopPart4 as cppOopPart4 } from './cpp/lessons/12-oop-part-4';
 import { oopPart5 as cppOopPart5 } from './cpp/lessons/13-oop-part-5';
 import { oopPart6 as cppOopPart6 } from './cpp/lessons/14-oop-part-6';
 import { templates as cppTemplates } from './cpp/lessons/15-templates';
+import { vectorsArrayLists as cppVectorsArrayLists } from './cpp/lessons/16-vectors-array-lists';
 
 // Python Lessons
 import { basicsPart1 as pyBasics1 } from './python/lessons/01-basics-part-1';
@@ -214,13 +215,7 @@ const trackLessonMap: Record<TrackId, Record<string, Lesson[]>> = {
   },
   'data-structures': {
     cpp: [
-      // Prerequisites copied from Programming Fundamentals as instructed
-      cppRecursion,
-      cppPointers,
-      cppDynamicArrays,
-      cppPointersPassByReference,
-      cppStructs,
-      cppTemplates,
+      cppVectorsArrayLists,
     ],
     python: [
       pyDs1,

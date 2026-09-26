@@ -20,6 +20,7 @@ import { oopPart4 } from './12-oop-part-4';
 import { oopPart5 } from './13-oop-part-5';
 import { oopPart6 } from './14-oop-part-6';
 import { templates } from './15-templates';
+import { vectorsArrayLists } from './16-vectors-array-lists';
 import type { Lesson } from '../../types';
 
 export const cppLessons: Lesson[] = [
@@ -45,4 +46,5 @@ export const cppLessons: Lesson[] = [
   oopPart5,
   oopPart6,
   templates,
+  vectorsArrayLists,
 ].sort((a, b) => a.order - b.order);
