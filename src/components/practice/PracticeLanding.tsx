@@ -5,7 +5,7 @@ import { TrackId, TRACK_LIST, getLanguagesForTrack, getTrackCourse } from '@/dat
 import { useCustomSets, usePublicCustomSets } from '@/hooks/customSets';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/profiles';
-import { Plus, BookOpen, Users, Search, X, ChevronDown, ArrowLeft, Terminal, Cpu, Boxes, Sparkles, Lock } from 'lucide-react';
+import { Plus, BookOpen, Users, Search, X, ChevronDown, ArrowLeft, Terminal, Cpu, Boxes, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -264,8 +264,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
                             </div>
                             <div className="flex items-center gap-1.5">
                               {track.isPro && (
-                                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-md flex items-center gap-1">
-                                  <Sparkles className="w-2.5 h-2.5" />
+                                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-md">
                                   Pro
                                 </span>
                               )}
