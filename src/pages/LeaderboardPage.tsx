@@ -105,14 +105,27 @@ const LeaderboardPage = () => {
         }
     };
 
+    const getMetricIcon = () => {
+        if (sortBy === 'current_streak' || sortBy === 'longest_streak') {
+            return <Flame className="h-3 w-3 text-orange-500" />;
+        }
+        return <Target className="h-3 w-3 text-emerald-500" />;
+    };
+
+    const getMetricValue = (u: LeaderboardUser) => {
+        if (sortBy === 'current_streak') return `${u.current_streak || 0}d streak`;
+        if (sortBy === 'longest_streak') return `${u.longest_streak || 0}d best`;
+        return `${u.problems_solved || 0} solved`;
+    };
+
     const getPositionStyle = (position: number) => {
         switch (position) {
             case 1:
-                return 'bg-primary/10 border-primary/40 hover:border-primary/60 shadow-[0_0_15px_hsl(var(--primary)/0.1)]';
+                return 'bg-amber-500/5 border-amber-500/30 hover:border-amber-500/50';
             case 2:
-                return 'bg-primary/5 border-primary/25 hover:border-primary/40';
+                return 'bg-secondary/40 border-border hover:border-border/80';
             case 3:
-                return 'bg-primary/5 border-primary/10 hover:border-primary/25';
+                return 'bg-amber-700/5 border-amber-700/20 hover:border-amber-700/40';
             default:
                 return 'bg-card/40 border-border/80 hover:border-border';
         }
@@ -237,143 +250,139 @@ const LeaderboardPage = () => {
                     <div className="space-y-6">
                         {/* Podium Section for Top 3 (Only shown when not searching and top 3 exist) */}
                         {topThree.length === 3 && (
-                            <div className="grid grid-cols-3 gap-3 sm:gap-6 items-end pt-10 pb-6 max-w-3xl mx-auto relative">
-                                <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent blur-3xl pointer-events-none -z-10" />
-
-                                {/* 2nd Place */}
-                                <motion.div
-                                    custom={0.2}
-                                    variants={podiumVariants}
-                                    initial="hidden"
-                                    animate="show"
-                                    className="flex flex-col items-center group"
-                                >
-                                    <div className="relative mb-3 flex flex-col items-center">
-                                        <Avatar className="h-14 w-14 sm:h-16 sm:w-16 border-2 border-primary/60 ring-4 ring-primary/10 group-hover:scale-105 transition-transform duration-300">
-                                            <AvatarImage src={topThree[1].avatar_url || undefined} />
-                                            <AvatarFallback seed={topThree[1].username} className="text-sm font-semibold">
-                                                {topThree[1].username?.charAt(0).toUpperCase()}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className="absolute -bottom-1 bg-primary/80 text-primary-foreground text-[10px] font-extrabold px-1.5 py-0.5 rounded-full shadow-md">
-                                            #2
+                            <div className="pt-4 pb-2 max-w-xl mx-auto">
+                                <div className="grid grid-cols-3 gap-2.5 sm:gap-4 items-end">
+                                    {/* 2nd Place - Silver */}
+                                    <motion.div
+                                        custom={0.2}
+                                        variants={podiumVariants}
+                                        initial="hidden"
+                                        animate="show"
+                                        className="flex flex-col items-center group"
+                                    >
+                                        <div className="relative mb-2 flex flex-col items-center">
+                                            <div className="h-4 sm:h-5 mb-1" />
+                                            <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-slate-300 dark:border-slate-500 bg-card group-hover:scale-105 transition-transform duration-300 shadow-sm">
+                                                <AvatarImage src={topThree[1].avatar_url || undefined} />
+                                                <AvatarFallback seed={topThree[1].username} className="text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                                    {topThree[1].username?.charAt(0).toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
                                         </div>
-                                    </div>
 
-                                    <div className="text-center w-full px-1 mb-2">
-                                        <div
-                                            title={topThree[1].username || undefined}
-                                            className="font-semibold text-sm truncate max-w-[100px] sm:max-w-[140px] text-foreground/90 mx-auto"
-                                        >
-                                            {formatPodiumName(topThree[1].username)}
-                                        </div>
-                                    </div>
-
-                                    {/* Pedestal */}
-                                    <div className="w-full h-32 sm:h-36 bg-gradient-to-b from-primary/10 to-card/25 border border-primary/20 rounded-t-2xl flex flex-col items-center justify-between p-3 sm:p-4 shadow-[0_4px_20px_hsl(var(--primary)/0.15)] gap-2">
-                                        <span className="text-3xl sm:text-4xl font-extrabold text-primary/20 select-none leading-none">2</span>
-                                        <div className="text-center">
-                                            <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                                                <Target className="h-3.5 w-3.5 text-primary/80" />
-                                                <span className="font-bold text-foreground">{topThree[1].problems_solved} Solved</span>
+                                        <div className="text-center w-full px-1 mb-1 mt-0.5">
+                                            <div
+                                                title={topThree[1].username || undefined}
+                                                className="font-semibold text-xs sm:text-sm truncate max-w-[90px] sm:max-w-[120px] text-foreground/90 mx-auto"
+                                            >
+                                                {formatPodiumName(topThree[1].username)}
                                             </div>
                                         </div>
-                                        <p className="text-[10px] text-muted-foreground/70 text-center line-clamp-2 px-0.5 italic w-full">
-                                            {topThree[1].description ? `"${topThree[1].description}"` : "No bio yet"}
-                                        </p>
-                                    </div>
-                                </motion.div>
 
-                                {/* 1st Place */}
-                                <motion.div
-                                    custom={0}
-                                    variants={podiumVariants}
-                                    initial="hidden"
-                                    animate="show"
-                                    className="flex flex-col items-center group relative z-10"
-                                >
-                                    <div className="relative mb-3 flex flex-col items-center">
-                                        <div className="absolute -top-6">
-                                            <Crown className="h-6 w-6 text-amber-400 fill-amber-400 drop-shadow-[0_2px_8px_rgba(251,191,36,0.5)]" />
+                                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary/80 border border-border/60 text-[10px] font-medium text-muted-foreground mb-2">
+                                            {getMetricIcon()}
+                                            <span className="font-semibold text-foreground/90">{getMetricValue(topThree[1])}</span>
                                         </div>
-                                        <Avatar className="h-16 w-16 sm:h-20 sm:w-20 border-2 border-amber-400/80 ring-4 ring-amber-400/20 shadow-[0_0_16px_rgba(251,191,36,0.18)] group-hover:scale-105 transition-transform duration-300">
-                                            <AvatarImage src={topThree[0].avatar_url || undefined} />
-                                            <AvatarFallback seed={topThree[0].username} className="text-base font-semibold">
-                                                {topThree[0].username?.charAt(0).toUpperCase()}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className="absolute -bottom-1 bg-amber-400 text-amber-950 text-[11px] font-extrabold px-2 py-0.5 rounded-full shadow-md">
-                                            #1
-                                        </div>
-                                    </div>
 
-                                    <div className="text-center w-full px-1 mb-2">
-                                        <div
-                                            title={topThree[0].username || undefined}
-                                            className="font-bold text-sm sm:text-base truncate max-w-[110px] sm:max-w-[160px] text-foreground mx-auto"
-                                        >
-                                            {formatPodiumName(topThree[0].username)}
+                                        {/* Pedestal */}
+                                        <div className="w-full h-20 sm:h-24 bg-card/60 border border-border/70 border-t-2 border-t-slate-400 dark:border-t-slate-400 rounded-t-xl flex flex-col items-center justify-center p-2 text-center transition-colors group-hover:border-border">
+                                            <div className="w-7 h-7 rounded-full bg-secondary border border-border/80 flex items-center justify-center text-muted-foreground font-bold text-xs mb-0.5">
+                                                2
+                                            </div>
+                                            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                                                2nd
+                                            </span>
                                         </div>
-                                    </div>
+                                    </motion.div>
 
-                                    {/* Pedestal */}
-                                    <div className="w-full h-40 sm:h-44 bg-gradient-to-b from-amber-400/15 via-card/50 to-card/25 border-2 border-amber-400/35 rounded-t-2xl flex flex-col items-center justify-between p-3 sm:p-4 shadow-[0_4px_20px_rgba(251,191,36,0.06)] gap-2">
-                                        <span className="text-4xl sm:text-5xl font-extrabold text-amber-400/30 select-none leading-none">1</span>
-                                        <div className="text-center">
-                                            <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                                                <Target className="h-3.5 w-3.5 text-amber-400" />
-                                                <span className="font-bold text-foreground">{topThree[0].problems_solved} Solved</span>
+                                    {/* 1st Place - Gold */}
+                                    <motion.div
+                                        custom={0}
+                                        variants={podiumVariants}
+                                        initial="hidden"
+                                        animate="show"
+                                        className="flex flex-col items-center group relative z-10"
+                                    >
+                                        <div className="relative mb-2 flex flex-col items-center">
+                                            <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-amber-400 fill-amber-400 mb-1" />
+                                            <Avatar className="h-14 w-14 sm:h-16 sm:w-16 border-2 border-amber-400 bg-card group-hover:scale-105 transition-transform duration-300 shadow-sm">
+                                                <AvatarImage src={topThree[0].avatar_url || undefined} />
+                                                <AvatarFallback seed={topThree[0].username} className="text-sm font-bold bg-amber-400/10 text-amber-500">
+                                                    {topThree[0].username?.charAt(0).toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        </div>
+
+                                        <div className="text-center w-full px-1 mb-1 mt-0.5">
+                                            <div
+                                                title={topThree[0].username || undefined}
+                                                className="font-bold text-xs sm:text-sm truncate max-w-[100px] sm:max-w-[140px] text-foreground mx-auto"
+                                            >
+                                                {formatPodiumName(topThree[0].username)}
                                             </div>
                                         </div>
-                                        <p className="text-[10px] text-muted-foreground/75 text-center line-clamp-2 px-0.5 italic w-full">
-                                            {topThree[0].description ? `"${topThree[0].description}"` : "No bio yet"}
-                                        </p>
-                                    </div>
-                                </motion.div>
 
-                                {/* 3rd Place */}
-                                <motion.div
-                                    custom={0.4}
-                                    variants={podiumVariants}
-                                    initial="hidden"
-                                    animate="show"
-                                    className="flex flex-col items-center group"
-                                >
-                                    <div className="relative mb-3 flex flex-col items-center">
-                                        <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/30 ring-4 ring-primary/5 group-hover:scale-105 transition-transform duration-300">
-                                            <AvatarImage src={topThree[2].avatar_url || undefined} />
-                                            <AvatarFallback seed={topThree[2].username} className="text-xs font-semibold">
-                                                {topThree[2].username?.charAt(0).toUpperCase()}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className="absolute -bottom-1 bg-primary/60 text-primary-foreground text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shadow-md">
-                                            #3
+                                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-[10px] font-medium text-amber-600 dark:text-amber-400 mb-2">
+                                            {getMetricIcon()}
+                                            <span className="font-semibold text-foreground/90">{getMetricValue(topThree[0])}</span>
                                         </div>
-                                    </div>
 
-                                    <div className="text-center w-full px-1 mb-2">
-                                        <div
-                                            title={topThree[2].username || undefined}
-                                            className="font-semibold text-sm truncate max-w-[100px] sm:max-w-[140px] text-foreground/90 mx-auto"
-                                        >
-                                            {formatPodiumName(topThree[2].username)}
+                                        {/* Pedestal */}
+                                        <div className="w-full h-28 sm:h-32 bg-card/80 border border-amber-500/30 border-t-2 border-t-amber-400 rounded-t-xl flex flex-col items-center justify-center p-2 text-center transition-colors group-hover:border-amber-500/50">
+                                            <div className="w-8 h-8 rounded-full bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-500 dark:text-amber-400 font-extrabold text-sm mb-0.5">
+                                                1
+                                            </div>
+                                            <span className="text-[10px] sm:text-[11px] font-semibold text-amber-500 dark:text-amber-400 uppercase tracking-wider">
+                                                Winner
+                                            </span>
                                         </div>
-                                    </div>
+                                    </motion.div>
 
-                                    {/* Pedestal */}
-                                    <div className="w-full h-26 sm:h-30 bg-gradient-to-b from-primary/5 to-card/25 border border-primary/10 rounded-t-2xl flex flex-col items-center justify-between p-3 sm:p-4 shadow-[0_4px_15px_hsl(var(--primary)/0.1)] gap-2">
-                                        <span className="text-2xl sm:text-3xl font-extrabold text-primary/10 select-none leading-none">3</span>
-                                        <div className="text-center">
-                                            <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                                                <Target className="h-3.5 w-3.5 text-primary/60" />
-                                                <span className="font-bold text-foreground">{topThree[2].problems_solved} Solved</span>
+                                    {/* 3rd Place - Bronze */}
+                                    <motion.div
+                                        custom={0.4}
+                                        variants={podiumVariants}
+                                        initial="hidden"
+                                        animate="show"
+                                        className="flex flex-col items-center group"
+                                    >
+                                        <div className="relative mb-2 flex flex-col items-center">
+                                            <div className="h-4 sm:h-5 mb-1" />
+                                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-amber-700/50 dark:border-amber-600/50 bg-card group-hover:scale-105 transition-transform duration-300 shadow-sm">
+                                                <AvatarImage src={topThree[2].avatar_url || undefined} />
+                                                <AvatarFallback seed={topThree[2].username} className="text-xs font-bold bg-amber-700/10 text-amber-700 dark:text-amber-500">
+                                                    {topThree[2].username?.charAt(0).toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        </div>
+
+                                        <div className="text-center w-full px-1 mb-1 mt-0.5">
+                                            <div
+                                                title={topThree[2].username || undefined}
+                                                className="font-semibold text-xs sm:text-sm truncate max-w-[90px] sm:max-w-[120px] text-foreground/90 mx-auto"
+                                            >
+                                                {formatPodiumName(topThree[2].username)}
                                             </div>
                                         </div>
-                                        <p className="text-[10px] text-muted-foreground/70 text-center line-clamp-2 px-0.5 italic w-full">
-                                            {topThree[2].description ? `"${topThree[2].description}"` : "No bio yet"}
-                                        </p>
-                                    </div>
-                                </motion.div>
+
+                                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary/80 border border-border/60 text-[10px] font-medium text-muted-foreground mb-2">
+                                            {getMetricIcon()}
+                                            <span className="font-semibold text-foreground/90">{getMetricValue(topThree[2])}</span>
+                                        </div>
+
+                                        {/* Pedestal */}
+                                        <div className="w-full h-16 sm:h-20 bg-card/40 border border-border/60 border-t-2 border-t-amber-700/60 dark:border-t-amber-600/60 rounded-t-xl flex flex-col items-center justify-center p-2 text-center transition-colors group-hover:border-border">
+                                            <div className="w-6 h-6 rounded-full bg-amber-700/10 border border-amber-700/20 flex items-center justify-center text-amber-700 dark:text-amber-500 font-bold text-xs mb-0.5">
+                                                3
+                                            </div>
+                                            <span className="text-[9px] sm:text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                                                3rd
+                                            </span>
+                                        </div>
+                                    </motion.div>
+                                </div>
+                                {/* Shared Grounded Base */}
+                                <div className="w-full h-1 bg-border/60 rounded-full" />
                             </div>
                         )}
 
