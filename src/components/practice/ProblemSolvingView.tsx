@@ -26,7 +26,7 @@ const DifficultyBadge = ({ difficulty, className }: { difficulty: Problem['diffi
   };
 
   return (
-    <Badge variant="outline" className={`text-[10px] px-2 py-0.5 ${colors[difficulty]} ${className || ''}`}>
+    <Badge variant="outline" className={`text-[10px] capitalize font-medium px-2 py-0.5 ${colors[difficulty]} ${className || ''}`}>
       {difficulty}
     </Badge>
   );

@@ -255,8 +255,8 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                       <span>Back to Menu</span>
                     </Button>
                     <div className="flex items-center gap-1.5 shrink-0 bg-secondary/50 px-2 py-0.5 rounded border border-border/50">
-                      <span className="text-[10px] font-bold text-primary uppercase tracking-wide">
-                        {practiceData.course.language}
+                      <span className="text-[10px] font-semibold text-primary capitalize">
+                        {practiceData.course.language === 'cpp' ? 'C++' : practiceData.course.language === 'csharp' ? 'C#' : practiceData.course.language}
                       </span>
                     </div>
                   </div>

@@ -42,7 +42,7 @@ export const ProjectCard = ({ project, isOwner, onRename, onDelete }: ProjectCar
 
   return (
     <Card
-      className="group flex flex-col hover:border-primary/50 hover:bg-card/65 transition-all duration-300 bg-card/45 backdrop-blur-sm border-border/40 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] rounded-xl overflow-hidden"
+      className="group flex flex-col bg-card border-border hover:border-primary/50 transition-colors duration-200 rounded-xl overflow-hidden"
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">

@@ -92,6 +92,7 @@ export interface TrackMetadata {
   shortTitle: string;
   description: string;
   icon: 'terminal' | 'cpu' | 'boxes';
+  image: string;
   level: 'Beginner' | 'Intermediate' | 'Advanced';
   isPro?: boolean;
 }
@@ -103,6 +104,7 @@ export const TRACK_LIST: TrackMetadata[] = [
     shortTitle: 'Intro',
     description: 'Master core programming fundamentals: variables, conditionals, loops, functions, and arrays.',
     icon: 'terminal',
+    image: '/imgs/tracks/track-intro.jpg',
     level: 'Beginner',
   },
   {
@@ -111,6 +113,7 @@ export const TRACK_LIST: TrackMetadata[] = [
     shortTitle: 'Fundamentals',
     description: 'Deep dive into functions, memory management, recursion, pointers, and object-oriented programming.',
     icon: 'cpu',
+    image: '/imgs/tracks/track-fundamentals.jpg',
     level: 'Intermediate',
   },
   {
@@ -119,6 +122,7 @@ export const TRACK_LIST: TrackMetadata[] = [
     shortTitle: 'Data Structures',
     description: 'Learn memory structures, pointer references, node links, dynamic arrays, and foundational data structures.',
     icon: 'boxes',
+    image: '/imgs/tracks/track-datastructures.jpg',
     level: 'Advanced',
     isPro: true,
   },

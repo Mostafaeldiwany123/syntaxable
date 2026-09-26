@@ -5,7 +5,7 @@ import { TrackId, TRACK_LIST, getLanguagesForTrack, getTrackCourse } from '@/dat
 import { useCustomSets, usePublicCustomSets } from '@/hooks/customSets';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/profiles';
-import { Plus, BookOpen, Users, Search, X, ChevronDown, ArrowLeft, Terminal, Cpu, Boxes, Lock } from 'lucide-react';
+import { Plus, BookOpen, Users, Search, X, ChevronDown, ArrowLeft, ArrowRight, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -222,12 +222,25 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
                   : 'Choose a learning track to start practicing, or explore custom problem sets.'}
               </p>
             </motion.div>
+            {activeTrack && (
+              <motion.div variants={itemVariants}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSelectTrack(null)}
+                  className="gap-1.5 px-3 text-xs shrink-0 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span>Back to Tracks</span>
+                </Button>
+              </motion.div>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6">
-        <div className="max-w-6xl mx-auto">
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
           {/* LEVEL 1: Track Selection View (when no track is selected) */}
           {!activeTrackId ? (
             <div className="space-y-12">
@@ -253,40 +266,48 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
                         variants={itemVariants}
                         key={track.id}
                         onClick={() => handleSelectTrack(track.id)}
-                        className="group relative overflow-hidden rounded-xl border border-border bg-card p-6 text-left transition-all hover:border-primary/50 hover:shadow-md cursor-pointer flex flex-col justify-between"
+                        className="group relative overflow-hidden rounded-xl border border-border bg-card text-left transition-all hover:border-primary/50 hover:shadow-sm cursor-pointer flex flex-col justify-between"
                       >
-                        <div>
-                          <div className="flex items-center justify-between mb-4">
-                            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
-                              {track.icon === 'terminal' && <Terminal className="w-6 h-6" />}
-                              {track.icon === 'cpu' && <Cpu className="w-6 h-6" />}
-                              {track.icon === 'boxes' && <Boxes className="w-6 h-6" />}
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              {track.isPro && (
-                                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-md">
-                                  Pro
-                                </span>
-                              )}
-                              <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 bg-secondary text-muted-foreground rounded-md">
-                                {track.level}
+                        {/* Track Image Cover */}
+                        <div className="relative w-full h-36 overflow-hidden bg-muted/10 border-b border-border/40">
+                          <img
+                            src={track.image}
+                            alt={track.title}
+                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                          />
+                          {/* Floating Badges */}
+                          <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
+                            <span className="text-[11px] capitalize font-medium px-2 py-0.5 bg-background/90 text-foreground border border-border/60 rounded-md">
+                              {track.level}
+                            </span>
+                            {track.isPro && (
+                              <span className="text-[10px] font-semibold px-2 py-0.5 bg-amber-500/15 text-amber-500 dark:text-amber-400 border border-amber-500/30 rounded-md">
+                                Pro
                               </span>
-                            </div>
+                            )}
                           </div>
-                          <h3 className="font-semibold text-base mb-2 text-foreground group-hover:text-primary transition-colors">
-                            {track.title}
-                          </h3>
-                          <p className="text-xs text-muted-foreground leading-relaxed mb-6">
-                            {track.description}
-                          </p>
                         </div>
-                        <div className="pt-4 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
-                          <span className="font-medium text-foreground">
-                            {langs.length} {langs.length === 1 ? 'Language' : 'Languages'}
-                          </span>
-                          <span className="text-primary font-medium group-hover:translate-x-0.5 transition-transform">
-                            Start Track &rarr;
-                          </span>
+
+                        {/* Content */}
+                        <div className="p-4 flex flex-col justify-between flex-1">
+                          <div>
+                            <h3 className="font-semibold text-sm sm:text-base mb-1 text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                              {track.title}
+                            </h3>
+                            <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 mb-3">
+                              {track.description}
+                            </p>
+                          </div>
+
+                          <div className="pt-3 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground">
+                            <span className="font-medium text-foreground/80">
+                              {langs.length} {langs.length === 1 ? 'Language' : 'Languages'}
+                            </span>
+                            <span className="text-primary font-medium flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                              Start Track
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </span>
+                          </div>
                         </div>
                       </motion.button>
                     );
@@ -329,7 +350,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
                         <p className="text-xs text-muted-foreground">
                           Design custom problems and test cases for your study group or class.
                         </p>
-                        <span className="inline-block mt-3 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 bg-primary/10 text-primary rounded">
+                        <span className="inline-block mt-3 text-[10px] font-medium px-2 py-0.5 bg-primary/10 text-primary rounded">
                           Pro Feature
                         </span>
                       </div>
@@ -367,7 +388,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
                 {hasPublicSets && (
                   <motion.div variants={itemVariants} className="space-y-4">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                      <h3 className="text-sm font-semibold text-muted-foreground">
                         Community Sets
                       </h3>
                       <div className="flex flex-col sm:flex-row gap-2">
@@ -479,21 +500,6 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
           ) : (
             /* LEVEL 2: Language Selection for Selected Track (ONLY languages for this track!) */
             <div>
-              <div className="flex items-center justify-between mb-5">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleSelectTrack(null)}
-                  className="gap-1.5 px-2.5 hover:bg-secondary/80 text-muted-foreground hover:text-foreground"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  <span className="font-medium text-xs">Back to Tracks</span>
-                </Button>
-                <span className="text-xs px-2.5 py-1 rounded bg-primary/10 text-primary border border-primary/20 font-medium">
-                  {activeTrack?.title}
-                </span>
-              </div>
-
               <motion.h2 variants={itemVariants} className="text-lg font-semibold mb-4">
                 Available Languages
               </motion.h2>

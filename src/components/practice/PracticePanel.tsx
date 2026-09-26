@@ -41,7 +41,7 @@ const DifficultyBadge: React.FC<{ difficulty: Problem['difficulty'] }> = ({ diff
   };
 
   return (
-    <span className={`text-[10px] px-2 py-0.5 rounded border ${colors[difficulty]} uppercase font-semibold`}>
+    <span className={`text-[10px] px-2 py-0.5 rounded border ${colors[difficulty]} capitalize font-medium`}>
       {difficulty}
     </span>
   );

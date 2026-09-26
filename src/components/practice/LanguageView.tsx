@@ -90,6 +90,26 @@ const getRelatedLessonIcon = (title: string, topics: string[] = []) => {
   return BookOpen;
 };
 
+const LANGUAGE_NAMES: Record<string, string> = {
+  c: 'C',
+  cpp: 'C++',
+  csharp: 'C#',
+  python: 'Python',
+  java: 'Java',
+  javascript: 'JavaScript',
+  typescript: 'TypeScript',
+  rust: 'Rust',
+  go: 'Go',
+  php: 'PHP',
+  ruby: 'Ruby',
+  swift: 'Swift',
+  kotlin: 'Kotlin',
+};
+
+const getLanguageDisplayName = (lang: string) => {
+  return LANGUAGE_NAMES[lang.toLowerCase()] || (lang.charAt(0).toUpperCase() + lang.slice(1));
+};
+
 const DifficultyBadge = ({ difficulty }: { difficulty: Problem['difficulty'] }) => {
   const colors = {
     easy: 'bg-green-500/10 text-green-500 border-green-500/20',
@@ -98,7 +118,7 @@ const DifficultyBadge = ({ difficulty }: { difficulty: Problem['difficulty'] }) 
   };
 
   return (
-    <Badge variant="outline" className={`text-[10px] uppercase font-semibold px-2 py-0.5 tracking-wider rounded ${colors[difficulty]}`}>
+    <Badge variant="outline" className={`text-[10px] capitalize font-medium px-2 py-0.5 rounded ${colors[difficulty]}`}>
       {difficulty}
     </Badge>
   );
@@ -266,19 +286,9 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
               className="w-4 h-4 sm:w-5 sm:h-5 ml-1"
             />
             <span className="font-semibold ml-2 text-sm sm:text-base tracking-tight truncate">
-              {course.language === 'c' ? 'C' : course.language === 'cpp' ? 'C++' : course.language === 'csharp' ? 'C#' : course.language.toUpperCase()}
+              {getLanguageDisplayName(course.language)}
             </span>
           </div>
-          {activeTrack && (
-            <Badge variant="outline" className="hidden sm:inline-flex text-xs px-2.5 py-1 font-medium bg-primary/10 text-primary border-primary/20 items-center gap-1.5">
-              <span>{activeTrack.title}</span>
-              {activeTrack.isPro && (
-                <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.2 bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded">
-                  PRO
-                </span>
-              )}
-            </Badge>
-          )}
         </div>
         
         <div className="flex items-center gap-3 sm:gap-4 shrink-0">
@@ -322,7 +332,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
             </Button>
 
             <div className="flex-1 flex flex-col">
-              <div className="text-xs text-primary font-bold uppercase tracking-wider mb-1.5">
+              <div className="text-xs text-primary font-medium mb-1.5">
                 Lesson Module
               </div>
               <h2 className="text-xl font-bold text-foreground mb-2">{activeLesson.title}</h2>
@@ -349,7 +359,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
 
                 {activeLesson.topics && activeLesson.topics.length > 0 && (
                   <div className="pt-2 border-t border-border/30">
-                    <span className="text-[10px] text-muted-foreground block mb-2 font-semibold uppercase tracking-wider">Topics</span>
+                    <span className="text-xs text-muted-foreground block mb-2 font-medium">Topics</span>
                     <div className="flex flex-wrap gap-1">
                       {activeLesson.topics.map((topic, i) => (
                         <Badge key={i} variant="secondary" className="text-[9px] px-2 py-0.5 rounded font-normal">
@@ -362,7 +372,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
               </div>
 
               {/* Problems list */}
-              <h3 className="font-bold text-[10px] text-muted-foreground uppercase tracking-widest mb-3 border-b border-border/40 pb-1">
+              <h3 className="font-semibold text-xs text-muted-foreground mb-3 border-b border-border/40 pb-1">
                 Problems in this Lesson
               </h3>
               <div className="space-y-2">
@@ -437,7 +447,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                   </div>
                 )}
                 <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  <h2 className="text-sm font-semibold text-muted-foreground">
                     {searchQuery ? `Search Results (${filteredLessons.length})` : (activeTrack?.title || 'Learning Track')}
                   </h2>
                   <span className="text-xs text-muted-foreground">
@@ -582,9 +592,9 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                     transition={{ duration: 0.2, ease: "easeOut" }}
                     className="flex-1 flex flex-col overflow-y-auto p-8"
                   >
-                    <div className="max-w-3xl w-full">
+                    <div className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl">
                       {/* Breadcrumb / Category */}
-                      <span className="text-[10px] font-bold text-primary uppercase tracking-widest block mb-2">
+                      <span className="text-xs font-medium text-primary block mb-2">
                         Lesson Module Overview
                       </span>
                       
@@ -643,7 +653,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
 
                       {/* Problems header */}
                       <div className="flex items-center justify-between mb-4 border-b border-border/40 pb-2">
-                        <h3 className="font-semibold text-xs text-foreground uppercase tracking-widest">
+                        <h3 className="font-semibold text-sm text-foreground">
                           Problems to Solve
                         </h3>
                         <span className="text-xs text-muted-foreground">{activeLesson.problems.length} Challenges</span>

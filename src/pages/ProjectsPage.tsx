@@ -134,7 +134,7 @@ const ProjectsPage = () => {
       animate="visible"
       className="min-h-full"
     >
-      <div className="border-b border-border/30 bg-background/25 backdrop-blur-md">
+      <div className="border-b border-border bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <motion.div variants={itemVariants}>
@@ -167,14 +167,14 @@ const ProjectsPage = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70 pointer-events-none z-10" />
             <Input 
               placeholder="Search projects..." 
-              className="pl-10 bg-card/40 border-border/40 backdrop-blur-sm focus-visible:border-primary/50 transition-colors"
+              className="pl-10 bg-card border-border focus-visible:border-primary/50 transition-colors"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="w-full sm:w-[180px]">
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="bg-card/40 border-border/40 backdrop-blur-sm focus-visible:border-primary/50 transition-colors">
+              <SelectTrigger className="bg-card border-border focus-visible:border-primary/50 transition-colors">
                 <SelectValue placeholder="Sort by..." />
               </SelectTrigger>
               <SelectContent>
@@ -187,7 +187,7 @@ const ProjectsPage = () => {
         </motion.div>
 
         {sortedAndFilteredProjects.length === 0 ? (
-          <motion.div variants={itemVariants} className="text-center py-16 border border-dashed border-border/40 rounded-xl bg-card/20 backdrop-blur-sm">
+          <motion.div variants={itemVariants} className="text-center py-16 border border-dashed border-border rounded-xl bg-card">
             <Folder className="h-12 w-12 text-muted-foreground/45 mx-auto mb-4" />
             <p className="text-muted-foreground">{searchTerm ? "No projects match your search." : "You don't have any projects yet."}</p>
             {!searchTerm && (
