@@ -92,6 +92,7 @@ export interface TrackMetadata {
   description: string;
   icon: 'terminal' | 'cpu' | 'boxes';
   level: 'Beginner' | 'Intermediate' | 'Advanced';
+  isPro?: boolean;
 }
 
 export const TRACK_LIST: TrackMetadata[] = [
@@ -118,6 +119,7 @@ export const TRACK_LIST: TrackMetadata[] = [
     description: 'Learn memory structures, pointer references, node links, dynamic arrays, and foundational data structures.',
     icon: 'boxes',
     level: 'Advanced',
+    isPro: true,
   },
 ];
 
@@ -331,5 +333,21 @@ export function findTrackForProblem(
   }
 
   return null;
+}
+
+/**
+ * Checks if a track is the Pro-only Data Structures track.
+ */
+export function isDataStructuresTrack(trackId?: TrackId | null): boolean {
+  return trackId === 'data-structures';
+}
+
+/**
+ * Checks if a problem belongs to the Data Structures track.
+ */
+export function isDataStructuresProblem(problemId: string, trackId?: TrackId | null): boolean {
+  if (trackId === 'data-structures') return true;
+  const match = findTrackForProblem(problemId, trackId);
+  return match?.trackId === 'data-structures';
 }
 

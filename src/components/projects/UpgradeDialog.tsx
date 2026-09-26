@@ -16,9 +16,10 @@ interface UpgradeDialogProps {
   limit?: number;
   title?: string;
   description?: React.ReactNode;
+  actionText?: string;
 }
 
-export function UpgradeDialog({ open, onOpenChange, currentCount, limit, title, description }: UpgradeDialogProps) {
+export function UpgradeDialog({ open, onOpenChange, currentCount, limit, title, description, actionText }: UpgradeDialogProps) {
   const navigate = useNavigate();
 
   return (
@@ -43,7 +44,7 @@ export function UpgradeDialog({ open, onOpenChange, currentCount, limit, title, 
               navigate("/pricing");
             }}
           >
-            Beta Trial
+            {actionText || (limit ? "Beta Trial" : "Upgrade to Pro")}
           </Button>
         </DialogFooter>
       </DialogContent>

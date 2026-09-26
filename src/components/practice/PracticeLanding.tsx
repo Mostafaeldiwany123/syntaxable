@@ -5,7 +5,7 @@ import { TrackId, TRACK_LIST, getLanguagesForTrack, getTrackCourse } from '@/dat
 import { useCustomSets, usePublicCustomSets } from '@/hooks/customSets';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/profiles';
-import { Plus, BookOpen, Users, Search, X, ChevronDown, ArrowLeft, Terminal, Cpu, Boxes } from 'lucide-react';
+import { Plus, BookOpen, Users, Search, X, ChevronDown, ArrowLeft, Terminal, Cpu, Boxes, Sparkles, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -262,9 +262,17 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
                               {track.icon === 'cpu' && <Cpu className="w-6 h-6" />}
                               {track.icon === 'boxes' && <Boxes className="w-6 h-6" />}
                             </div>
-                            <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 bg-secondary text-muted-foreground rounded-md">
-                              {track.level}
-                            </span>
+                            <div className="flex items-center gap-1.5">
+                              {track.isPro && (
+                                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-md flex items-center gap-1">
+                                  <Sparkles className="w-2.5 h-2.5" />
+                                  Pro
+                                </span>
+                              )}
+                              <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 bg-secondary text-muted-foreground rounded-md">
+                                {track.level}
+                              </span>
+                            </div>
                           </div>
                           <h3 className="font-semibold text-base mb-2 text-foreground group-hover:text-primary transition-colors">
                             {track.title}

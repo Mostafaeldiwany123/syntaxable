@@ -15,7 +15,10 @@ import {
   Workflow, 
   Boxes, 
   Play,
-  Check
+  Check,
+  Lock,
+  Sparkles,
+  Eye
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +27,9 @@ import { Course, Lesson, Problem } from '@/data/practiceProblems';
 import { TrackId, TRACK_LIST, getTracksForLanguage } from '@/data/practice/tracks';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSidebar } from '@/context/SidebarContext';
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/profiles';
+import { UpgradeDialog } from '@/components/projects/UpgradeDialog';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface LanguageViewProps {
@@ -109,6 +115,11 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
 }) => {
   const { setPracticeData, setShowPracticeSidebar } = useSidebar();
   const isMobile = useIsMobile();
+  const { user } = useAuth();
+  const { data: profile } = useProfile(user?.id);
+  const isPro = profile?.tier === 'pro' || profile?.tier === 'admin';
+  const isDataStructures = currentTrackId === 'data-structures';
+  const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
   const SESSION_SEARCH_KEY = `practice-search-${course.language}`;
   const SESSION_SCROLL_KEY = `practice-scroll-${course.language}`;
 
@@ -263,8 +274,13 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
             </span>
           </div>
           {activeTrack && (
-            <Badge variant="outline" className="hidden sm:inline-flex text-xs px-2.5 py-1 font-medium bg-primary/10 text-primary border-primary/20">
-              {activeTrack.title}
+            <Badge variant="outline" className="hidden sm:inline-flex text-xs px-2.5 py-1 font-medium bg-primary/10 text-primary border-primary/20 items-center gap-1.5">
+              <span>{activeTrack.title}</span>
+              {activeTrack.isPro && (
+                <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.2 bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded">
+                  PRO
+                </span>
+              )}
             </Badge>
           )}
         </div>
@@ -359,12 +375,13 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                   const localCode = localStorage.getItem(`practice-code-${problem.id}`);
                   const hasStarted = !isSolved && localCode !== null && localCode !== problem.starterCode;
                   const buttonText = isSolved ? "Review" : hasStarted ? "Continue" : "Solve";
+                  const isLocked = isDataStructures && !isPro;
 
                   return (
                     <div 
                       key={problem.id}
-                      onClick={() => onSelectProblem(problem)}
-                      className="flex items-center justify-between p-3.5 rounded-xl border border-border/65 bg-card/40 active:bg-secondary/40 transition-colors"
+                      onClick={() => isLocked ? setIsUpgradeOpen(true) : onSelectProblem(problem)}
+                      className="flex items-center justify-between p-3.5 rounded-xl border border-border/65 bg-card/40 active:bg-secondary/40 transition-colors cursor-pointer"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         {isSolved ? (
@@ -379,7 +396,17 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                           </div>
                         </div>
                       </div>
-                      <Button size="sm" variant={isSolved ? "ghost" : "default"} className="h-8 text-xs gap-1 shrink-0">
+                      <Button 
+                        size="sm" 
+                        variant={isSolved ? "ghost" : "default"} 
+                        className={`h-8 text-xs gap-1 shrink-0 ${isLocked ? 'opacity-40 hover:opacity-60 cursor-pointer' : ''}`}
+                        onClick={(e) => {
+                          if (isLocked) {
+                            e.stopPropagation();
+                            setIsUpgradeOpen(true);
+                          }
+                        }}
+                      >
                         <span>{buttonText}</span>
                         <Play className="w-2.5 h-2.5 fill-current" />
                       </Button>
@@ -633,11 +660,13 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                           const localCode = localStorage.getItem(`practice-code-${problem.id}`);
                           const hasStarted = !isSolved && localCode !== null && localCode !== problem.starterCode;
                           const buttonText = isSolved ? "Review" : hasStarted ? "Continue" : "Solve";
+                          const isLocked = isDataStructures && !isPro;
                           
                           return (
                             <div 
                               key={problem.id}
-                              className="group flex items-center justify-between p-4 rounded-xl border border-border/40 bg-card/30 hover:border-primary/30 hover:bg-card/70 transition-all duration-200"
+                              onClick={() => isLocked ? setIsUpgradeOpen(true) : onSelectProblem(problem)}
+                              className="group flex items-center justify-between p-4 rounded-xl border border-border/40 bg-card/30 hover:border-primary/30 hover:bg-card/70 transition-all duration-200 cursor-pointer"
                             >
                               <div className="flex items-center gap-3.5 min-w-0">
                                 {isSolved ? (
@@ -671,8 +700,15 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                               <Button
                                 size="sm"
                                 variant={isSolved ? "outline" : "default"}
-                                onClick={() => onSelectProblem(problem)}
-                                className="ml-4 gap-1.5 px-3 shrink-0 shadow-sm"
+                                onClick={(e) => {
+                                  if (isLocked) {
+                                    e.stopPropagation();
+                                    setIsUpgradeOpen(true);
+                                  } else {
+                                    onSelectProblem(problem);
+                                  }
+                                }}
+                                className={`ml-4 gap-1.5 px-3 shrink-0 shadow-sm ${isLocked ? 'opacity-40 hover:opacity-60 cursor-pointer' : ''}`}
                               >
                                 <span className="text-xs font-semibold">{buttonText}</span>
                                 <Play className="w-3 h-3 fill-current opacity-80" />
@@ -693,6 +729,14 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
           </>
         )}
       </div>
+
+      <UpgradeDialog
+        open={isUpgradeOpen}
+        onOpenChange={setIsUpgradeOpen}
+        title="Data Structures is a Pro Feature"
+        description="Solving Data Structures questions is exclusive to Pro members. Upgrade to Pro to write code, run test cases, and unlock all advanced learning tracks!"
+        actionText="Upgrade to Pro"
+      />
     </div>
   );
 };

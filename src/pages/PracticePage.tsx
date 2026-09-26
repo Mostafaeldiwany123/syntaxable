@@ -4,9 +4,10 @@ import { PracticeLanding } from '@/components/practice/PracticeLanding';
 import { LanguageView } from '@/components/practice/LanguageView';
 import { ProblemSolvingView } from '@/components/practice/ProblemSolvingView';
 import { Course, Problem, cppCourse, cCourse, csharpCourse, pythonCourse, javaCourse, javascriptCourse, typescriptCourse } from '@/data/practiceProblems';
-import { TrackId, getTrackCourse, findTrackForProblem } from '@/data/practice/tracks';
+import { TrackId, getTrackCourse, findTrackForProblem, isDataStructuresProblem } from '@/data/practice/tracks';
 import { usePracticeProgress, useMarkProblemComplete } from '@/hooks/practice';
 import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/profiles';
 
 type ViewState =
   | { type: 'landing' }
@@ -25,6 +26,8 @@ const PracticePage: React.FC<PracticePageProps> = ({
   initialProblemId,
 }) => {
   const { user } = useAuth();
+  const { data: profile } = useProfile(user?.id);
+  const isPro = profile?.tier === 'pro' || profile?.tier === 'admin';
   const { data: progress } = usePracticeProgress();
   const markProblemComplete = useMarkProblemComplete();
   const navigate = useNavigate();
@@ -303,6 +306,7 @@ const PracticePage: React.FC<PracticePageProps> = ({
     const currentIndex = allProblems.findIndex(p => p.id === currentProblem.id);
     const hasNext = currentIndex < allProblems.length - 1;
     const hasPrev = currentIndex > 0;
+    const isDataStructures = viewState.trackId === 'data-structures' || isDataStructuresProblem(currentProblem.id, viewState.trackId);
 
     return (
       <div className="h-dvh w-full bg-background flex flex-col overflow-hidden text-foreground font-sans">
