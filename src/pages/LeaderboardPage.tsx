@@ -105,11 +105,11 @@ const LeaderboardPage = () => {
         }
     };
 
-    const getMetricIcon = () => {
+    const getMetricIcon = (iconColor?: string) => {
         if (sortBy === 'current_streak' || sortBy === 'longest_streak') {
-            return <Flame className="h-3 w-3 text-orange-500" />;
+            return <Flame className={`h-3 w-3 ${iconColor || 'text-orange-500'}`} />;
         }
-        return <Target className="h-3 w-3 text-emerald-500" />;
+        return <Target className={`h-3 w-3 ${iconColor || 'text-emerald-500'}`} />;
     };
 
     const getMetricValue = (u: LeaderboardUser) => {
@@ -121,11 +121,11 @@ const LeaderboardPage = () => {
     const getPositionStyle = (position: number) => {
         switch (position) {
             case 1:
-                return 'bg-amber-500/5 border-amber-500/30 hover:border-amber-500/50';
+                return 'bg-primary/5 border-primary/30 hover:border-primary/50';
             case 2:
                 return 'bg-secondary/40 border-border hover:border-border/80';
             case 3:
-                return 'bg-amber-700/5 border-amber-700/20 hover:border-amber-700/40';
+                return 'bg-secondary/20 border-border/80 hover:border-border';
             default:
                 return 'bg-card/40 border-border/80 hover:border-border';
         }
@@ -252,19 +252,19 @@ const LeaderboardPage = () => {
                         {topThree.length === 3 && (
                             <div className="pt-4 pb-2 max-w-xl mx-auto">
                                 <div className="grid grid-cols-3 gap-2.5 sm:gap-4 items-end">
-                                    {/* 2nd Place - Silver */}
+                                    {/* 2nd Place - Runner up */}
                                     <motion.div
                                         custom={0.2}
                                         variants={podiumVariants}
                                         initial="hidden"
                                         animate="show"
-                                        className="flex flex-col items-center group"
+                                        className="flex flex-col items-center"
                                     >
                                         <div className="relative mb-2 flex flex-col items-center">
                                             <div className="h-4 sm:h-5 mb-1" />
-                                            <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-slate-300 dark:border-slate-500 bg-card group-hover:scale-105 transition-transform duration-300 shadow-sm">
+                                            <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-border/80 bg-card shadow-sm">
                                                 <AvatarImage src={topThree[1].avatar_url || undefined} />
-                                                <AvatarFallback seed={topThree[1].username} className="text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                                <AvatarFallback seed={topThree[1].username} className="text-xs font-semibold">
                                                     {topThree[1].username?.charAt(0).toUpperCase()}
                                                 </AvatarFallback>
                                             </Avatar>
@@ -279,35 +279,38 @@ const LeaderboardPage = () => {
                                             </div>
                                         </div>
 
-                                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary/80 border border-border/60 text-[10px] font-medium text-muted-foreground mb-2">
-                                            {getMetricIcon()}
+                                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary border border-border/70 text-[10px] font-medium text-muted-foreground mb-2">
+                                            {getMetricIcon("text-muted-foreground")}
                                             <span className="font-semibold text-foreground/90">{getMetricValue(topThree[1])}</span>
                                         </div>
 
                                         {/* Pedestal */}
-                                        <div className="w-full h-20 sm:h-24 bg-card/60 border border-border/70 border-t-2 border-t-slate-400 dark:border-t-slate-400 rounded-t-xl flex flex-col items-center justify-center p-2 text-center transition-colors group-hover:border-border">
-                                            <div className="w-7 h-7 rounded-full bg-secondary border border-border/80 flex items-center justify-center text-muted-foreground font-bold text-xs mb-0.5">
+                                        <div className="w-full h-24 sm:h-28 bg-card/60 border border-border/70 border-t-2 border-t-muted-foreground/40 rounded-t-xl flex flex-col items-center justify-center p-2 text-center">
+                                            <div className="w-7 h-7 rounded-full bg-secondary border border-border flex items-center justify-center text-muted-foreground font-bold text-xs mb-0.5">
                                                 2
                                             </div>
                                             <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                                                 2nd
                                             </span>
+                                            <p className="text-[10px] text-muted-foreground/70 text-center line-clamp-1 sm:line-clamp-2 px-1 italic mt-1 w-full max-w-[120px] select-none">
+                                                {topThree[1].description ? `"${topThree[1].description}"` : "No bio yet"}
+                                            </p>
                                         </div>
                                     </motion.div>
 
-                                    {/* 1st Place - Gold */}
+                                    {/* 1st Place - Champion */}
                                     <motion.div
                                         custom={0}
                                         variants={podiumVariants}
                                         initial="hidden"
                                         animate="show"
-                                        className="flex flex-col items-center group relative z-10"
+                                        className="flex flex-col items-center relative z-10"
                                     >
                                         <div className="relative mb-2 flex flex-col items-center">
-                                            <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-amber-400 fill-amber-400 mb-1" />
-                                            <Avatar className="h-14 w-14 sm:h-16 sm:w-16 border-2 border-amber-400 bg-card group-hover:scale-105 transition-transform duration-300 shadow-sm">
+                                            <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-primary fill-primary mb-1" />
+                                            <Avatar className="h-14 w-14 sm:h-16 sm:w-16 border-2 border-primary ring-2 ring-primary/20 bg-card shadow-sm">
                                                 <AvatarImage src={topThree[0].avatar_url || undefined} />
-                                                <AvatarFallback seed={topThree[0].username} className="text-sm font-bold bg-amber-400/10 text-amber-500">
+                                                <AvatarFallback seed={topThree[0].username} className="text-sm font-semibold">
                                                     {topThree[0].username?.charAt(0).toUpperCase()}
                                                 </AvatarFallback>
                                             </Avatar>
@@ -322,35 +325,38 @@ const LeaderboardPage = () => {
                                             </div>
                                         </div>
 
-                                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-[10px] font-medium text-amber-600 dark:text-amber-400 mb-2">
-                                            {getMetricIcon()}
-                                            <span className="font-semibold text-foreground/90">{getMetricValue(topThree[0])}</span>
+                                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/25 text-[10px] font-medium text-primary mb-2">
+                                            {getMetricIcon("text-primary")}
+                                            <span className="font-semibold text-foreground">{getMetricValue(topThree[0])}</span>
                                         </div>
 
                                         {/* Pedestal */}
-                                        <div className="w-full h-28 sm:h-32 bg-card/80 border border-amber-500/30 border-t-2 border-t-amber-400 rounded-t-xl flex flex-col items-center justify-center p-2 text-center transition-colors group-hover:border-amber-500/50">
-                                            <div className="w-8 h-8 rounded-full bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-500 dark:text-amber-400 font-extrabold text-sm mb-0.5">
+                                        <div className="w-full h-32 sm:h-36 bg-card border border-primary/30 border-t-2 border-t-primary rounded-t-xl flex flex-col items-center justify-center p-2 text-center">
+                                            <div className="w-8 h-8 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-primary font-extrabold text-sm mb-0.5">
                                                 1
                                             </div>
-                                            <span className="text-[10px] sm:text-[11px] font-semibold text-amber-500 dark:text-amber-400 uppercase tracking-wider">
+                                            <span className="text-[10px] sm:text-[11px] font-semibold text-primary uppercase tracking-wider">
                                                 Winner
                                             </span>
+                                            <p className="text-[10px] text-muted-foreground/70 text-center line-clamp-1 sm:line-clamp-2 px-1 italic mt-1 w-full max-w-[130px] select-none">
+                                                {topThree[0].description ? `"${topThree[0].description}"` : "No bio yet"}
+                                            </p>
                                         </div>
                                     </motion.div>
 
-                                    {/* 3rd Place - Bronze */}
+                                    {/* 3rd Place - Third */}
                                     <motion.div
                                         custom={0.4}
                                         variants={podiumVariants}
                                         initial="hidden"
                                         animate="show"
-                                        className="flex flex-col items-center group"
+                                        className="flex flex-col items-center"
                                     >
                                         <div className="relative mb-2 flex flex-col items-center">
                                             <div className="h-4 sm:h-5 mb-1" />
-                                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-amber-700/50 dark:border-amber-600/50 bg-card group-hover:scale-105 transition-transform duration-300 shadow-sm">
+                                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-border/60 bg-card shadow-sm">
                                                 <AvatarImage src={topThree[2].avatar_url || undefined} />
-                                                <AvatarFallback seed={topThree[2].username} className="text-xs font-bold bg-amber-700/10 text-amber-700 dark:text-amber-500">
+                                                <AvatarFallback seed={topThree[2].username} className="text-xs font-semibold">
                                                     {topThree[2].username?.charAt(0).toUpperCase()}
                                                 </AvatarFallback>
                                             </Avatar>
@@ -365,19 +371,22 @@ const LeaderboardPage = () => {
                                             </div>
                                         </div>
 
-                                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary/80 border border-border/60 text-[10px] font-medium text-muted-foreground mb-2">
-                                            {getMetricIcon()}
-                                            <span className="font-semibold text-foreground/90">{getMetricValue(topThree[2])}</span>
+                                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary/60 border border-border/50 text-[10px] font-medium text-muted-foreground mb-2">
+                                            {getMetricIcon("text-muted-foreground")}
+                                            <span className="font-semibold text-foreground/80">{getMetricValue(topThree[2])}</span>
                                         </div>
 
                                         {/* Pedestal */}
-                                        <div className="w-full h-16 sm:h-20 bg-card/40 border border-border/60 border-t-2 border-t-amber-700/60 dark:border-t-amber-600/60 rounded-t-xl flex flex-col items-center justify-center p-2 text-center transition-colors group-hover:border-border">
-                                            <div className="w-6 h-6 rounded-full bg-amber-700/10 border border-amber-700/20 flex items-center justify-center text-amber-700 dark:text-amber-500 font-bold text-xs mb-0.5">
+                                        <div className="w-full h-20 sm:h-24 bg-card/40 border border-border/60 border-t-2 border-t-border rounded-t-xl flex flex-col items-center justify-center p-2 text-center">
+                                            <div className="w-6 h-6 rounded-full bg-secondary/50 border border-border/70 flex items-center justify-center text-muted-foreground/80 font-bold text-xs mb-0.5">
                                                 3
                                             </div>
                                             <span className="text-[9px] sm:text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                                                 3rd
                                             </span>
+                                            <p className="text-[10px] text-muted-foreground/70 text-center line-clamp-1 sm:line-clamp-2 px-1 italic mt-1 w-full max-w-[120px] select-none">
+                                                {topThree[2].description ? `"${topThree[2].description}"` : "No bio yet"}
+                                            </p>
                                         </div>
                                     </motion.div>
                                 </div>
@@ -403,7 +412,7 @@ const LeaderboardPage = () => {
                                         key={leaderboardUser.id}
                                         variants={listItemVariants}
                                         className={`flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 group ${isCurrentUser
-                                            ? 'bg-primary/5 border-primary/40 ring-1 ring-primary/10 shadow-[0_0_15px_rgba(59,130,246,0.04)]'
+                                            ? 'bg-primary/5 border-primary/40 ring-1 ring-primary/10 shadow-[0_0_15px_hsl(var(--primary)/0.06)]'
                                             : getPositionStyle(position)
                                             }`}
                                     >
