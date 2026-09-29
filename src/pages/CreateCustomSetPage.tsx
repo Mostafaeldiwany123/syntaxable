@@ -202,6 +202,9 @@ const CreateCustomSetPage = () => {
   const [activeTab, setActiveTab] = useState<string>('description');
   const [hintsExpanded, setHintsExpanded] = useState(false);
 
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [importJsonString, setImportJsonString] = useState('');
+
   useEffect(() => {
     saveToSession({
       title,
@@ -232,6 +235,30 @@ const CreateCustomSetPage = () => {
     const newProblems = [...problems, { ...emptyProblem, starterCode: defaultStarterCode[language] }];
     setProblems(newProblems);
     setActiveProblemIndex(newProblems.length - 1);
+  };
+
+  const handleImportJson = () => {
+    try {
+      const parsed = JSON.parse(importJsonString);
+      if (!Array.isArray(parsed)) throw new Error('Expected an array of problems');
+      
+      const newProblems = parsed.map(p => ({
+        ...emptyProblem,
+        ...p,
+        starterCode: p.starterCode || defaultStarterCode[language],
+      }));
+      
+      if (newProblems.length === 0) throw new Error('No problems found in JSON');
+      if (newProblems.length > 10) throw new Error('Maximum 10 problems allowed');
+      
+      setProblems(newProblems);
+      setActiveProblemIndex(0);
+      setImportJsonString('');
+      setIsImportDialogOpen(false);
+      toast.success('Problems imported successfully');
+    } catch (e: any) {
+      toast.error(e.message || 'Invalid JSON format');
+    }
   };
 
   const removeProblem = (index: number) => {
@@ -450,7 +477,7 @@ const CreateCustomSetPage = () => {
           </ScrollArea>
 
           {/* Add Problem Button */}
-          <div className="p-3 border-t">
+          <div className="p-3 border-t flex flex-col gap-2">
             <Button
               size="sm"
               onClick={addProblem}
@@ -460,6 +487,15 @@ const CreateCustomSetPage = () => {
             >
               <Plus className="h-4 w-4" />
               Add Problem
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => setIsImportDialogOpen(true)}
+              variant="secondary"
+              className="w-full gap-1.5"
+            >
+              <Code2 className="h-4 w-4" />
+              Import JSON
             </Button>
           </div>
 
@@ -817,6 +853,32 @@ const CreateCustomSetPage = () => {
           </Tabs>
         </div>
       </div>
+      <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Import Problems via JSON</DialogTitle>
+            <DialogDescription>
+              Paste an array of problem objects. Note: This will overwrite any current problems. Maximum 10 problems.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Textarea
+              value={importJsonString}
+              onChange={(e) => setImportJsonString(e.target.value)}
+              placeholder="[\n  {\n    \"title\": \"Example Problem\",\n    \"difficulty\": \"easy\",\n    \"description\": \"...\"\n  }\n]"
+              className="h-64 font-mono text-xs"
+            />
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button variant="ghost" onClick={() => setIsImportDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleImportJson}>
+              Import Problems
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
