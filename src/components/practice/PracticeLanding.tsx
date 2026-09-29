@@ -2,10 +2,10 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Course } from '@/data/practiceProblems';
 import { TrackId, TRACK_LIST, getLanguagesForTrack, getTrackCourse } from '@/data/practice/tracks';
-import { useCustomSets, usePublicCustomSets } from '@/hooks/customSets';
+import { useCustomSets, usePublicCustomSets, useRecentPracticeRooms } from '@/hooks/customSets';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/profiles';
-import { Plus, BookOpen, Users, Search, X, ChevronDown, ArrowLeft, ArrowRight, Lock } from 'lucide-react';
+import { Plus, BookOpen, Users, Search, X, ChevronDown, ArrowLeft, ArrowRight, Lock, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -82,6 +82,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
   const { data: profile } = useProfile(user?.id);
   const { data: customSets } = useCustomSets();
   const { data: publicSets } = usePublicCustomSets();
+  const { data: recentRooms } = useRecentPracticeRooms(5);
 
   const [localTrack, setLocalTrack] = useState<TrackId | null>(() => {
     return propSelectedTrack || null;
@@ -116,31 +117,11 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
   const isPro = profile?.tier === 'pro' || profile?.tier === 'admin';
 
   const handleCreateSet = () => {
-    if (isPro) {
-      navigate('/practice/custom/create');
-    } else {
-      toast.error("Pro Feature", {
-        description: "Creating custom practice sets is only available for Pro members. Upgrade your account to create your own sets!",
-        action: {
-          label: "Upgrade",
-          onClick: () => navigate("/pricing")
-        },
-      });
-    }
+    navigate('/practice/custom/create');
   };
 
   const handleViewMySets = () => {
-    if (isPro) {
-      navigate('/practice/custom');
-    } else {
-      toast.error("Pro Feature", {
-        description: "Managing custom practice sets is only available for Pro members.",
-        action: {
-          label: "Upgrade",
-          onClick: () => navigate("/pricing")
-        },
-      });
-    }
+    navigate('/practice/custom');
   };
 
   const filteredAndSortedPublicSets = useMemo(() => {
@@ -350,9 +331,6 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
                         <p className="text-xs text-muted-foreground">
                           Design custom problems and test cases for your study group or class.
                         </p>
-                        <span className="inline-block mt-3 text-[10px] font-medium px-2 py-0.5 bg-primary/10 text-primary rounded">
-                          Pro Feature
-                        </span>
                       </div>
                     </div>
                   </motion.button>
@@ -370,13 +348,39 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
                         </div>
                         <div>
                           <h3 className="font-medium text-sm mb-1 text-foreground group-hover:text-primary transition-colors">
-                            My Sets
+                            My Created Sets
                           </h3>
                           <p className="text-xs text-muted-foreground">
                             Manage and review your created problem collections.
                           </p>
                           <span className="inline-block mt-3 text-[10px] font-semibold px-2 py-0.5 bg-secondary text-muted-foreground rounded">
                             {customSets?.length || 0} {customSets?.length === 1 ? 'set' : 'sets'}
+                          </span>
+                        </div>
+                      </div>
+                    </motion.button>
+                  )}
+
+                  {/* Joined Sets Card */}
+                  {recentRooms && recentRooms.length > 0 && (
+                    <motion.button
+                      variants={itemVariants}
+                      onClick={() => navigate('/practice/custom')}
+                      className="group relative overflow-hidden rounded-lg border border-border bg-card p-6 text-left transition-colors hover:border-primary/50 hover:shadow-sm cursor-pointer"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
+                          <Clock className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-sm mb-1 text-foreground group-hover:text-primary transition-colors">
+                            Joined Sets
+                          </h3>
+                          <p className="text-xs text-muted-foreground">
+                            View custom sets you have recently joined and solved.
+                          </p>
+                          <span className="inline-block mt-3 text-[10px] font-semibold px-2 py-0.5 bg-secondary text-muted-foreground rounded">
+                            {recentRooms.length} recent {recentRooms.length === 1 ? 'set' : 'sets'}
                           </span>
                         </div>
                       </div>

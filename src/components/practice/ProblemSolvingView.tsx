@@ -45,6 +45,7 @@ interface ProblemSolvingViewProps {
   onSelectProblem: (problem: Problem) => void;
   savedSolutionCode?: string | null;
   aiEnabled?: boolean;
+  completedProblems?: Set<string>;
 }
 
 export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
@@ -60,6 +61,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
   onSelectProblem,
   savedSolutionCode,
   aiEnabled = true,
+  completedProblems: propCompletedProblems,
 }) => {
   const { user } = useAuth();
   const { data: progress } = usePracticeProgress();
@@ -92,7 +94,8 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
   const prevIsAIAgentOpenRef = useRef(false);
 
   // Memoize completedProblems to avoid unstable dependency references
-  const completedProblems = React.useMemo(() => new Set(progress?.map(p => p.problem_id) || []), [progress]);
+  const internalCompletedProblems = React.useMemo(() => new Set(progress?.map(p => p.problem_id) || []), [progress]);
+  const finalCompletedProblems = propCompletedProblems || internalCompletedProblems;
 
   // Register practice data to the sidebar context
   useEffect(() => {
@@ -100,7 +103,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
       lessons,
       course,
       currentProblemId: currentProblem.id,
-      completedProblems,
+      completedProblems: finalCompletedProblems,
       onSelectProblem,
     });
     setShowPracticeSidebar(true);
@@ -109,7 +112,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
       setPracticeData(null);
       setShowPracticeSidebar(false);
     };
-  }, [lessons, course, currentProblem.id, completedProblems, onSelectProblem, setPracticeData, setShowPracticeSidebar]);
+  }, [lessons, course, currentProblem.id, finalCompletedProblems, onSelectProblem, setPracticeData, setShowPracticeSidebar]);
  
   // Update code when switching problems
   React.useEffect(() => {
@@ -138,7 +141,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
     prevIsAIAgentOpenRef.current = isAIAgentOpen;
   }, [isAIAgentOpen, collapseForAIAgent]);
  
-  const isCompleted = completedProblems.has(currentProblem.id);
+  const isCompleted = finalCompletedProblems.has(currentProblem.id);
  
   // Get file extension and name based on language
   const getFileExtension = (lang: string): string => {
@@ -263,8 +266,8 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
       <div className="flex-1 flex overflow-hidden">
 
         {/* Code and Problem Panels */}
-        <div className="flex-1">
-          <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"}>
+        <div className="flex-1 h-full w-full">
+          <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"} className="h-full w-full">
             {/* Code Editor */}
             <ResizablePanel defaultSize={50} minSize={30} maxSize={70} className="relative flex flex-col">
               <div className="flex-1">

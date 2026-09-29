@@ -102,29 +102,13 @@ const AppRoutes = () => {
           <Route path="/learn/:language" element={user ? <LearnRoutes /> : <Navigate to="/" replace />} />
           <Route path="/learn/:language/:lessonId" element={user ? <LearnRoutes /> : <Navigate to="/" replace />} />
 
-          {/* Custom sets routes - Creating is a Pro feature, joining is free */}
-          <Route path="/practice/custom/create" element={
-            <PremiumGuard>
-              <CreateCustomSetPage />
-            </PremiumGuard>
-          } />
-          <Route path="/practice/custom/:setId/share" element={
-            <PremiumGuard>
-              <CustomSetSharePage />
-            </PremiumGuard>
-          } />
-          <Route path="/practice/custom/:setId/participants" element={
-            <PremiumGuard>
-              <CustomSetParticipantsPage />
-            </PremiumGuard>
-          } />
+          {/* Custom sets routes - Creating and managing custom sets is now free for all users */}
+          <Route path="/practice/custom/create" element={user ? <CreateCustomSetPage /> : <Navigate to="/" replace />} />
+          <Route path="/practice/custom/:setId/share" element={user ? <CustomSetSharePage /> : <Navigate to="/" replace />} />
+          <Route path="/practice/custom/:setId/participants" element={user ? <CustomSetParticipantsPage /> : <Navigate to="/" replace />} />
           {/* Viewing/practicing custom sets is free for all users */}
           <Route path="/practice/custom/:setId" element={user ? <CustomSetViewPage /> : <Navigate to="/" replace />} />
-          <Route path="/practice/custom" element={
-            <PremiumGuard>
-              <CustomSetsPage />
-            </PremiumGuard>
-          } />
+          <Route path="/practice/custom" element={user ? <CustomSetsPage /> : <Navigate to="/" replace />} />
 
           {/* Practice Routes with Track support */}
           <Route path="/practice/sets" element={<Navigate to="/practice" replace />} />

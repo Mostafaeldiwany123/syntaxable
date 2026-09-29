@@ -28,7 +28,7 @@ const PricingPage = () => {
         { text: "Access to basic practice sets", included: true },
         { text: "Lite & Dark themes included", included: true },
         { text: "Rate limiting on compiler usage", included: true },
-        { text: "Create custom practice sets", included: false },
+        { text: "Create custom practice sets", included: true },
         { text: "Premium themes", included: false },
         { text: "Data Structures track", included: false },
       ],

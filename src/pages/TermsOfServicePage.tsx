@@ -53,7 +53,7 @@ const TermsOfServicePage = () => {
                 <strong>AI Assistance:</strong> AI-powered code suggestions and learning assistance (subject to usage limits based on your subscription tier).
               </p>
               <p>
-                <strong>Custom Sets:</strong> Ability to create and share custom practice sets (Pro feature).
+                <strong>Custom Sets:</strong> Ability to create and share custom practice sets.
               </p>
             </div>
           </section>

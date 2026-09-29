@@ -1,9 +1,9 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ArrowLeft, CheckCircle2, Circle, Users, Share2, UserCircle } from "lucide-react";
-import { useCustomSet, useCustomSetProblems, useMarkProblemComplete, useCustomSetParticipants, useUpdateCustomSetVisibility, useJoinCustomSet } from "@/hooks/customSets";
+import { Loader2, ArrowLeft, CheckCircle2, Circle, Users, Share2, UserCircle, BookOpen } from "lucide-react";
+import { useCustomSet, useCustomSetProblems, useMarkProblemComplete, useCustomSetParticipantsWithProgress, useUpdateCustomSetVisibility, useJoinCustomSet } from "@/hooks/customSets";
 import { useAuth } from "@/hooks/useAuth";
 import { getFileIconUrl } from "@/lib/project-utils";
 import { formatDistanceToNow } from "date-fns";
@@ -17,6 +17,7 @@ import { useShareCustomSet } from "@/hooks/customSets";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/context/SidebarContext";
 
 const languageLabels: Record<string, string> = {
   cpp: 'C++',
@@ -38,7 +39,7 @@ const CustomSetViewPage = () => {
   const { data: customSet, isLoading: setLoading } = useCustomSet(setId);
   const { data: problems, isLoading: problemsLoading } = useCustomSetProblems(setId);
   const { mutate: markComplete } = useMarkProblemComplete();
-  const { data: participants } = useCustomSetParticipants(setId);
+  const { data: participants } = useCustomSetParticipantsWithProgress(setId);
   const { mutate: shareSet } = useShareCustomSet();
   const { mutate: joinSet } = useJoinCustomSet();
 
@@ -48,6 +49,7 @@ const CustomSetViewPage = () => {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const debouncedSearch = useDebounce(searchTerm, 300);
   const { data: searchResults } = useSearchUsers(debouncedSearch, setId);
+  const { setPracticeData, setShowPracticeSidebar } = useSidebar();
 
   const isLoading = setLoading || problemsLoading;
 
@@ -57,6 +59,18 @@ const CustomSetViewPage = () => {
       joinSet({ setId: setId! });
     }
   }, [customSet, user, setId]);
+
+  const hasAutoOpened = useRef(false);
+
+  // For non-owners, automatically open the first unsolved problem to bypass the dashboard
+  useEffect(() => {
+    if (customSet && !customSet.is_owner && problems && problems.length > 0 && selectedProblemIndex === null && !hasAutoOpened.current) {
+      const completedSet = new Set(problems.filter(p => p.completed).map(p => p.id));
+      const firstUnsolved = problems.findIndex(p => !completedSet.has(p.id));
+      setSelectedProblemIndex(firstUnsolved !== -1 ? firstUnsolved : 0);
+      hasAutoOpened.current = true;
+    }
+  }, [customSet, problems, selectedProblemIndex]);
 
   const convertedProblems: Problem[] = useMemo(() => {
     if (!problems) return [];
@@ -103,6 +117,27 @@ const CustomSetViewPage = () => {
     return new Set(problems.filter((p) => p.completed).map((p) => p.id));
   }, [problems]);
 
+  // Register practice data to the sidebar context
+  useEffect(() => {
+    if (!mockCourse || !convertedProblems) return;
+    setPracticeData({
+      lessons: mockCourse.lessons,
+      course: mockCourse,
+      currentProblemId: selectedProblemIndex !== null ? convertedProblems[selectedProblemIndex].id : null,
+      completedProblems,
+      onSelectProblem: (problem) => {
+        const index = convertedProblems.findIndex((p) => p.id === problem.id);
+        if (index !== -1) setSelectedProblemIndex(index);
+      },
+    });
+    setShowPracticeSidebar(false);
+
+    return () => {
+      setPracticeData(null);
+      setShowPracticeSidebar(false);
+    };
+  }, [mockCourse, selectedProblemIndex, convertedProblems, completedProblems, setPracticeData, setShowPracticeSidebar]);
+
   const handleProblemComplete = (problemId: string, solutionCode?: string, language?: string) => {
     if (setId) {
       markComplete({ setId, problemId, solutionCode, language });
@@ -122,7 +157,7 @@ const CustomSetViewPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex items-center justify-center min-h-[calc(100dvh-4rem)]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -146,31 +181,40 @@ const CustomSetViewPage = () => {
     const currentProblemWithSolution = problems?.find(p => p.id === convertedProblems[selectedProblemIndex].id);
 
     return (
-      <ProblemSolvingView
-        course={mockCourse}
-        currentProblem={convertedProblems[selectedProblemIndex]}
-        lessons={mockLessons}
-        onBack={() => setSelectedProblemIndex(null)}
-        onProblemComplete={handleProblemComplete}
-        onNextProblem={() => {
-          if (selectedProblemIndex < convertedProblems.length - 1) {
-            setSelectedProblemIndex(selectedProblemIndex + 1);
-          }
-        }}
-        onPrevProblem={() => {
-          if (selectedProblemIndex > 0) {
-            setSelectedProblemIndex(selectedProblemIndex - 1);
-          }
-        }}
-        hasNext={selectedProblemIndex < convertedProblems.length - 1}
-        hasPrev={selectedProblemIndex > 0}
-        onSelectProblem={(problem) => {
-          const index = convertedProblems.findIndex((p) => p.id === problem.id);
-          if (index !== -1) setSelectedProblemIndex(index);
-        }}
-        savedSolutionCode={currentProblemWithSolution?.solution_code}
-        aiEnabled={customSet?.ai_enabled ?? true}
-      />
+      <div className="h-dvh w-full bg-background flex flex-col overflow-hidden text-foreground font-sans">
+        <ProblemSolvingView
+          course={mockCourse}
+          currentProblem={convertedProblems[selectedProblemIndex]}
+          lessons={mockLessons}
+          onBack={() => {
+            if (!customSet?.is_owner) {
+              navigate('/practice/custom');
+            } else {
+              setSelectedProblemIndex(null);
+            }
+          }}
+          onProblemComplete={handleProblemComplete}
+          completedProblems={completedProblems}
+          onNextProblem={() => {
+            if (selectedProblemIndex < convertedProblems.length - 1) {
+              setSelectedProblemIndex(selectedProblemIndex + 1);
+            }
+          }}
+          onPrevProblem={() => {
+            if (selectedProblemIndex > 0) {
+              setSelectedProblemIndex(selectedProblemIndex - 1);
+            }
+          }}
+          hasNext={selectedProblemIndex < convertedProblems.length - 1}
+          hasPrev={selectedProblemIndex > 0}
+          onSelectProblem={(problem) => {
+            const index = convertedProblems.findIndex((p) => p.id === problem.id);
+            if (index !== -1) setSelectedProblemIndex(index);
+          }}
+          savedSolutionCode={currentProblemWithSolution?.solution_code}
+          aiEnabled={customSet?.ai_enabled ?? true}
+        />
+      </div>
     );
   }
 
@@ -232,125 +276,133 @@ const CustomSetViewPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Flat Problems Sidebar - Numbered 1 to N */}
-        <div className="h-full flex flex-col bg-card border-r border-border w-56 shrink-0">
-          <div className="h-9 bg-card border-b border-border flex items-center px-3 select-none shrink-0">
-            <span className="text-xs font-semibold text-foreground uppercase tracking-wide">
-              Problems ({convertedProblems.length})
-            </span>
-          </div>
-          <div className="flex-1 overflow-y-auto py-2">
-            {convertedProblems.map((problem, index) => {
-              const isSelected = selectedProblemIndex === index;
-              const isCompleted = completedProblems.has(problem.id);
-              const problemNumber = index + 1;
-
-              return (
-                <button
-                  key={problem.id}
-                  onClick={() => setSelectedProblemIndex(index)}
-                  className={cn(
-                    "w-full text-left px-3 py-2 flex items-center gap-2 transition-colors",
-                    isSelected
-                      ? 'bg-primary/10 text-primary'
-                      : 'hover:bg-muted/50 text-foreground'
-                  )}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
+          {!customSet.is_owner ? (
+            <div className="flex items-center justify-center min-h-[50vh]">
+               <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {/* Top Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-6 rounded-xl border border-border bg-card flex flex-col justify-center items-center text-center">
+                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <BookOpen className="h-6 w-6 text-primary" />
+                  </div>
+                  <p className="text-sm text-muted-foreground font-medium">Total Problems</p>
+                  <p className="text-3xl font-bold">{convertedProblems.length}</p>
+                </div>
+                <div 
+                  className="p-6 rounded-xl border border-border bg-card flex flex-col justify-center items-center text-center cursor-pointer hover:border-primary/50 transition-colors"
+                  onClick={() => navigate(`/practice/custom/${setId}/participants`)}
                 >
-                  <span className="text-xs font-medium text-muted-foreground w-5 shrink-0">
-                    {problemNumber}.
-                  </span>
-                  {!customSet.is_owner && (
-                    isCompleted ? (
-                      <CheckCircle2 size={14} className="text-green-500 shrink-0" />
-                    ) : (
-                      <Circle size={14} className="text-muted-foreground/40 shrink-0" />
-                    )
-                  )}
-                  <span className="text-xs truncate flex-1">{problem.title}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <Users className="h-6 w-6 text-primary" />
+                  </div>
+                  <p className="text-sm text-muted-foreground font-medium">Participants</p>
+                  <p className="text-3xl font-bold">{participants?.length || 0}</p>
+                </div>
+                <div 
+                  className="p-6 rounded-xl border border-border bg-card flex flex-col justify-center items-center text-center cursor-pointer hover:border-primary/50 transition-colors"
+                  onClick={() => navigate(`/practice/custom/${setId}/share`)}
+                >
+                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <Share2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <p className="text-sm text-muted-foreground font-medium">Share Code</p>
+                  <p className="text-3xl font-mono text-primary font-bold tracking-wider">{setId?.slice(-8).toUpperCase()}</p>
+                </div>
+              </div>
 
-        {/* Problems List Container */}
-        <div className="flex-1 overflow-y-auto px-4 py-6">
-          <div className="max-w-6xl">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-foreground">Select a Problem</h2>
-              <Badge variant="secondary" className="font-normal px-2 py-0 shrink-0">
-                {languageLabels[customSet.language]}
-              </Badge>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {convertedProblems.map((problem, index) => {
-                const isDone = completedProblems.has(problem.id);
-                const problemNumber = index + 1;
-
-                return (
-                  <button
-                    key={problem.id}
-                    onClick={() => setSelectedProblemIndex(index)}
-                    className={cn(
-                      "group flex flex-col rounded-xl border bg-card p-5 text-left transition-all hover:border-primary/50 hover:shadow-md",
-                      isDone ? "border-green-500/30 bg-green-500/5" : "border-border"
-                    )}
-                  >
-                    {/* Top: Icon + Number + Status */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="p-2 bg-primary/10 rounded-lg">
-                          <img
-                            src={getFileIconUrl(`file.${customSet.language === 'csharp' ? 'cs' : customSet.language === 'cpp' ? 'cpp' : customSet.language === 'java' ? 'java' : customSet.language === 'javascript' ? 'js' : customSet.language === 'typescript' ? 'ts' : 'py'}`)}
-                            alt=""
-                            className="w-5 h-5"
-                          />
-                        </div>
-                        <span className="text-sm font-bold text-muted-foreground">#{problemNumber}</span>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left: Participants Leaderboard */}
+                <div className="lg:col-span-2 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-foreground">Top Participants</h2>
+                  </div>
+                  <div className="border border-border rounded-xl bg-card overflow-hidden">
+                    {participants && participants.length > 0 ? (
+                      <div className="divide-y divide-border/50">
+                        {participants.slice(0, 10).map((p, i) => (
+                          <div key={p.user_id} className="flex items-center justify-between p-4 px-6">
+                            <div className="flex items-center gap-4">
+                              <span className="text-sm font-bold text-muted-foreground w-4">{i + 1}</span>
+                              <Avatar className="h-10 w-10">
+                                <AvatarImage src={p.avatar_url || ''} />
+                                <AvatarFallback seed={p.username} className="text-sm">{p.username.charAt(0).toUpperCase()}</AvatarFallback>
+                              </Avatar>
+                              <span className="text-base font-medium">{p.username}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-lg font-bold text-primary">{p.completed_count}</span>
+                              <span className="text-sm text-muted-foreground">/{convertedProblems.length}</span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                      {!customSet.is_owner && isDone && (
-                        <div className="flex items-center gap-1 text-green-600">
-                          <CheckCircle2 className="h-4 w-4" />
-                          <span className="text-xs font-medium">Done</span>
-                        </div>
-                      )}
-                    </div>
+                    ) : (
+                      <div className="p-8 text-center text-sm text-muted-foreground flex flex-col items-center">
+                        <Users className="h-8 w-8 mb-3 opacity-20" />
+                        No participants yet.
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-                    {/* Title */}
-                    <h3 className="font-semibold text-sm mb-2 group-hover:text-primary transition-colors line-clamp-1">
-                      {problem.title}
-                    </h3>
-
-                    {/* Description */}
-                    <p className="text-xs text-muted-foreground line-clamp-2 mb-4 flex-1">
-                      {problem.description}
-                    </p>
-
-                    {/* Footer: Difficulty + Tests */}
-                    <div className="flex items-center justify-between pt-3 border-t border-border/50">
-                      <span
-                        className={cn(
-                          "text-[10px] uppercase tracking-wide font-semibold px-2 py-1 rounded-md",
-                          problem.difficulty === 'easy'
-                            ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400'
-                            : problem.difficulty === 'medium'
-                              ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400'
-                              : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400'
-                        )}
-                      >
-                        {problem.difficulty}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {problem.testCases.length} tests
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
+                {/* Right: Problems List */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-foreground">Problems</h2>
+                    <Badge variant="secondary" className="font-normal px-2 py-0 shrink-0">
+                      {languageLabels[customSet.language]}
+                    </Badge>
+                  </div>
+                  <div className="border border-border rounded-xl bg-card overflow-hidden">
+                    {convertedProblems.length > 0 ? (
+                      <div className="divide-y divide-border/50">
+                        {convertedProblems.map((problem, index) => (
+                          <div
+                            key={problem.id}
+                            className={cn(
+                              "flex items-center justify-between p-3 hover:bg-secondary/20 transition-colors cursor-pointer",
+                            )}
+                            onClick={() => setSelectedProblemIndex(index)}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-muted-foreground font-bold text-xs w-4">#{index + 1}</span>
+                              <div className="overflow-hidden">
+                                <p className="font-medium text-sm text-foreground mb-1 truncate">{problem.title}</p>
+                                <div className="flex items-center gap-2">
+                                  <span
+                                    className={cn(
+                                      "text-[10px] uppercase tracking-wide font-semibold px-1.5 py-0.5 rounded",
+                                      problem.difficulty === 'easy'
+                                        ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400'
+                                        : problem.difficulty === 'medium'
+                                          ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400'
+                                          : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400'
+                                    )}
+                                  >
+                                    {problem.difficulty}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">Solve</Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-8 text-center text-sm text-muted-foreground">
+                        No problems added to this set yet.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

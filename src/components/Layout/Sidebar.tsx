@@ -152,9 +152,13 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                   {/* Header */}
                   <div className="border-b border-border flex items-center justify-center p-3 shrink-0 h-14 bg-card">
                     <button
-                      onClick={() => setShowPracticeSidebar(false)}
+                      onClick={() => {
+                        setShowPracticeSidebar(false);
+                        navigate('/practice');
+                        onNavigate?.();
+                      }}
                       className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-colors"
-                      title="Back to Main Menu"
+                      title="Back to Menu"
                     >
                       <ArrowLeft className="h-4 w-4" />
                     </button>
@@ -248,7 +252,11 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setShowPracticeSidebar(false)}
+                      onClick={() => {
+                        setShowPracticeSidebar(false);
+                        navigate('/practice');
+                        onNavigate?.();
+                      }}
                       className="gap-1.5 px-2 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/40 shrink-0"
                     >
                       <ArrowLeft className="h-3.5 w-3.5" />
@@ -368,7 +376,11 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                   {/* Footer Controls */}
                   <div className="shrink-0 p-3 border-t border-border/50 flex items-center justify-between">
                     <button
-                      onClick={() => setShowPracticeSidebar(false)}
+                      onClick={() => {
+                        setShowPracticeSidebar(false);
+                        navigate('/dashboard');
+                        onNavigate?.();
+                      }}
                       className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5 px-2 rounded hover:bg-secondary/35"
                     >
                       <LayoutDashboard className="h-4 w-4" />

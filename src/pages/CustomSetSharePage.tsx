@@ -53,14 +53,14 @@ const CustomSetSharePage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-full">
+      <div className="flex items-center justify-center min-h-[calc(100dvh-2rem)]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center min-h-full bg-background p-4">
+    <div className="flex items-center justify-center min-h-[calc(100dvh-2rem)] bg-background p-4">
       <Card className="w-full max-w-2xl">
         <CardHeader>
           <div className="flex items-center gap-3">
