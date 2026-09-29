@@ -21,6 +21,8 @@ import { oopPart5 } from './13-oop-part-5';
 import { oopPart6 } from './14-oop-part-6';
 import { templates } from './15-templates';
 import { vectorsArrayLists } from './16-vectors-array-lists';
+import { linkedListsPart1 } from './17-linked-lists-part-1';
+import { linkedListsPart2 } from './18-linked-lists-part-2';
 import type { Lesson } from '../../types';
 
 export const cppLessons: Lesson[] = [
@@ -47,4 +49,6 @@ export const cppLessons: Lesson[] = [
   oopPart6,
   templates,
   vectorsArrayLists,
+  linkedListsPart1,
+  linkedListsPart2,
 ].sort((a, b) => a.order - b.order);

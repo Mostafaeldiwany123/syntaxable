@@ -34,6 +34,8 @@ import { oopPart5 as cppOopPart5 } from './cpp/lessons/13-oop-part-5';
 import { oopPart6 as cppOopPart6 } from './cpp/lessons/14-oop-part-6';
 import { templates as cppTemplates } from './cpp/lessons/15-templates';
 import { vectorsArrayLists as cppVectorsArrayLists } from './cpp/lessons/16-vectors-array-lists';
+import { linkedListsPart1 as cppLinkedListsPart1 } from './cpp/lessons/17-linked-lists-part-1';
+import { linkedListsPart2 as cppLinkedListsPart2 } from './cpp/lessons/18-linked-lists-part-2';
 
 // Python Lessons
 import { basicsPart1 as pyBasics1 } from './python/lessons/01-basics-part-1';
@@ -223,6 +225,8 @@ const trackLessonMap: Record<TrackId, Record<string, Lesson[]>> = {
   'data-structures': {
     cpp: [
       cppVectorsArrayLists,
+      cppLinkedListsPart1,
+      cppLinkedListsPart2,
     ],
     python: [
       pyDs1,

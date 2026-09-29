@@ -112,6 +112,87 @@ int main() {
       topics: ['ArrayList', 'Insertion', 'Array Shifting']
     },
     {
+      id: 'custom-arraylist-get-set',
+      title: 'Custom ArrayList Get & Set',
+      difficulty: 'easy',
+      description: `In an ArrayList, accessing elements by index is O(1) fast operation.
+Write a program that:
+1. Reads an integer \`N\`, followed by \`N\` elements into an array.
+2. Reads two integers: \`index\` and \`newValue\`.
+3. If \`index\` is valid (\`0 ≤ index < N\`), prints the element currently at that index, updates it to \`newValue\`, and then prints the updated array.
+4. If \`index\` is out of bounds, print "Out of bounds".`,
+      inputFormat: 'First line: N. Second line: N space-separated integers. Third line: index and newValue.',
+      outputFormat: 'If valid: Print original value, then on next line print updated array. If invalid: Print "Out of bounds".',
+      constraints: '1 ≤ N ≤ 100',
+      sampleInput: '5\n10 20 30 40 50\n2 99',
+      sampleOutput: '30\n10 20 99 40 50',
+      testCases: [
+        { input: '5\n10 20 30 40 50\n2 99', expectedOutput: '30\n10 20 99 40 50' },
+        { input: '3\n1 2 3\n3 10', expectedOutput: 'Out of bounds' },
+        { input: '4\n1 2 3 4\n0 5', expectedOutput: '1\n5 2 3 4' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    
+    int* A = new int[n];
+    for(int i = 0; i < n; i++) cin >> A[i];
+    
+    int index, newValue;
+    cin >> index >> newValue;
+    
+    // Check bounds, get, set, print
+    
+    return 0;
+}`,
+      hints: ['Check if index >= 0 and index < n.', 'Print A[index], set A[index] = newValue, then loop to print A.'],
+      topics: ['ArrayList', 'Access', 'Update']
+    },
+    {
+      id: 'custom-arraylist-remove',
+      title: 'Custom ArrayList Remove At',
+      difficulty: 'medium',
+      description: `Removing an element from the middle of an array requires shifting elements to the left to close the gap.
+Write a program that:
+1. Reads an integer \`N\`, followed by \`N\` elements into an array.
+2. Reads an integer \`index\` representing the position to remove.
+3. If \`index\` is valid (\`0 ≤ index < N\`), shifts elements from \`index + 1\` up to the end one step to the left, overwriting the element at \`index\`.
+4. Decrements the size.
+5. Prints the new array elements. If invalid index, print "Out of bounds".`,
+      inputFormat: 'First line: N. Second line: N space-separated integers. Third line: index.',
+      outputFormat: 'Print the array elements after deletion, or "Out of bounds".',
+      constraints: '1 ≤ N ≤ 100',
+      sampleInput: '5\n10 20 30 40 50\n2',
+      sampleOutput: '10 20 40 50',
+      testCases: [
+        { input: '5\n10 20 30 40 50\n2', expectedOutput: '10 20 40 50' },
+        { input: '4\n1 2 3 4\n3', expectedOutput: '1 2 3' },
+        { input: '3\n1 2 3\n5', expectedOutput: 'Out of bounds' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    
+    int* A = new int[n];
+    for(int i = 0; i < n; i++) cin >> A[i];
+    
+    int index;
+    cin >> index;
+    
+    // Check bounds, shift left, update size, print
+    
+    return 0;
+}`,
+      hints: ['Use a loop from i = index to n - 2: A[i] = A[i + 1];', 'After loop, decrease n.'],
+      topics: ['ArrayList', 'Deletion', 'Array Shifting']
+    },
+    {
       id: 'vector-basics',
       title: 'STL Vector Basics',
       difficulty: 'easy',
