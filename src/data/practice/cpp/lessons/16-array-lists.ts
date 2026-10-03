@@ -13,7 +13,7 @@ export const arrayLists: Lesson = {
       difficulty: 'easy',
       description: `An ArrayList uses a dynamically allocated array and resizes it when full.
 Write a templated class \`ArrayList<T>\` that has:
-1. Three private member variables: a pointer \`T* arr\`, an integer \`numElems\`, and an integer \`capacity\`.
+1. Three member variables: a pointer \`T* arr\`, an integer \`numElems\`, and an integer \`capacity\`.
 2. A default constructor that sets \`numElems\` to 0, \`capacity\` to 10, and allocates an array of \`capacity\` elements.
 3. A destructor that deletes the dynamically allocated array.
 
@@ -30,25 +30,10 @@ In \`main\`, create an \`ArrayList<int>\` and an \`ArrayList<float>\` to verify 
       starterCode: `#include <iostream>
 using namespace std;
 
-template <class T>
-class ArrayList {
-    T* arr;
-    int numElems;
-    int capacity;
-public:
-    ArrayList() {
-        // Initialize and allocate
-    }
-    
-    ~ArrayList() {
-        // Deallocate
-    }
-};
+// Write your ArrayList class here
 
 int main() {
-    ArrayList<int> intAL;
-    ArrayList<float> floatAL;
-    cout << "Success\\n";
+    
     return 0;
 }`,
       hints: ['arr = new T[capacity];', 'delete[] arr;'],
@@ -87,38 +72,66 @@ public:
         capacity = 2; // small capacity to force expansion
         arr = new T[capacity];
     }
-    
     ~ArrayList() {
         delete[] arr;
     }
     
-    void expand() {
-        // double capacity, allocate, copy, delete old, reassign
-    }
-    
-    void append(T val) {
-        // expand if full, then add and increment
-    }
+    // Implement expand and append here
 };
 
 int main() {
-    int n;
-    cin >> n;
-    ArrayList<int> list;
-    for(int i=0; i<n; i++) {
-        int x;
-        cin >> x;
-        list.append(x);
-    }
     
-    for(int i=0; i<list.numElems; i++) {
-        cout << list.arr[i] << (i == list.numElems-1 ? "" : " ");
-    }
-    cout << "\\n";
     return 0;
 }`,
       hints: ['In expand(): capacity *= 2; T* tmp = new T[capacity];', 'Copy elements using a loop.', 'In append(): if(capacity <= numElems) expand();'],
       topics: ['ArrayList', 'Expansion']
+    },
+    {
+      id: 'arraylist-get-set',
+      title: 'Get & Set',
+      difficulty: 'easy',
+      description: `Implement \`get(int index)\` and \`set(int index, T val)\` methods for your \`ArrayList\`.
+In an ArrayList, accessing elements by index is O(1) fast operation.
+
+Write a program that:
+1. Reads an integer \`N\`, followed by \`N\` elements and appends them to your \`ArrayList\`.
+2. Reads two integers: \`index\` and \`newValue\`.
+3. If \`index\` is valid (\`0 ≤ index < numElems\`), prints the element currently at that index using \`get\`, updates it to \`newValue\` using \`set\`, and then prints the updated array.
+4. If \`index\` is out of bounds, print "Out of bounds".`,
+      inputFormat: 'First line: N. Second line: N space-separated integers. Third line: index and newValue.',
+      outputFormat: 'If valid: Print original value, then on next line print updated array. If invalid: Print "Out of bounds".',
+      constraints: '1 ≤ N ≤ 100',
+      sampleInput: '5\n10 20 30 40 50\n2 99',
+      sampleOutput: '30\n10 20 99 40 50',
+      testCases: [
+        { input: '5\n10 20 30 40 50\n2 99', expectedOutput: '30\n10 20 99 40 50' },
+        { input: '3\n1 2 3\n3 10', expectedOutput: 'Out of bounds' },
+        { input: '4\n1 2 3 4\n0 5', expectedOutput: '1\n5 2 3 4' },
+      ],
+      starterCode: `#include <iostream>
+using namespace std;
+
+template <class T>
+class ArrayList {
+public:
+    T* arr;
+    int numElems;
+    int capacity;
+
+    ArrayList() {
+        numElems = 0; capacity = 10; arr = new T[capacity];
+    }
+    ~ArrayList() { delete[] arr; }
+    
+    // Implement get and set here
+};
+
+int main() {
+    
+    return 0;
+}`,
+      hints: ['Check if index >= 0 and index < numElems.'],
+      topics: ['ArrayList', 'Access', 'Update']
     },
     {
       id: 'arraylist-insert-at',
@@ -142,7 +155,6 @@ In \`main\`, read \`N\` elements and append them. Then read \`val\` and \`index\
         { input: '3\n1 2 3\n5 0', expectedOutput: '5 1 2 3' }
       ],
       starterCode: `#include <iostream>
-#include <cassert>
 using namespace std;
 
 template <class T>
@@ -156,38 +168,12 @@ public:
         numElems = 0; capacity = 10; arr = new T[capacity];
     }
     ~ArrayList() { delete[] arr; }
-    void expand() {
-        capacity *= 2;
-        T* tmp = new T[capacity];
-        for(int i=0; i<numElems; i++) tmp[i] = arr[i];
-        delete[] arr; arr = tmp;
-    }
-    void append(T val) {
-        if(capacity <= numElems) expand();
-        arr[numElems++] = val;
-    }
     
-    void insertAt(int index, T val) {
-        // Implement insertion logic here
-    }
+    // Implement insertAt here
 };
 
 int main() {
-    int n;
-    cin >> n;
-    ArrayList<int> list;
-    for(int i=0; i<n; i++) {
-        int x; cin >> x; list.append(x);
-    }
-    int val, idx;
-    cin >> val >> idx;
     
-    list.insertAt(idx, val);
-    
-    for(int i=0; i<list.numElems; i++) {
-        cout << list.arr[i] << (i == list.numElems-1 ? "" : " ");
-    }
-    cout << "\\n";
     return 0;
 }`,
       hints: ['for(int i = numElems; i > index; i--) arr[i] = arr[i-1];'],
@@ -214,7 +200,6 @@ In \`main\`, read \`N\` elements and append them. Then read an \`index\` and del
         { input: '5\n1 2 3 4 5\n4', expectedOutput: '1 2 3 4' }
       ],
       starterCode: `#include <iostream>
-#include <cassert>
 using namespace std;
 
 template <class T>
@@ -228,38 +213,12 @@ public:
         numElems = 0; capacity = 10; arr = new T[capacity];
     }
     ~ArrayList() { delete[] arr; }
-    void expand() {
-        capacity *= 2;
-        T* tmp = new T[capacity];
-        for(int i=0; i<numElems; i++) tmp[i] = arr[i];
-        delete[] arr; arr = tmp;
-    }
-    void append(T val) {
-        if(capacity <= numElems) expand();
-        arr[numElems++] = val;
-    }
     
-    void deleteAt(int index) {
-        // Implement deletion logic here
-    }
+    // Implement deleteAt here
 };
 
 int main() {
-    int n;
-    cin >> n;
-    ArrayList<int> list;
-    for(int i=0; i<n; i++) {
-        int x; cin >> x; list.append(x);
-    }
-    int idx;
-    cin >> idx;
     
-    list.deleteAt(idx);
-    
-    for(int i=0; i<list.numElems; i++) {
-        cout << list.arr[i] << (i == list.numElems-1 ? "" : " ");
-    }
-    cout << "\\n";
     return 0;
 }`,
       hints: ['for(int i = index + 1; i < numElems; i++) arr[i-1] = arr[i];', 'numElems--;'],
@@ -288,45 +247,21 @@ using namespace std;
 
 template <class T>
 class ArrayList {
+public:
     T* arr;
     int numElems;
     int capacity;
-public:
+    
     ArrayList() {
         numElems = 0; capacity = 10; arr = new T[capacity];
     }
     ~ArrayList() { delete[] arr; }
-    void append(T val) {
-        if(capacity <= numElems) {
-            capacity *= 2; T* tmp = new T[capacity];
-            for(int i=0; i<numElems; i++) tmp[i] = arr[i];
-            delete[] arr; arr = tmp;
-        }
-        arr[numElems++] = val;
-    }
     
-    void print() {
-        // Print elements space separated
-    }
-    
-    void clear() {
-        // Set numElems to 0
-    }
-    
-    int size() { return numElems; }
+    // Implement print and clear here
 };
 
 int main() {
-    int n;
-    cin >> n;
-    ArrayList<int> list;
-    for(int i=0; i<n; i++) {
-        int x; cin >> x; list.append(x);
-    }
     
-    list.print();
-    list.clear();
-    cout << list.size() << "\\n";
     return 0;
 }`,
       hints: ['print() can use cout << arr[i] << " ";', 'clear() just sets numElems = 0;'],
@@ -357,42 +292,21 @@ using namespace std;
 
 template <class T>
 class ArrayList {
+public:
     T* arr;
     int numElems;
     int capacity;
-public:
+    
     ArrayList() {
         numElems = 0; capacity = 10; arr = new T[capacity];
     }
     ~ArrayList() { delete[] arr; }
-    void append(T val) {
-        if(capacity <= numElems) {
-            capacity *= 2; T* tmp = new T[capacity];
-            for(int i=0; i<numElems; i++) tmp[i] = arr[i];
-            delete[] arr; arr = tmp;
-        }
-        arr[numElems++] = val;
-    }
     
     // Write operator[] overload here
-    
-    int size() { return numElems; }
 };
 
 int main() {
-    int n;
-    cin >> n;
-    ArrayList<int> list;
-    for(int i=0; i<n; i++) {
-        int x; cin >> x; list.append(x);
-    }
     
-    list[0] = 99; // Should work and modify the value
-    
-    for(int i = 0; i < list.size(); i++) {
-        cout << list[i] << (i == list.size()-1 ? "" : " "); // Should work to read
-    }
-    cout << "\\n";
     return 0;
 }`,
       hints: ['T& operator[](int index) { return arr[index]; }'],
@@ -404,7 +318,6 @@ int main() {
       difficulty: 'hard',
       description: `Challenge: How to make this line work? \`cout << arr << endl;\` and print all array elements?
 To print the object directly with \`cout\`, you must overload the \`operator<<\` as a friend function.
-(Because this is a templated class, the friend function syntax can be a bit tricky. We provide a simple template for it).
 
 Implement the \`operator<<\` to loop over the ArrayList and print elements separated by a space.`,
       inputFormat: 'First line: N. Second line: N elements.',
@@ -421,39 +334,25 @@ using namespace std;
 
 template <class T>
 class ArrayList {
+public:
     T* arr;
     int numElems;
     int capacity;
-public:
+    
     ArrayList() {
         numElems = 0; capacity = 10; arr = new T[capacity];
     }
     ~ArrayList() { delete[] arr; }
-    void append(T val) {
-        if(capacity <= numElems) {
-            capacity *= 2; T* tmp = new T[capacity];
-            for(int i=0; i<numElems; i++) tmp[i] = arr[i];
-            delete[] arr; arr = tmp;
-        }
-        arr[numElems++] = val;
-    }
     
     // Friend function to overload operator<<
     friend ostream& operator<<(ostream& os, const ArrayList<T>& list) {
         // Loop and output elements to os
-        // return os;
+        return os;
     }
 };
 
 int main() {
-    int n;
-    cin >> n;
-    ArrayList<int> list;
-    for(int i=0; i<n; i++) {
-        int x; cin >> x; list.append(x);
-    }
     
-    cout << list << "\\n";
     return 0;
 }`,
       hints: ['Inside the friend function: for(int i=0; i<list.numElems; i++) { os << list.arr[i] << " "; } return os;'],

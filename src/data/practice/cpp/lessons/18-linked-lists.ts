@@ -17,7 +17,7 @@ It should:
 2. Set its \`next\` to point to the current \`head\`.
 3. Update \`head\` to point to this new node.
 
-In \`main\`, read \`N\`, then read \`N\` integers and add them to the head of the list. Since they are added to the head, they will be printed in reverse order! (A basic \`print()\` is provided in the starter code).`,
+In \`main\`, read \`N\`, then read \`N\` integers and add them to the head of the list. Since they are added to the head, they will be printed in reverse order! (You must write the code to print the list).`,
       inputFormat: 'First line: N. Second line: N space-separated integers.',
       outputFormat: 'Print the elements in the linked list space-separated.',
       constraints: '1 <= N <= 100',
@@ -41,32 +41,15 @@ public:
 
 template<class T>
 class LinkedList {
-    Node<T>* head;
 public:
+    Node<T>* head;
     LinkedList() { head = NULL; }
     
-    void addToHead(T value) {
-        // Implement insertion at head here
-    }
-    
-    void print() {
-        Node<T>* temp = head;
-        while (temp != NULL) { 
-            cout << temp->data << " "; 
-            temp = temp->next; 
-        }
-    }
+    // Add your functions here
 };
 
 int main() {
-    int n;
-    cin >> n;
-    LinkedList<int> list;
-    for(int i = 0; i < n; i++) {
-        int x; cin >> x;
-        list.addToHead(x);
-    }
-    list.print();
+    
     return 0;
 }`,
       hints: ['Node<T>* newNode = new Node<T>(value);', 'newNode->next = head;', 'head = newNode;'],
@@ -107,32 +90,15 @@ public:
 
 template<class T>
 class LinkedList {
-    Node<T>* head;
 public:
+    Node<T>* head;
     LinkedList() { head = NULL; }
     
-    void addToTail(T value) {
-        // Implement insertion at tail here
-    }
-    
-    void print() {
-        Node<T>* temp = head;
-        while (temp != NULL) { 
-            cout << temp->data << " "; 
-            temp = temp->next; 
-        }
-    }
+    // Add your functions here
 };
 
 int main() {
-    int n;
-    cin >> n;
-    LinkedList<int> list;
-    for(int i = 0; i < n; i++) {
-        int x; cin >> x;
-        list.addToTail(x);
-    }
-    list.print();
+    
     return 0;
 }`,
       hints: ['Node<T>* temp = head; while (temp->next != NULL) temp = temp->next; temp->next = newNode;'],
@@ -173,59 +139,15 @@ public:
 
 template<class T>
 class LinkedList {
-    Node<T>* head;
 public:
+    Node<T>* head;
     LinkedList() { head = NULL; }
     
-    void addToTail(T value) {
-        Node<T>* newNode = new Node<T>(value);
-        if (head == NULL) { head = newNode; return; }
-        Node<T>* temp = head;
-        while (temp->next != NULL) temp = temp->next;
-        temp->next = newNode;
-    }
-    
-    void deleteAt(int indx) {
-        if (indx < 0) return;
-        if (indx == 0) {
-            if (head == NULL) return;
-            Node<T>* del = head;
-            head = head->next;
-            delete del;
-            return;
-        }
-        Node<T>* temp = head;
-        for (int i = 1; i < indx; i++) {
-            if (temp == NULL) return;
-            temp = temp->next;
-        }
-        if (temp == NULL || temp->next == NULL) return;
-        Node<T>* nodeToDel = temp->next;
-        temp->next = nodeToDel->next;
-        delete nodeToDel;
-    }
-    
-    void print() {
-        Node<T>* temp = head;
-        while (temp != NULL) { 
-            cout << temp->data << " "; 
-            temp = temp->next; 
-        }
-    }
+    // Add your functions here
 };
 
 int main() {
-    int n;
-    cin >> n;
-    LinkedList<int> list;
-    for(int i = 0; i < n; i++) {
-        int x; cin >> x;
-        list.addToTail(x);
-    }
-    int indx;
-    cin >> indx;
-    list.deleteAt(indx);
-    list.print();
+    
     return 0;
 }`,
       hints: ['Be careful when deleting head (index 0).', 'Keep a pointer to the node being deleted to free its memory.'],
@@ -263,42 +185,15 @@ public:
 
 template<class T>
 class LinkedList {
-    Node<T>* head;
 public:
+    Node<T>* head;
     LinkedList() { head = NULL; }
     
-    void addToTail(T value) {
-        Node<T>* newNode = new Node<T>(value);
-        if (head == NULL) { head = newNode; return; }
-        Node<T>* temp = head;
-        while (temp->next != NULL) temp = temp->next;
-        temp->next = newNode;
-    }
-    
-    void deleteValue(T value) {
-        // Implement deletion by value here
-    }
-    
-    void print() {
-        Node<T>* temp = head;
-        while (temp != NULL) { 
-            cout << temp->data << " "; 
-            temp = temp->next; 
-        }
-    }
+    // Add your functions here
 };
 
 int main() {
-    int n;
-    cin >> n;
-    LinkedList<int> list;
-    for(int i = 0; i < n; i++) {
-        int x; cin >> x; list.addToTail(x);
-    }
-    int val;
-    cin >> val;
-    list.deleteValue(val);
-    list.print();
+    
     return 0;
 }`,
       hints: ['If head->data == value, delete head and update head = head->next.', 'Otherwise traverse: if(temp->next->data == value) then unlink and delete temp->next.'],
@@ -333,34 +228,15 @@ public:
 
 template<class T>
 class LinkedList {
-    Node<T>* head;
 public:
+    Node<T>* head;
     LinkedList() { head = NULL; }
     
-    void addToTail(T value) {
-        Node<T>* newNode = new Node<T>(value);
-        if (head == NULL) { head = newNode; return; }
-        Node<T>* temp = head;
-        while (temp->next != NULL) temp = temp->next;
-        temp->next = newNode;
-    }
-    
-    int search(T value) {
-        // Implement search here
-        return -1;
-    }
+    // Add your functions here
 };
 
 int main() {
-    int n;
-    cin >> n;
-    LinkedList<int> list;
-    for(int i = 0; i < n; i++) {
-        int x; cin >> x; list.addToTail(x);
-    }
-    int val;
-    cin >> val;
-    cout << list.search(val) << "\\n";
+    
     return 0;
 }`,
       hints: ['Maintain an index counter starting at 0.', 'Traverse the list and increment the counter. If you find the value, return the counter.'],
@@ -396,32 +272,15 @@ public:
 
 template<class T>
 class LinkedList {
-    Node<T>* head;
 public:
+    Node<T>* head;
     LinkedList() { head = NULL; }
     
-    void addToTail(T value) {
-        Node<T>* newNode = new Node<T>(value);
-        if (head == NULL) { head = newNode; return; }
-        Node<T>* temp = head;
-        while (temp->next != NULL) temp = temp->next;
-        temp->next = newNode;
-    }
-    
-    T findMiddle() {
-        // Implement find middle here
-        return 0; // return dummy for now
-    }
+    // Add your functions here
 };
 
 int main() {
-    int n;
-    cin >> n;
-    LinkedList<int> list;
-    for(int i = 0; i < n; i++) {
-        int x; cin >> x; list.addToTail(x);
-    }
-    cout << list.findMiddle() << "\\n";
+    
     return 0;
 }`,
       hints: ['Use two pointers: slow and fast. Both start at head.', 'Advance slow by 1 step, and fast by 2 steps. When fast reaches the end, slow will be at the middle.'],
@@ -456,31 +315,15 @@ public:
 
 template<class T>
 class LinkedList {
-    Node<T>* head;
 public:
+    Node<T>* head;
     LinkedList() { head = NULL; }
     
-    void addToTail(T value) {
-        Node<T>* newNode = new Node<T>(value);
-        if (head == NULL) { head = newNode; return; }
-        Node<T>* temp = head;
-        while (temp->next != NULL) temp = temp->next;
-        temp->next = newNode;
-    }
-    
-    T findMin() {
-        // Implement find min here
-    }
+    // Add your functions here
 };
 
 int main() {
-    int n;
-    cin >> n;
-    LinkedList<int> list;
-    for(int i = 0; i < n; i++) {
-        int x; cin >> x; list.addToTail(x);
-    }
-    cout << list.findMin() << "\\n";
+    
     return 0;
 }`,
       hints: ['Initialize min_val to head->data.', 'Traverse the list and update min_val if temp->data < min_val.'],
@@ -517,33 +360,15 @@ public:
 
 template<class T>
 class LinkedList {
-    Node<T>* head;
 public:
+    Node<T>* head;
     LinkedList() { head = NULL; }
     
-    void addToTail(T value) {
-        Node<T>* newNode = new Node<T>(value);
-        if (head == NULL) { head = newNode; return; }
-        Node<T>* temp = head;
-        while (temp->next != NULL) temp = temp->next;
-        temp->next = newNode;
-    }
-    
-    T findNearest(T x) {
-        // Implement find nearest here
-    }
+    // Add your functions here
 };
 
 int main() {
-    int n;
-    cin >> n;
-    LinkedList<int> list;
-    for(int i = 0; i < n; i++) {
-        int x; cin >> x; list.addToTail(x);
-    }
-    int target;
-    cin >> target;
-    cout << list.findNearest(target) << "\\n";
+    
     return 0;
 }`,
       hints: ['Keep track of both the nearest value and the minimum difference so far.', 'Use abs(temp->data - x) to calculate difference.'],
@@ -581,40 +406,15 @@ public:
 
 template<class T>
 class LinkedList {
-    Node<T>* head;
 public:
+    Node<T>* head;
     LinkedList() { head = NULL; }
     
-    void addToTail(T value) {
-        Node<T>* newNode = new Node<T>(value);
-        if (head == NULL) { head = newNode; return; }
-        Node<T>* temp = head;
-        while (temp->next != NULL) temp = temp->next;
-        temp->next = newNode;
-    }
-    
-    void moveLastToFront() {
-        // Implement move last to front here
-    }
-    
-    void print() {
-        Node<T>* temp = head;
-        while (temp != NULL) { 
-            cout << temp->data << " "; 
-            temp = temp->next; 
-        }
-    }
+    // Add your functions here
 };
 
 int main() {
-    int n;
-    cin >> n;
-    LinkedList<int> list;
-    for(int i = 0; i < n; i++) {
-        int x; cin >> x; list.addToTail(x);
-    }
-    list.moveLastToFront();
-    list.print();
+    
     return 0;
 }`,
       hints: ['Traverse the list to find the last node AND the second-to-last node.', 'Unlink the last node from the end (second-to-last->next = NULL).', 'Make the last node point to head, then update head = last node.'],
