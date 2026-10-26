@@ -249,17 +249,8 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/5" />
 
-                          <span className="absolute left-3.5 top-3.5 flex h-7 items-center rounded-full bg-white/95 px-2.5 text-xs font-bold text-black shadow-sm">
-                            Step {index + 1}
-                          </span>
-                          {track.isPro && (
-                            <span className="absolute right-3.5 top-3.5 rounded-full bg-amber-400/95 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-950 shadow-sm">
-                              Pro
-                            </span>
-                          )}
-
                           <div className="absolute inset-x-4 bottom-3.5">
-                            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/70">
+                            <p className="text-[10px] font-medium tracking-wide text-white/70">
                               {track.level}
                             </p>
                             <h3 className="text-lg font-semibold leading-tight text-white">

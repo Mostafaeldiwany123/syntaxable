@@ -149,7 +149,7 @@ const ProblemsSidebar: React.FC<ProblemsSidebarProps> = ({
     <div className="h-full flex flex-col bg-card border-r border-border w-56 shrink-0">
       {/* Header */}
       <div className="h-9 bg-card border-b border-border flex items-center justify-between px-2.5 select-none shrink-0">
-        <span className="text-xs font-semibold text-foreground uppercase tracking-wide">
+        <span className="text-xs font-semibold text-foreground tracking-wide">
           {language}
         </span>
         <button

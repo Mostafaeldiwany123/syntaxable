@@ -45,18 +45,11 @@
 
   <style>
     :root {
-      --bg-initial: #080808;
-      --loader-ring: rgba(255, 255, 255, 0.05);
-      --loader-spin: #3b82f6;
-      --text-primary: #ffffff;
-      --text-secondary: #a1a1aa;
+      --bg-initial: #ffffff;
     }
 
-    html[data-theme='light'] {
-      --bg-initial: #ffffff;
-      --loader-ring: rgba(0, 0, 0, 0.1);
-      --text-primary: #09090b;
-      --text-secondary: #71717a;
+    html[data-theme='dark'] {
+      --bg-initial: #09090b;
     }
 
     html,
@@ -68,82 +61,60 @@
       margin: 0;
       padding: 0;
       font-family: 'PT Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: var(--text-primary);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Premium Initial Loader UI */
     #initial-loader {
       position: fixed;
       inset: 0;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       background-color: var(--bg-initial);
-      background-image:
-        radial-gradient(circle at center, rgba(59, 130, 246, 0.08) 0%, transparent 45%),
-        linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.1));
       z-index: 9999;
       transition: opacity 0.2s ease-out;
     }
 
-    .logo-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 2rem;
-    }
-
-    .logo-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.25);
-      object-fit: cover;
-    }
-
-    .logo-brand-text {
-      font-size: 28px;
-      font-weight: 400;
+    .loader-text {
+      font-size: 32px;
+      font-weight: 700;
       letter-spacing: -0.5px;
-      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      color: #d4d4d8;
+      background: linear-gradient(
+        90deg,
+        #d4d4d8 0%,
+        #d4d4d8 40%,
+        #a1a1aa 50%,
+        #d4d4d8 60%,
+        #d4d4d8 100%
+      );
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 2s ease-in-out infinite;
+    }
+
+    html[data-theme='dark'] .loader-text {
+      color: #3f3f46;
+      background: linear-gradient(
+        90deg,
+        #3f3f46 0%,
+        #3f3f46 40%,
+        #52525b 50%,
+        #3f3f46 60%,
+        #3f3f46 100%
+      );
+      background-size: 200% 100%;
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .spinner-container {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .loader-spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid var(--loader-ring);
-      border-top-color: var(--loader-spin);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    .loader-message {
-      margin-top: 1.5rem;
-      font-size: 14px;
-      font-weight: 400;
-      color: var(--text-secondary);
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
   </style>
   <script>
@@ -159,18 +130,8 @@
 </head>
 
 <body>
-  <!-- Loader is moved outside of #root so React doesn't abruptly unmount it -->
   <div id="initial-loader">
-    <div class="logo-wrapper">
-      <img src="/syntaxable.png" alt="Syntaxable Logo" class="logo-icon" />
-      <span class="logo-brand-text">Syntaxable</span>
-    </div>
-    <div class="spinner-container">
-      <div class="loader-spinner"></div>
-    </div>
-    <div class="loader-message">
-      Initializing Workspace
-    </div>
+    <div class="loader-text">Syntaxable</div>
   </div>
   
   <div id="root"></div>

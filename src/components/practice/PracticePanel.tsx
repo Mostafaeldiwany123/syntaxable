@@ -144,7 +144,7 @@ ${problem.explanation ? `**Explanation:**\n${problem.explanation}` : ''}`;
       {/* Header */}
       <div className="h-10 bg-card border-b border-border flex items-center justify-between px-2 sm:px-3 select-none shrink-0 gap-2">
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-          <span className="text-xs font-medium text-foreground uppercase tracking-wide hidden sm:inline">Problem</span>
+          <span className="text-xs font-medium text-foreground tracking-wide hidden sm:inline">Problem</span>
           <span className="text-xs text-muted-foreground hidden sm:inline">•</span>
           <span className="text-xs text-muted-foreground truncate max-w-[120px] sm:max-w-[200px]">{problem.title}</span>
         </div>

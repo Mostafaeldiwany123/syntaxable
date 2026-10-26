@@ -126,7 +126,6 @@ export const TRACK_LIST: TrackMetadata[] = [
     icon: 'boxes',
     image: '/imgs/tracks/track-datastructures.jpg',
     level: 'Advanced',
-    isPro: true,
   },
 ];
 

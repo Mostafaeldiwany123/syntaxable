@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Star } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { SignInForm } from "@/components/auth/SignInForm";
 import { SignUpForm } from "@/components/auth/SignUpForm";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -19,6 +20,24 @@ const TESTIMONIALS: Testimonial[] = [
     name: "Marwan Ashraf",
     role: "EUI Student",
     quote: "An amazing website, very organized and easy to use. It tackles every programming aspect and helps master it.",
+    rating: 10,
+  },
+  {
+    name: "Eyad Tamer",
+    role: "EUI Student",
+    quote: "Syntaxable is really useful for saving, reusing and memorising your code.",
+    rating: 10,
+  },
+  {
+    name: "Karas Ayman",
+    role: "EUI Student",
+    quote: "Syntaxable is pretty good when it comes to group projects cause all members of the project can code live and save their code on the cloud without having to send the code back and forth between each other.",
+    rating: 10,
+  },
+  {
+    name: "Youssef Ehab",
+    role: "EUI Student",
+    quote: "Such an amazing website where it takes me step by step to improve my programming skills and has nice well structured problems that is organized from easy to difficult. And looks good.",
     rating: 10,
   },
 ];
@@ -62,6 +81,22 @@ const TestimonialSlide = ({ testimonial }: { testimonial: Testimonial }) => (
 
 const AuthPage = () => {
   const [tab, setTab] = useState<"signin" | "signup">("signin");
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndex((current) => (current + 1) % TESTIMONIALS.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const goPrev = () => {
+    setActiveIndex((current) => (current - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
+  };
+
+  const goNext = () => {
+    setActiveIndex((current) => (current + 1) % TESTIMONIALS.length);
+  };
 
   return (
     <div className="grid min-h-dvh bg-background text-foreground lg:grid-cols-2">
@@ -129,10 +164,58 @@ const AuthPage = () => {
         </div>
       </div>
 
-      {/* Right: testimonial */}
+      {/* Right: testimonial carousel */}
       <div className="hidden border-l border-border bg-secondary/20 lg:flex lg:flex-col lg:justify-center lg:px-12 xl:px-20">
         <div className="mx-auto w-full max-w-lg">
-          <TestimonialSlide testimonial={TESTIMONIALS[0]} />
+          <div className="min-h-[19rem]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeIndex}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+              >
+                <TestimonialSlide testimonial={TESTIMONIALS[activeIndex]} />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          <div className="mt-8 flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              {TESTIMONIALS.map((item, index) => (
+                <button
+                  key={item.name}
+                  type="button"
+                  aria-label={`Go to testimonial ${index + 1}`}
+                  onClick={() => setActiveIndex(index)}
+                  className={cn(
+                    "h-1.5 rounded-full transition-all",
+                    index === activeIndex ? "w-6 bg-blue-500" : "w-1.5 bg-border hover:bg-muted-foreground/40"
+                  )}
+                />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                aria-label="Previous testimonial"
+                onClick={goPrev}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background/70 text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                aria-label="Next testimonial"
+                onClick={goNext}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background/70 text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

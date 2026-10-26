@@ -29,7 +29,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useSidebar } from '@/context/SidebarContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/profiles';
-import { UpgradeDialog } from '@/components/projects/UpgradeDialog';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface LanguageViewProps {
@@ -137,9 +136,6 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
   const isMobile = useIsMobile();
   const { user } = useAuth();
   const { data: profile } = useProfile(user?.id);
-  const isPro = profile?.tier === 'pro' || profile?.tier === 'admin';
-  const isDataStructures = currentTrackId === 'data-structures';
-  const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
   const SESSION_SEARCH_KEY = `practice-search-${course.language}`;
   const SESSION_SCROLL_KEY = `practice-scroll-${course.language}`;
 
@@ -381,12 +377,11 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                   const localCode = localStorage.getItem(`practice-code-${problem.id}`);
                   const hasStarted = !isSolved && localCode !== null && localCode !== problem.starterCode;
                   const buttonText = isSolved ? "Review" : hasStarted ? "Continue" : "Solve";
-                  const isLocked = isDataStructures && !isPro;
 
                   return (
                     <div 
                       key={problem.id}
-                      onClick={() => isLocked ? setIsUpgradeOpen(true) : onSelectProblem(problem)}
+                      onClick={() => onSelectProblem(problem)}
                       className="flex items-center justify-between p-3.5 rounded-xl border border-border/65 bg-card/40 active:bg-secondary/40 transition-colors cursor-pointer"
                     >
                       <div className="flex items-center gap-3 min-w-0">
@@ -405,13 +400,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                       <Button 
                         size="sm" 
                         variant={isSolved ? "ghost" : "default"} 
-                        className={`h-8 text-xs gap-1 shrink-0 ${isLocked ? 'opacity-40 hover:opacity-60 cursor-pointer' : ''}`}
-                        onClick={(e) => {
-                          if (isLocked) {
-                            e.stopPropagation();
-                            setIsUpgradeOpen(true);
-                          }
-                        }}
+                        className="h-8 text-xs gap-1 shrink-0"
                       >
                         <span>{buttonText}</span>
                         <Play className="w-2.5 h-2.5 fill-current" />
@@ -639,12 +628,11 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                             const localCode = localStorage.getItem(`practice-code-${problem.id}`);
                             const hasStarted = !isSolved && localCode !== null && localCode !== problem.starterCode;
                             const buttonText = isSolved ? "Review" : hasStarted ? "Continue" : "Solve";
-                            const isLocked = isDataStructures && !isPro;
                             
                             return (
                               <div 
                                 key={problem.id}
-                                onClick={() => isLocked ? setIsUpgradeOpen(true) : onSelectProblem(problem)}
+                                onClick={() => onSelectProblem(problem)}
                                 className="flex items-center justify-between px-4 py-3 hover:bg-secondary/20 transition-colors cursor-pointer"
                               >
                                 <div className="flex items-center gap-3 min-w-0">
@@ -674,15 +662,8 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                                 <Button
                                   size="sm"
                                   variant={isSolved ? "ghost" : "default"}
-                                  onClick={(e) => {
-                                    if (isLocked) {
-                                      e.stopPropagation();
-                                      setIsUpgradeOpen(true);
-                                    } else {
-                                      onSelectProblem(problem);
-                                    }
-                                  }}
-                                  className={`h-7 text-[10px] gap-1 px-2.5 shrink-0 ${isLocked ? 'opacity-40 hover:opacity-60 cursor-pointer' : ''}`}
+                                  onClick={() => onSelectProblem(problem)}
+                                  className="h-7 text-[10px] gap-1 px-2.5 shrink-0"
                                 >
                                   <span>{buttonText}</span>
                                   <Play className="w-2.5 h-2.5 fill-current" />
@@ -704,14 +685,6 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
           </>
         )}
       </div>
-
-      <UpgradeDialog
-        open={isUpgradeOpen}
-        onOpenChange={setIsUpgradeOpen}
-        title="Data Structures is a Pro Feature"
-        description="Solving Data Structures questions is exclusive to Pro members. Upgrade to Pro to write code, run test cases, and unlock all advanced learning tracks!"
-        actionText="Upgrade to Pro"
-      />
     </div>
   );
 };
