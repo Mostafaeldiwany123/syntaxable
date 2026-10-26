@@ -403,13 +403,13 @@ const CustomSetViewPage = () => {
                 </div>
 
                 {/* Participants */}
-                <div>
+                <div className="flex flex-col">
                   <div className="p-5 border-b border-border bg-secondary/10">
                     <h2 className="text-lg font-semibold">Top Participants</h2>
                   </div>
-                  <div className="divide-y divide-border/50">
-                    {participants && participants.length > 0 ? (
-                      participants.slice(0, 10).map((p, i) => (
+                  {participants && participants.length > 0 ? (
+                    <div className="divide-y divide-border/50">
+                      {participants.slice(0, 10).map((p, i) => (
                         <div key={p.user_id} className="flex items-center justify-between p-3 px-4">
                           <div className="flex items-center gap-3">
                             <span className="text-xs font-bold text-muted-foreground w-4">{i + 1}</span>
@@ -424,14 +424,14 @@ const CustomSetViewPage = () => {
                             <span className="text-xs text-muted-foreground">/{convertedProblems.length}</span>
                           </div>
                         </div>
-                      ))
-                    ) : (
-                      <div className="p-6 text-center text-sm text-muted-foreground flex flex-col items-center">
-                        <Users className="h-6 w-6 mb-2 opacity-20" />
-                        No participants yet
-                      </div>
-                    )}
-                  </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-1 flex-col items-center justify-center p-6 text-center text-sm text-muted-foreground">
+                      <Users className="h-6 w-6 mb-2 opacity-20" />
+                      No participants yet
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -5,10 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, Trash2, ChevronDown, Globe, EyeOff, Bot, Code2, Check, ListChecks, FileText, Lightbulb, RotateCcw } from "lucide-react";
+import { Loader2, Plus, Trash2, ChevronDown, Globe, EyeOff, Bot, Code2, Check, ListChecks, FileText, Lightbulb, RotateCcw, Library } from "lucide-react";
 import { useCreateCustomSet } from "@/hooks/customSets";
+import { ExistingQuestionPicker, type ExistingQuestion } from "@/components/practice/ExistingQuestionPicker";
 import { toast } from "sonner";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { getFileIconUrl } from "@/lib/project-utils";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -138,6 +138,20 @@ const getProblemCompletion = (problem: Problem): { complete: boolean } => {
   return { complete: hasTitle && hasDescription && hasTestCases };
 };
 
+const isPristineProblem = (problem: Problem): boolean =>
+  !problem.title.trim() &&
+  !problem.description.trim() &&
+  !problem.inputFormat.trim() &&
+  !problem.outputFormat.trim() &&
+  !problem.constraints.trim() &&
+  !problem.sampleInput.trim() &&
+  !problem.sampleOutput.trim() &&
+  !problem.explanation.trim() &&
+  problem.hints.length === 0 &&
+  problem.testCases.length === 1 &&
+  !problem.testCases[0].input.trim() &&
+  !problem.testCases[0].expectedOutput.trim();
+
 const SESSION_KEY = 'create-custom-set-draft';
 
 const saveToSession = (data: {
@@ -147,6 +161,7 @@ const saveToSession = (data: {
   isPublic: boolean;
   aiEnabled: boolean;
   problems: Problem[];
+  problemSourceIds: (string | null)[];
   activeProblemIndex: number;
 }) => {
   try {
@@ -163,6 +178,7 @@ const loadFromSession = (): {
   isPublic: boolean;
   aiEnabled: boolean;
   problems: Problem[];
+  problemSourceIds?: (string | null)[];
   activeProblemIndex: number;
 } | null => {
   try {
@@ -194,13 +210,18 @@ const CreateCustomSetPage = () => {
   const [description, setDescription] = useState(savedData?.description ?? '');
   const [language, setLanguage] = useState<Language>(savedData?.language ?? 'cpp');
   const [isPublic, setIsPublic] = useState(savedData?.isPublic ?? false);
-  const [aiEnabled, setAiEnabled] = useState(savedData?.aiEnabled ?? true);
-  const [problems, setProblems] = useState<Problem[]>(
-    savedData?.problems ?? [{ ...emptyProblem, starterCode: defaultStarterCode.cpp }]
+  const [aiEnabled, setAiEnabled] = useState(savedData?.aiEnabled ?? false);
+  const initialProblems: Problem[] =
+    savedData?.problems ?? [{ ...emptyProblem, starterCode: defaultStarterCode.cpp }];
+
+  const [problems, setProblems] = useState<Problem[]>(initialProblems);
+  const [problemSourceIds, setProblemSourceIds] = useState<(string | null)[]>(
+    initialProblems.map((_, index) => savedData?.problemSourceIds?.[index] ?? null)
   );
   const [activeProblemIndex, setActiveProblemIndex] = useState(savedData?.activeProblemIndex ?? 0);
   const [activeTab, setActiveTab] = useState<string>('description');
   const [hintsExpanded, setHintsExpanded] = useState(false);
+  const [setPickerOpen, setSetPickerOpen] = useState(false);
 
   useEffect(() => {
     saveToSession({
@@ -210,9 +231,10 @@ const CreateCustomSetPage = () => {
       isPublic,
       aiEnabled,
       problems,
+      problemSourceIds,
       activeProblemIndex,
     });
-  }, [title, description, language, isPublic, aiEnabled, problems, activeProblemIndex]);
+  }, [title, description, language, isPublic, aiEnabled, problems, problemSourceIds, activeProblemIndex]);
 
   const handleLanguageChange = (newLang: Language) => {
     setLanguage(newLang);
@@ -231,6 +253,7 @@ const CreateCustomSetPage = () => {
     }
     const newProblems = [...problems, { ...emptyProblem, starterCode: defaultStarterCode[language] }];
     setProblems(newProblems);
+    setProblemSourceIds([...problemSourceIds, null]);
     setActiveProblemIndex(newProblems.length - 1);
   };
 
@@ -241,6 +264,7 @@ const CreateCustomSetPage = () => {
     }
     const newProblems = problems.filter((_, i) => i !== index);
     setProblems(newProblems);
+    setProblemSourceIds(problemSourceIds.filter((_, i) => i !== index));
     if (activeProblemIndex >= newProblems.length) {
       setActiveProblemIndex(newProblems.length - 1);
     }
@@ -301,11 +325,56 @@ const CreateCustomSetPage = () => {
     setDescription('');
     setLanguage('cpp');
     setIsPublic(false);
-    setAiEnabled(true);
+    setAiEnabled(false);
     setProblems([{ ...emptyProblem, starterCode: defaultStarterCode.cpp }]);
+    setProblemSourceIds([null]);
     setActiveProblemIndex(0);
     setActiveTab('description');
     toast.success('Draft cleared');
+  };
+
+  const hasPristinePlaceholder = problems.length === 1 && isPristineProblem(problems[0]);
+
+  const handleAddExistingQuestion = (question: ExistingQuestion) => {
+    if (problems.length >= 10) {
+      toast.error('Maximum 10 problems allowed');
+      return;
+    }
+    if (problemSourceIds.includes(question.id)) {
+      return;
+    }
+
+    const p = question.problem;
+    const imported: Problem = {
+      title: p.title,
+      difficulty: p.difficulty,
+      description: p.description,
+      inputFormat: p.inputFormat,
+      outputFormat: p.outputFormat,
+      constraints: p.constraints,
+      sampleInput: p.sampleInput,
+      sampleOutput: p.sampleOutput,
+      explanation: p.explanation ?? '',
+      testCases: p.testCases.map((tc) => ({
+        input: tc.input,
+        expectedOutput: tc.expectedOutput,
+        isHidden: tc.isHidden ?? false,
+      })),
+      starterCode: p.starterCode || defaultStarterCode[language],
+      hints: p.hints ?? [],
+    };
+
+    const replacePlaceholder = problems.length === 1 && isPristineProblem(problems[0]);
+    const nextProblems = replacePlaceholder ? [imported] : [...problems, imported];
+
+    setProblems(nextProblems);
+    setProblemSourceIds(
+      replacePlaceholder ? [question.id] : [...problemSourceIds, question.id]
+    );
+    setActiveProblemIndex(nextProblems.length - 1);
+    setActiveTab('description');
+    if (!title.trim()) setTitle(question.setTitle);
+    if (!description.trim() && question.setDescription) setDescription(question.setDescription);
   };
 
   const handleSubmit = () => {
@@ -335,9 +404,9 @@ const CreateCustomSetPage = () => {
       isPublic,
       aiEnabled,
     }, {
-      onSuccess: () => {
+      onSuccess: (setId) => {
         clearSession();
-        navigate('/practice/custom');
+        navigate(setId ? `/practice/custom/${setId}` : '/practice/custom');
       },
     });
   };
@@ -419,13 +488,16 @@ const CreateCustomSetPage = () => {
                         : 'bg-secondary/20 hover:bg-secondary/40 border border-transparent'
                       }`}
                   >
-                    <div className="flex items-center gap-2 overflow-hidden flex-1">
+                    <div className="flex items-center gap-2 overflow-hidden flex-1 min-w-0">
                       {complete ? (
                         <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                       ) : (
                         <div className="h-3.5 w-3.5 rounded-full border border-dashed border-muted-foreground/30 shrink-0" />
                       )}
-                      <span className="font-medium truncate text-sm">
+                      <span
+                        className="font-medium truncate text-sm"
+                        title={problem.title || `Problem ${index + 1}`}
+                      >
                         {problem.title || `Problem ${index + 1}`}
                       </span>
                     </div>
@@ -449,8 +521,17 @@ const CreateCustomSetPage = () => {
             </div>
           </ScrollArea>
 
-          {/* Add Problem Button */}
-          <div className="p-3 border-t">
+          {/* Add / Import Problems */}
+          <div className="p-3 border-t space-y-2">
+            <Button
+              size="sm"
+              onClick={() => setSetPickerOpen(true)}
+              variant="secondary"
+              className="w-full gap-1.5"
+            >
+              <Library className="h-4 w-4" />
+              Add from Existing Sets
+            </Button>
             <Button
               size="sm"
               onClick={addProblem}
@@ -494,45 +575,40 @@ const CreateCustomSetPage = () => {
 
         {/* Main Content - Problem Editor */}
         <div className="flex-1 overflow-hidden flex flex-col">
-          {/* Language Selector */}
-          <div className="border-b bg-card px-6 py-3">
-            <div className="flex items-center gap-4">
-              <Label className="text-sm font-medium">Language:</Label>
-              <RadioGroup
-                value={language}
-                onValueChange={(val) => handleLanguageChange(val as Language)}
-                className="flex gap-2"
-              >
-                {languageOptions.map((type) => (
-                  <div key={type.value}>
-                    <RadioGroupItem value={type.value} id={`lang-${type.value}`} className="peer sr-only" />
-                    <Label
-                      htmlFor={`lang-${type.value}`}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-md border cursor-pointer transition-all hover:bg-secondary/50 peer-data-[state=checked]:bg-primary/10 peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary"
-                    >
-                      <img src={getFileIconUrl(`file${type.extension}`)} alt="" className="w-4 h-4" />
-                      <span className="text-sm">{type.label}</span>
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
-          </div>
-
-          {/* Problem Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-            <div className="border-b bg-card px-6 flex justify-center">
-              <TabsList className="h-11 bg-transparent p-0 gap-12">
-                <TabsTrigger value="description" className="px-1 py-4 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-medium">
+            <div className="h-12 border-b bg-card px-6 flex items-center justify-between gap-4">
+              <TabsList className="h-full bg-transparent p-0 gap-8">
+                <TabsTrigger value="description" className="px-0 h-full rounded-none border-b-2 border-transparent text-sm font-medium text-muted-foreground transition-colors hover:text-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                   Description
                 </TabsTrigger>
-                <TabsTrigger value="tests" className="px-1 py-4 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-medium">
+                <TabsTrigger value="tests" className="px-0 h-full rounded-none border-b-2 border-transparent text-sm font-medium text-muted-foreground transition-colors hover:text-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                   Test Cases
                 </TabsTrigger>
-                <TabsTrigger value="code" className="px-1 py-4 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-medium">
+                <TabsTrigger value="code" className="px-0 h-full rounded-none border-b-2 border-transparent text-sm font-medium text-muted-foreground transition-colors hover:text-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                   Starter Code
                 </TabsTrigger>
               </TabsList>
+              <Select
+                value={language}
+                onValueChange={(val) => handleLanguageChange(val as Language)}
+              >
+                <SelectTrigger
+                  aria-label="Language"
+                  className="h-8 w-[136px] shrink-0 border-border/60 bg-secondary/30 text-sm"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {languageOptions.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      <span className="flex items-center gap-2">
+                        <img src={getFileIconUrl(`file${type.extension}`)} alt="" className="w-4 h-4" />
+                        {type.label}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <ScrollArea className="flex-1 bg-card/20">
@@ -817,6 +893,17 @@ const CreateCustomSetPage = () => {
           </Tabs>
         </div>
       </div>
+
+      <ExistingQuestionPicker
+        open={setPickerOpen}
+        onOpenChange={setSetPickerOpen}
+        language={language}
+        languageLabel={languageOptions.find((option) => option.value === language)?.label ?? language}
+        addedProblemIds={problemSourceIds.filter((id): id is string => Boolean(id))}
+        problemCount={hasPristinePlaceholder ? 0 : problems.length}
+        maxProblems={10}
+        onAdd={handleAddExistingQuestion}
+      />
     </div>
   );
 };

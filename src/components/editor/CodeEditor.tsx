@@ -108,7 +108,38 @@ const CodeEditor = ({
 
     monacoInstance.editor.defineTheme('custom-dynamic', getDynamicTheme());
     monacoInstance.editor.setTheme('custom-dynamic');
+
+    // Re-apply the language after mount: a shared Monaco model can keep the
+    // previous language until the first keystroke, leaving code uncolored.
+    const model = editor.getModel();
+    if (model && model.getLanguageId() !== language) {
+      monacoInstance.editor.setModelLanguage(model, language);
+    }
+
     setIsEditorLoading(false);
+
+    // A standalone Monaco view only reports its visible lines after a scroll
+    // or content change, so a freshly mounted editor is never tokenized and
+    // renders uncolored. Restoring the view state reports them, which triggers
+    // the first tokenization pass. Re-run once the container has settled.
+    let disposed = false;
+    const stabilize = () => {
+      if (disposed) return;
+      editor.layout();
+      const viewState = editor.saveViewState();
+      if (viewState) editor.restoreViewState(viewState);
+      editor.render(true);
+    };
+
+    requestAnimationFrame(() => {
+      stabilize();
+      requestAnimationFrame(stabilize);
+    });
+    const settleTimer = window.setTimeout(stabilize, 200);
+    editor.onDidDispose(() => {
+      disposed = true;
+      window.clearTimeout(settleTimer);
+    });
 
     editor.addCommand(monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.KeyK, () => {
       onAIAgentClick();
@@ -165,7 +196,7 @@ const CodeEditor = ({
         blurListener.dispose();
       });
     }
-  }, [isMobile, onAIAgentClick]);
+  }, [isMobile, onAIAgentClick, language]);
 
   useEffect(() => {
     if (editorRef.current && activeFile) {
@@ -293,6 +324,7 @@ const CodeEditor = ({
             loading=""
             options={{
               readOnly: isReadOnly,
+              automaticLayout: true,
               minimap: { enabled: false },
               fontSize: 14,
               fontFamily: "'Inconsolata', 'Consolas', 'Monaco', 'Courier New', monospace",
