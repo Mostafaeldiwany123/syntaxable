@@ -8,59 +8,61 @@ export const PendingRequests = () => {
   const { data: requests, isLoading } = useFriendRequests();
   const { acceptRequest, removeFriendship, isPending } = useFriendshipActions();
 
-  if (!requests || requests.length === 0) {
+  if (isLoading || !requests || requests.length === 0) {
     return null;
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <Clock className="h-4 w-4 text-primary" />
-        <h2 className="text-lg font-semibold">
-          Pending Requests
-          <span className="ml-2 text-sm font-normal text-muted-foreground">
-            {requests.length} waiting
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
+      <div className="flex items-center justify-between border-b border-border bg-primary/[0.04] px-4 py-2">
+        <div className="flex items-center gap-2">
+          <Clock className="h-3.5 w-3.5 text-primary" />
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Pending Requests
           </span>
-        </h2>
+        </div>
+        <span className="text-[11px] font-medium tabular-nums text-primary">
+          {requests.length} waiting
+        </span>
       </div>
 
-      <div className="space-y-2">
+      <div className="divide-y divide-border/50">
         {requests.map((request: FriendRequest) => (
-          <div 
-            key={request.friendship_id} 
-            className="flex items-center justify-between p-4 rounded-xl border border-primary/20 bg-primary/5"
+          <div
+            key={request.friendship_id}
+            className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-secondary/30"
           >
-            <div className="flex items-center gap-4">
-              <Avatar className="h-11 w-11">
-                <AvatarImage src={request.avatar_url} />
-                <AvatarFallback seed={request.username} className="text-sm font-medium">
-                  {request.username.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0">
-                <p className="font-semibold truncate">{request.username}</p>
-                <p className="text-xs text-muted-foreground">
-                  {formatDistanceToNow(new Date(request.created_at), { addSuffix: true })}
-                </p>
-              </div>
+            <Avatar className="h-9 w-9 shrink-0 border border-border/70">
+              <AvatarImage src={request.avatar_url} />
+              <AvatarFallback seed={request.username} className="text-xs font-semibold">
+                {request.username.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-foreground">{request.username}</p>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">
+                Requested {formatDistanceToNow(new Date(request.created_at), { addSuffix: true })}
+              </p>
             </div>
-            
-            <div className="flex items-center gap-2">
-              <Button 
+
+            <div className="flex shrink-0 items-center gap-1.5">
+              <Button
                 size="sm"
-                onClick={() => acceptRequest(request.friendship_id)} 
+                onClick={() => acceptRequest(request.friendship_id)}
                 disabled={isPending}
-                className="gap-1.5"
+                className="h-8 gap-1.5 px-3 text-xs"
               >
-                <UserPlus className="h-4 w-4" />
+                <UserPlus className="h-3.5 w-3.5" />
                 Accept
               </Button>
-              <Button 
-                size="sm"
+              <Button
+                size="icon"
                 variant="ghost"
-                onClick={() => removeFriendship(request.friendship_id)} 
+                onClick={() => removeFriendship(request.friendship_id)}
                 disabled={isPending}
-                className="text-muted-foreground hover:text-destructive"
+                title="Decline request"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive"
               >
                 <UserX className="h-4 w-4" />
               </Button>

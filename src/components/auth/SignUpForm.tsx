@@ -95,7 +95,7 @@ export const SignUpForm = () => {
           <Input
             id="signup-email"
             type="email"
-            placeholder="you@example.com"
+            placeholder="2x-xxxxxx@students.eui.edu.eg"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required

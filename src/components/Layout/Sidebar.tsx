@@ -46,14 +46,14 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
   const [expandedLessons, setExpandedLessons] = useState<Set<string>>(new Set());
 
   const [isInboxOpen, setIsInboxOpen] = useState(false);
-  const [currentTheme, setCurrentTheme] = useState(() => document.documentElement.getAttribute('data-theme') || 'dark');
+  const [currentTheme, setCurrentTheme] = useState(() => document.documentElement.getAttribute('data-theme') || 'light');
 
   const isPro = profile?.tier === 'pro' || profile?.tier === 'admin';
   const proThemes: string[] = [];
 
   useEffect(() => {
     if (profileLoading) return;
-    const savedTheme = localStorage.getItem('app-theme') || 'dark';
+    const savedTheme = localStorage.getItem('app-theme') || 'light';
     setCurrentTheme(savedTheme);
   }, [profileLoading]);
 
@@ -635,10 +635,10 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="start" className="w-48 ml-2">
                             <DropdownMenuItem onClick={() => handleThemeChange('dark')} className="flex justify-between w-full">
-                              <span>Dark (Default)</span> {currentTheme === 'dark' && <span>✓</span>}
+                              <span>Dark</span> {currentTheme === 'dark' && <span>✓</span>}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleThemeChange('light')} className="flex justify-between w-full">
-                              <span>Light</span> {currentTheme === 'light' && <span>✓</span>}
+                              <span>Light (Default)</span> {currentTheme === 'light' && <span>✓</span>}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleThemeChange('neon')} className="flex justify-between w-full">
                               <div className="flex items-center gap-2">
@@ -746,10 +746,10 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                           </DropdownMenuTrigger>
                           <DropdownMenuContent side="right" align="end" className="w-48 ml-2">
                             <DropdownMenuItem onClick={() => handleThemeChange('dark')} className="flex justify-between w-full">
-                              <span>Dark (Default)</span> {currentTheme === 'dark' && <span>✓</span>}
+                              <span>Dark</span> {currentTheme === 'dark' && <span>✓</span>}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleThemeChange('light')} className="flex justify-between w-full">
-                              <span>Light</span> {currentTheme === 'light' && <span>✓</span>}
+                              <span>Light (Default)</span> {currentTheme === 'light' && <span>✓</span>}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleThemeChange('neon')} className="flex justify-between w-full">
                               <div className="flex items-center gap-2">
