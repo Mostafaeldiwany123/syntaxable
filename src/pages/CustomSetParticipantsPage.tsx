@@ -192,64 +192,62 @@ const CustomSetParticipantsPage = () => {
 
       {participants && participants.length > 0 ? (
         filteredAndSortedParticipants.length > 0 ? (
-          <div className="space-y-4">
-            {filteredAndSortedParticipants.map((participant, index) => {
-              const progressPercent = participant.total_count > 0
-                ? Math.round((participant.completed_count / participant.total_count) * 100)
-                : 0;
+          <div className="border border-border rounded-xl bg-card overflow-hidden">
+            <div className="divide-y divide-border/50">
+              {filteredAndSortedParticipants.map((participant, index) => {
+                const progressPercent = participant.total_count > 0
+                  ? Math.round((participant.completed_count / participant.total_count) * 100)
+                  : 0;
 
-              return (
-                <Card key={participant.user_id} className="border-border/50 hover:border-primary/30 transition-colors">
-                  <CardContent className="p-5">
-                    <div className="flex items-center gap-4">
-                      {/* Rank */}
-                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-sm font-bold text-muted-foreground">
-                        {index + 1}
+                return (
+                  <div key={participant.user_id} className="flex items-center gap-4 p-4 hover:bg-secondary/20 transition-colors">
+                    {/* Rank */}
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-sm font-bold text-muted-foreground shrink-0">
+                      {index + 1}
+                    </div>
+
+                    {/* Avatar */}
+                    <Avatar className="h-10 w-10 shrink-0">
+                      <AvatarImage src={participant.avatar_url} />
+                      <AvatarFallback seed={participant.username}>
+                        {participant.username?.charAt(0).toUpperCase() || '?'}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    {/* User Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium truncate">{participant.username}</span>
+                        {participant.completed_count === participant.total_count && participant.total_count > 0 && (
+                          <Badge variant="outline" className="text-green-500 border-green-500/30 bg-green-500/10 text-[10px] px-2 py-0">
+                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                            Complete
+                          </Badge>
+                        )}
                       </div>
-
-                      {/* Avatar */}
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={participant.avatar_url} />
-                        <AvatarFallback seed={participant.username}>
-                          {participant.username?.charAt(0).toUpperCase() || '?'}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      {/* User Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium truncate">{participant.username}</span>
-                          {participant.completed_count === participant.total_count && participant.total_count > 0 && (
-                            <Badge variant="outline" className="text-green-500 border-green-500/30 bg-green-500/10 text-[10px] px-2">
-                              <CheckCircle2 className="h-3 w-3 mr-1" />
-                              Complete
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-3 mt-1">
-                          <span className="text-sm text-muted-foreground">
-                            {participant.completed_count} / {participant.total_count} problems
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Progress */}
-                      <div className="flex items-center gap-3 w-40">
-                        <Progress value={progressPercent} className="h-2 flex-1" />
-                        <span className="text-sm font-medium text-muted-foreground w-12 text-right">
-                          {progressPercent}%
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground">
+                          {participant.completed_count} / {participant.total_count} problems
                         </span>
                       </div>
-
-                      {/* Trophy for top performers */}
-                      {index === 0 && participant.completed_count > 0 && (
-                        <Trophy className="h-5 w-5 text-yellow-500" />
-                      )}
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+
+                    {/* Progress */}
+                    <div className="flex items-center gap-3 w-32 shrink-0">
+                      <Progress value={progressPercent} className="h-2 flex-1" />
+                      <span className="text-sm font-medium text-muted-foreground w-10 text-right">
+                        {progressPercent}%
+                      </span>
+                    </div>
+
+                    {/* Trophy for top performer */}
+                    {index === 0 && participant.completed_count > 0 && (
+                      <Trophy className="h-5 w-5 text-yellow-500 shrink-0" />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         ) : (
           <Card className="border-dashed">

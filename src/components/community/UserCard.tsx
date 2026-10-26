@@ -1,9 +1,9 @@
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CommunityUser, useFriendshipActions } from "@/hooks/friends";
-import { UserPlus, Check, Clock, Users, Crown } from "lucide-react";
+import { UserPlus, Check, Clock, Users, Crown, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface UserCardProps {
@@ -21,64 +21,97 @@ export const UserCard = ({ user }: UserCardProps) => {
       case 'is_self':
         return null;
       case 'friends':
-        return <Button variant="secondary" className="w-full" disabled><Check className="mr-2 h-4 w-4" /> Friends</Button>;
+        return (
+          <Badge variant="secondary" className="text-xs px-2 py-0.5">
+            <Check className="h-3 w-3 mr-1" /> Friends
+          </Badge>
+        );
       case 'pending_sent':
-        return <Button variant="secondary" className="w-full" disabled><Clock className="mr-2 h-4 w-4" /> Pending</Button>;
+        return (
+          <Badge variant="outline" className="text-xs px-2 py-0.5">
+            <Clock className="h-3 w-3 mr-1" /> Pending
+          </Badge>
+        );
       case 'pending_received':
-        return <Button variant="secondary" className="w-full" onClick={() => alert("Please respond from your inbox.")}>Respond</Button>;
+        return (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => alert("Please respond from your inbox.")}
+            className="h-7 text-xs"
+          >
+            Respond
+          </Button>
+        );
       case 'not_friends':
-        return <Button className="w-full" onClick={() => sendRequest(user.id)} disabled={isPending}><UserPlus className="mr-2 h-4 w-4" /> Add</Button>;
+        return (
+          <Button
+            size="sm"
+            onClick={() => sendRequest(user.id)}
+            disabled={isPending}
+            className="h-7 text-xs"
+          >
+            <UserPlus className="h-3 w-3 mr-1" /> Add
+          </Button>
+        );
       default:
         return null;
     }
   };
 
   return (
-    <Card className={`flex flex-col text-left p-0 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${isPro
-        ? 'bg-pro-bg border-yellow-600/40 shadow-yellow-900/10'
-        : 'bg-secondary/30 border-border/50 shadow-sm'
-      }`}>
-      <div className={`h-20 relative ${isPro ? 'bg-gradient-to-r from-pro-dark via-pro to-pro-dark' : 'bg-secondary'}`} />
-      <CardContent className="p-4 flex flex-col items-start relative flex-grow">
+    <Card className={`flex items-center gap-3 p-3 hover:shadow-md transition-all duration-200 ${
+      isPro
+        ? 'bg-pro-bg border-yellow-600/40'
+        : 'bg-card border-border/50'
+    }`}>
+      <Avatar className={`h-12 w-12 shrink-0 border-2 ${isPro ? 'border-pro' : 'border-border'}`}>
+        <AvatarImage src={user.avatar_url} alt={user.username} />
+        <AvatarFallback seed={user.username} className="text-base">
+          {getInitials()}
+        </AvatarFallback>
+      </Avatar>
 
-        <Avatar className={`h-20 w-20 -mt-14 mb-2 border-4 ${isPro ? 'border-pro' : 'border-card'}`}>
-          <AvatarImage src={user.avatar_url} alt={user.username} />
-          <AvatarFallback seed={user.username} className="text-3xl">{getInitials()}</AvatarFallback>
-        </Avatar>
-        <div className="flex items-center gap-2">
-          <h3 className={`font-bold text-lg ${isPro ? 'text-pro-light' : ''}`}>{user.username}</h3>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <Link
+            to={`/profile/${user.id}`}
+            className={`font-semibold text-sm truncate hover:underline ${isPro ? 'text-pro-light' : 'text-foreground'}`}
+          >
+            {user.username}
+          </Link>
           {isPro && (
-            <Badge className="bg-pro hover:bg-pro-dark text-pro-bg border-none font-extrabold px-2 py-0.5 shadow-sm">
-              <Crown className="h-3 w-3 mr-1 fill-current" />
-              PRO
+            <Badge className="bg-pro hover:bg-pro-dark text-pro-bg border-none font-bold px-1.5 py-0 text-[10px]">
+              <Crown className="h-2.5 w-2.5 fill-current" />
             </Badge>
           )}
         </div>
-        {user.status && (
-          <Badge variant="outline" className={`mt-1 ${isPro ? 'border-yellow-600/30 text-yellow-600/80' : ''}`}>
-            {user.status}
-          </Badge>
-        )}
-        <p className={`text-sm mt-3 h-10 overflow-hidden flex-grow ${isPro ? 'text-pro/70' : 'text-muted-foreground'}`}>
-          {user.description || "No description provided."}
-        </p>
 
-        <div className={`flex items-center justify-start gap-1.5 text-sm mt-3 ${isPro ? 'text-yellow-600/60' : 'text-muted-foreground'}`}>
-          <Users className="h-4 w-4" />
-          <span className="font-medium">{user.friend_count} Friends</span>
+        {user.status && (
+          <p className={`text-xs truncate mb-1 ${isPro ? 'text-pro/70' : 'text-muted-foreground'}`}>
+            {user.status}
+          </p>
+        )}
+
+        <div className={`flex items-center gap-1 text-xs ${isPro ? 'text-yellow-600/60' : 'text-muted-foreground'}`}>
+          <Users className="h-3 w-3" />
+          <span>{user.friend_count} friends</span>
         </div>
-      </CardContent>
-      <CardFooter className={`p-4 mt-2 flex flex-col sm:flex-row gap-2 w-full border-t ${isPro
-          ? 'bg-pro-grad1 border-yellow-600/20'
-          : 'bg-secondary/50 border-border/50'
-        }`}>
-        <Button variant="outline" className={`w-full ${isPro ? 'border-yellow-600/30 hover:bg-yellow-600/10 text-yellow-600/80' : ''}`} asChild>
-          <Link to={`/profile/${user.id}`}>View Profile</Link>
+      </div>
+
+      <div className="flex flex-col gap-2 shrink-0">
+        {renderFriendshipButton()}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 text-xs"
+          asChild
+        >
+          <Link to={`/profile/${user.id}`}>
+            <Eye className="h-3 w-3 mr-1" /> View
+          </Link>
         </Button>
-        <div className="w-full">
-          {renderFriendshipButton()}
-        </div>
-      </CardFooter>
+      </div>
     </Card>
   );
 };

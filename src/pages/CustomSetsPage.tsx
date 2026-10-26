@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, BookOpen, CheckCircle2, Circle, Trash2, Users, ArrowLeft, Clock, UserCircle } from "lucide-react";
+import { Loader2, Plus, BookOpen, CheckCircle2, Circle, Trash2, Users, ArrowLeft, UserCircle } from "lucide-react";
 import { useCustomSets, useDeleteCustomSet, useRecentPracticeRooms } from "@/hooks/customSets";
 import { getFileIconUrl } from "@/lib/project-utils";
 import { formatDistanceToNow } from "date-fns";
@@ -75,88 +75,67 @@ const CustomSetsPage = () => {
         </div>
 
       {(ownedSets.length > 0 || joinedSets.length > 0) ? (
-        <div className="space-y-12">
+        <div className="space-y-8">
           {/* Created Sets Section */}
           {ownedSets.length > 0 && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-primary" />
-                Created Sets
-              </h2>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="border border-border rounded-xl bg-card overflow-hidden">
+              <div className="p-5 border-b border-border bg-secondary/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                    <h2 className="text-lg font-semibold">My Sets</h2>
+                    <Badge variant="secondary" className="font-normal text-xs">
+                      {ownedSets.length}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="divide-y divide-border/50">
                 {ownedSets.map((set) => (
-                  <Card
+                  <div
                     key={set.id}
-                    className="group relative hover:border-primary/40 transition-all cursor-pointer bg-card border-border/50"
+                    className="flex items-center gap-4 p-4 hover:bg-secondary/20 transition-colors cursor-pointer group"
                     onClick={() => navigate(`/practice/custom/${set.id}`)}
                   >
-                    <CardContent className="p-6">
-                      {/* Top Section: Title & Meta */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="p-2 bg-secondary/50 border border-border rounded-lg shrink-0">
-                            <img
-                              src={getFileIconUrl(`file.${set.language === 'csharp' ? 'cs' : set.language === 'cpp' ? 'cpp' : set.language === 'java' ? 'java' : set.language === 'javascript' ? 'js' : set.language === 'typescript' ? 'ts' : 'py'}`)}
-                              alt=""
-                              className="w-5 h-5"
-                            />
-                          </div>
-                          <div className="min-w-0">
-                            <h3 className="font-medium text-lg leading-tight truncate group-hover:text-primary transition-colors">
-                              {set.title}
-                            </h3>
-                            <div className="flex items-center gap-2 mt-1 text-muted-foreground">
-                              <Clock className="h-3 w-3" />
-                              <span className="text-[11px] uppercase tracking-wider">
-                                {formatDistanceToNow(new Date(set.created_at), { addSuffix: true })}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <Badge variant="secondary" className="shrink-0 font-normal py-0 px-2 h-6">
-                          {languageLabels[set.language]}
-                        </Badge>
-                      </div>
-
-                      {/* Middle: Description */}
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-6 min-h-[40px] leading-relaxed">
-                        {set.description || 'No description provided for this problem set.'}
+                    <div className="p-2 bg-secondary/50 border border-border rounded-lg shrink-0">
+                      <img
+                        src={getFileIconUrl(`file.${set.language === 'csharp' ? 'cs' : set.language === 'cpp' ? 'cpp' : set.language === 'java' ? 'java' : set.language === 'javascript' ? 'js' : set.language === 'typescript' ? 'ts' : set.language === 'python' ? 'py' : 'py'}`)}
+                        alt=""
+                        className="w-5 h-5"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-base truncate group-hover:text-primary transition-colors">
+                        {set.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        {set.problem_count} {set.problem_count === 1 ? 'problem' : 'problems'} · {languageLabels[set.language]}
                       </p>
-
-                      {/* Bottom Section: Meta Data & Progress */}
-                      <div className="flex items-end justify-between border-t border-border/40 pt-4 mt-auto">
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <BookOpen className="h-3.5 w-3.5" />
-                            <span>{set.problem_count} {set.problem_count === 1 ? 'Problem' : 'Problems'}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/practice/custom/${set.id}/participants`);
-                            }}
-                            className="p-1.5 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-                            title="View Participants"
-                          >
-                            <UserCircle className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSetToDelete(set.id);
-                              setDeleteDialogOpen(true);
-                            }}
-                            className="p-1.5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors ml-1"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/practice/custom/${set.id}/participants`);
+                        }}
+                        className="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                        title="View Participants"
+                      >
+                        <Users className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSetToDelete(set.id);
+                          setDeleteDialogOpen(true);
+                        }}
+                        className="p-2 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                        title="Delete Set"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
@@ -164,81 +143,51 @@ const CustomSetsPage = () => {
 
           {/* Joined Sets Section */}
           {joinedSets.length > 0 && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <Users className="h-5 w-5 text-blue-500" />
-                Joined Sets
-              </h2>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="border border-border rounded-xl bg-card overflow-hidden">
+              <div className="p-5 border-b border-border bg-secondary/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Users className="h-5 w-5 text-blue-500" />
+                    <h2 className="text-lg font-semibold">Joined Sets</h2>
+                    <Badge variant="secondary" className="font-normal text-xs">
+                      {joinedSets.length}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="divide-y divide-border/50">
                 {joinedSets.map((set) => (
-                  <Card
+                  <div
                     key={set.id}
-                    className="group relative hover:border-blue-500/40 transition-all cursor-pointer bg-card border-border/50"
+                    className="flex items-center gap-4 p-4 hover:bg-secondary/20 transition-colors cursor-pointer group"
                     onClick={() => navigate(`/practice/custom/${set.id}`)}
                   >
-                    <CardContent className="p-6">
-                      {/* Top Section: Title & Meta */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="p-2 bg-secondary/50 border border-border rounded-lg shrink-0">
-                            <img
-                              src={getFileIconUrl(`file.${set.language === 'csharp' ? 'cs' : set.language === 'cpp' ? 'cpp' : set.language === 'java' ? 'java' : set.language === 'javascript' ? 'js' : set.language === 'typescript' ? 'ts' : 'py'}`)}
-                              alt=""
-                              className="w-5 h-5"
-                            />
-                          </div>
-                          <div className="min-w-0">
-                            <h3 className="font-medium text-lg leading-tight truncate group-hover:text-blue-400 transition-colors">
-                              {set.title}
-                            </h3>
-                            <div className="flex items-center gap-2 mt-1 text-muted-foreground">
-                              <Clock className="h-3 w-3" />
-                              <span className="text-[11px] uppercase tracking-wider">
-                                {formatDistanceToNow(new Date(set.created_at), { addSuffix: true })}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <Badge variant="secondary" className="shrink-0 font-normal py-0 px-2 h-6">
-                          {languageLabels[set.language]}
-                        </Badge>
-                      </div>
-
-                      {/* Middle: Description */}
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-6 min-h-[40px] leading-relaxed">
-                        {set.description || 'No description provided for this problem set.'}
+                    <div className="p-2 bg-secondary/50 border border-border rounded-lg shrink-0">
+                      <img
+                        src={getFileIconUrl(`file.${set.language === 'csharp' ? 'cs' : set.language === 'cpp' ? 'cpp' : set.language === 'java' ? 'java' : set.language === 'javascript' ? 'js' : set.language === 'typescript' ? 'ts' : set.language === 'python' ? 'py' : 'py'}`)}
+                        alt=""
+                        className="w-5 h-5"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-base truncate group-hover:text-blue-400 transition-colors">
+                        {set.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        {set.problem_count} {set.problem_count === 1 ? 'problem' : 'problems'} · {set.owner_username ? `By ${set.owner_username}` : 'Shared with you'}
                       </p>
-
-                      {/* Bottom Section: Meta Data & Progress */}
-                      <div className="flex items-end justify-between border-t border-border/40 pt-4 mt-auto">
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <BookOpen className="h-3.5 w-3.5" />
-                            <span>{set.problem_count} {set.problem_count === 1 ? 'Problem' : 'Problems'}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-xs text-blue-400">
-                            <Users className="h-3.5 w-3.5" />
-                            <span>{set.owner_username ? `By ${set.owner_username}` : 'Shared with you'}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <div className="flex flex-col items-end gap-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm text-foreground/80">
-                                {set.completed_count}/{set.problem_count}
-                              </span>
-                              {set.completed_count === set.problem_count && set.problem_count > 0 ? (
-                                <CheckCircle2 className="h-4 w-4 text-green-500" />
-                              ) : (
-                                <Circle className="h-4 w-4 text-muted-foreground/20" />
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="font-medium text-foreground">
+                        {set.completed_count}/{set.problem_count}
+                      </span>
+                      {set.completed_count === set.problem_count && set.problem_count > 0 ? (
+                        <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <Circle className="h-4 w-4 text-muted-foreground/30" />
+                      )}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>

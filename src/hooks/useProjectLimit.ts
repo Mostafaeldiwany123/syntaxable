@@ -14,7 +14,9 @@ export function useProjectLimit() {
   const { data: projects } = useProjects();
 
   const tier = profile?.tier || 'free';
-  const projectCount = projects?.length || 0;
+  // Only count projects owned by the user toward the limit
+  const ownedProjects = projects?.filter(p => p.owner_id === user?.id) || [];
+  const projectCount = ownedProjects.length;
   const limit = tier === 'admin' ? Infinity : PROJECT_LIMITS[tier as keyof typeof PROJECT_LIMITS] || PROJECT_LIMITS.free;
   const canCreate = projectCount < limit;
   const remaining = Math.max(0, limit - projectCount);

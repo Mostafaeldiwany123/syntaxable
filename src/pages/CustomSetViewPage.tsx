@@ -283,119 +283,152 @@ const CustomSetViewPage = () => {
                <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : (
-            <div className="space-y-8">
-              {/* Top Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-6 rounded-xl border border-border bg-card flex flex-col justify-center items-center text-center">
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <BookOpen className="h-6 w-6 text-primary" />
+            <div className="border border-border rounded-xl bg-card overflow-hidden">
+              {/* Header */}
+              <div className="p-6 border-b border-border bg-secondary/20">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4 min-w-0 flex-1">
+                    <div className="p-3 bg-primary/10 rounded-xl shrink-0">
+                      <img
+                        src={getFileIconUrl(`file.${customSet.language === 'csharp' ? 'cs' : customSet.language === 'cpp' ? 'cpp' : customSet.language === 'java' ? 'java' : customSet.language === 'javascript' ? 'js' : customSet.language === 'typescript' ? 'ts' : 'py'}`)}
+                        alt=""
+                        className="w-8 h-8"
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h1 className="text-2xl font-bold truncate">{customSet.title}</h1>
+                      <p className="text-sm text-muted-foreground mt-1 truncate">
+                        {customSet.description || 'No description provided'}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground font-medium">Total Problems</p>
-                  <p className="text-3xl font-bold">{convertedProblems.length}</p>
-                </div>
-                <div 
-                  className="p-6 rounded-xl border border-border bg-card flex flex-col justify-center items-center text-center cursor-pointer hover:border-primary/50 transition-colors"
-                  onClick={() => navigate(`/practice/custom/${setId}/participants`)}
-                >
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <Users className="h-6 w-6 text-primary" />
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate(`/practice/custom/${setId}/participants`)}
+                      className="rounded-full"
+                    >
+                      <Users className="h-4 w-4 mr-2" />
+                      {participants?.length || 0}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate(`/practice/custom/${setId}/share`)}
+                      className="rounded-full"
+                    >
+                      <Share2 className="h-4 w-4 mr-2" />
+                      Share
+                    </Button>
                   </div>
-                  <p className="text-sm text-muted-foreground font-medium">Participants</p>
-                  <p className="text-3xl font-bold">{participants?.length || 0}</p>
-                </div>
-                <div 
-                  className="p-6 rounded-xl border border-border bg-card flex flex-col justify-center items-center text-center cursor-pointer hover:border-primary/50 transition-colors"
-                  onClick={() => navigate(`/practice/custom/${setId}/share`)}
-                >
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <Share2 className="h-6 w-6 text-primary" />
-                  </div>
-                  <p className="text-sm text-muted-foreground font-medium">Share Code</p>
-                  <p className="text-3xl font-mono text-primary font-bold tracking-wider">{setId?.slice(-8).toUpperCase()}</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left: Participants Leaderboard */}
-                <div className="lg:col-span-2 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-foreground">Top Participants</h2>
+              {/* Stats */}
+              <div className="grid grid-cols-3 border-b border-border">
+                <div className="p-5 text-center border-r border-border">
+                  <p className="text-2xl font-bold">{convertedProblems.length}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Problems</p>
+                </div>
+                <div
+                  className="p-5 text-center border-r border-border cursor-pointer hover:bg-secondary/20 transition-colors"
+                  onClick={() => navigate(`/practice/custom/${setId}/participants`)}
+                >
+                  <p className="text-2xl font-bold">{participants?.length || 0}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Participants</p>
+                </div>
+                <div
+                  className="p-5 text-center cursor-pointer hover:bg-secondary/20 transition-colors"
+                  onClick={() => navigate(`/practice/custom/${setId}/share`)}
+                >
+                  <p className="text-xl font-mono text-primary font-bold">{setId?.slice(-6).toUpperCase()}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Share Code</p>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="grid grid-cols-1 lg:grid-cols-3">
+                {/* Problems */}
+                <div className="lg:col-span-2 border-r border-border">
+                  <div className="p-5 border-b border-border bg-secondary/10">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-lg font-semibold">Problems</h2>
+                      <Badge variant="secondary" className="font-normal">
+                        {languageLabels[customSet.language]}
+                      </Badge>
+                    </div>
                   </div>
-                  <div className="border border-border rounded-xl bg-card overflow-hidden">
-                    {participants && participants.length > 0 ? (
-                      <div className="divide-y divide-border/50">
-                        {participants.slice(0, 10).map((p, i) => (
-                          <div key={p.user_id} className="flex items-center justify-between p-4 px-6">
-                            <div className="flex items-center gap-4">
-                              <span className="text-sm font-bold text-muted-foreground w-4">{i + 1}</span>
-                              <Avatar className="h-10 w-10">
-                                <AvatarImage src={p.avatar_url || ''} />
-                                <AvatarFallback seed={p.username} className="text-sm">{p.username.charAt(0).toUpperCase()}</AvatarFallback>
-                              </Avatar>
-                              <span className="text-base font-medium">{p.username}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-lg font-bold text-primary">{p.completed_count}</span>
-                              <span className="text-sm text-muted-foreground">/{convertedProblems.length}</span>
+                  <div className="divide-y divide-border/50">
+                    {convertedProblems.length > 0 ? (
+                      convertedProblems.map((problem, index) => (
+                        <div
+                          key={problem.id}
+                          className="flex items-center justify-between p-4 hover:bg-secondary/20 transition-colors cursor-pointer group"
+                          onClick={() => setSelectedProblemIndex(index)}
+                        >
+                          <div className="flex items-center gap-4 flex-1 min-w-0">
+                            <span className="text-xs font-bold text-muted-foreground w-6">#{index + 1}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm text-foreground group-hover:text-primary transition-colors truncate">
+                                {problem.title}
+                              </p>
                             </div>
                           </div>
-                        ))}
-                      </div>
+                          <div className="flex items-center gap-3 shrink-0">
+                            <span
+                              className={cn(
+                                "text-[10px] uppercase tracking-wide font-semibold px-2 py-1 rounded",
+                                problem.difficulty === 'easy'
+                                  ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400'
+                                  : problem.difficulty === 'medium'
+                                    ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400'
+                                    : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400'
+                              )}
+                            >
+                              {problem.difficulty}
+                            </span>
+                            <Button variant="ghost" size="sm" className="h-7 px-3 text-xs">
+                              Solve
+                            </Button>
+                          </div>
+                        </div>
+                      ))
                     ) : (
-                      <div className="p-8 text-center text-sm text-muted-foreground flex flex-col items-center">
-                        <Users className="h-8 w-8 mb-3 opacity-20" />
-                        No participants yet.
+                      <div className="p-8 text-center text-sm text-muted-foreground">
+                        No problems added to this set yet.
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Right: Problems List */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-foreground">Problems</h2>
-                    <Badge variant="secondary" className="font-normal px-2 py-0 shrink-0">
-                      {languageLabels[customSet.language]}
-                    </Badge>
+                {/* Participants */}
+                <div>
+                  <div className="p-5 border-b border-border bg-secondary/10">
+                    <h2 className="text-lg font-semibold">Top Participants</h2>
                   </div>
-                  <div className="border border-border rounded-xl bg-card overflow-hidden">
-                    {convertedProblems.length > 0 ? (
-                      <div className="divide-y divide-border/50">
-                        {convertedProblems.map((problem, index) => (
-                          <div
-                            key={problem.id}
-                            className={cn(
-                              "flex items-center justify-between p-3 hover:bg-secondary/20 transition-colors cursor-pointer",
-                            )}
-                            onClick={() => setSelectedProblemIndex(index)}
-                          >
-                            <div className="flex items-center gap-3">
-                              <span className="text-muted-foreground font-bold text-xs w-4">#{index + 1}</span>
-                              <div className="overflow-hidden">
-                                <p className="font-medium text-sm text-foreground mb-1 truncate">{problem.title}</p>
-                                <div className="flex items-center gap-2">
-                                  <span
-                                    className={cn(
-                                      "text-[10px] uppercase tracking-wide font-semibold px-1.5 py-0.5 rounded",
-                                      problem.difficulty === 'easy'
-                                        ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400'
-                                        : problem.difficulty === 'medium'
-                                          ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400'
-                                          : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400'
-                                    )}
-                                  >
-                                    {problem.difficulty}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">Solve</Button>
+                  <div className="divide-y divide-border/50">
+                    {participants && participants.length > 0 ? (
+                      participants.slice(0, 10).map((p, i) => (
+                        <div key={p.user_id} className="flex items-center justify-between p-3 px-4">
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs font-bold text-muted-foreground w-4">{i + 1}</span>
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={p.avatar_url || ''} />
+                              <AvatarFallback seed={p.username} className="text-xs">{p.username.charAt(0).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <span className="text-sm font-medium">{p.username}</span>
                           </div>
-                        ))}
-                      </div>
+                          <div className="flex items-center gap-1">
+                            <span className="text-sm font-bold text-primary">{p.completed_count}</span>
+                            <span className="text-xs text-muted-foreground">/{convertedProblems.length}</span>
+                          </div>
+                        </div>
+                      ))
                     ) : (
-                      <div className="p-8 text-center text-sm text-muted-foreground">
-                        No problems added to this set yet.
+                      <div className="p-6 text-center text-sm text-muted-foreground flex flex-col items-center">
+                        <Users className="h-6 w-6 mb-2 opacity-20" />
+                        No participants yet
                       </div>
                     )}
                   </div>

@@ -280,6 +280,7 @@ export const ProblemSolvingView: React.FC<ProblemSolvingViewProps> = ({
                   onTabClick={() => { }}
                   onTabClose={() => { }}
                   isReadOnly={false}
+                  language={course.language}
                   onAIAgentClick={handleAIAgentToggle}
                 />
               </div>

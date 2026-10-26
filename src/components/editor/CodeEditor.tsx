@@ -59,6 +59,7 @@ const CodeEditor = ({
   onTabClick,
   onTabClose,
   onAIAgentClick,
+  language: explicitLanguage,
   isReadOnly = false,
 }: CodeEditorProps) => {
   const [isEditorLoading, setIsEditorLoading] = useState(true);
@@ -66,6 +67,9 @@ const CodeEditor = ({
   const monaco = useMonaco();
   const isMobile = useIsMobile();
   const editorRef = useRef<any>(null);
+
+  // Use explicit language if provided, otherwise derive from filename
+  const language = explicitLanguage || (activeFile ? getLanguage(activeFile) : 'plaintext');
 
   useEffect(() => {
     setIsRawMode(false);
@@ -166,7 +170,6 @@ const CodeEditor = ({
   useEffect(() => {
     if (editorRef.current && activeFile) {
       const content = fileContents[activeFile] || "";
-      const language = getLanguage(activeFile);
 
       if (editorRef.current.getValue() !== content) {
         editorRef.current.setValue(content);
@@ -179,7 +182,7 @@ const CodeEditor = ({
         }
       }
     }
-  }, [activeFile, fileContents, monaco]);
+  }, [activeFile, fileContents, monaco, language]);
 
   if (!activeFile) {
     return (
@@ -278,7 +281,7 @@ const CodeEditor = ({
         ) : (
           <Editor
             height="100%"
-            language={getLanguage(activeFile)}
+            language={language}
             value={fileContents[activeFile] || ""}
             onChange={onChange}
             beforeMount={(monaco) => {
