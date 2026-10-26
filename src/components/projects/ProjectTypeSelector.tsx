@@ -1,5 +1,10 @@
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ProjectType } from "@/hooks/projects";
 import { getFileIconUrl } from "@/lib/project-utils";
 
@@ -22,27 +27,24 @@ const projectTypes: { value: ProjectType; label: string; extension: string }[] =
 
 export const ProjectTypeSelector = ({ value, onChange }: ProjectTypeSelectorProps) => {
   return (
-    <RadioGroup
-      value={value}
-      onValueChange={(val) => onChange(val as ProjectType)}
-      className="grid grid-cols-4 gap-2"
-    >
-      {projectTypes.map((type) => (
-        <div key={type.value}>
-          <RadioGroupItem value={type.value} id={type.value} className="peer sr-only" />
-          <Label
-            htmlFor={type.value}
-            className="flex flex-col items-center justify-between border border-border bg-card p-2 transition-colors hover:bg-secondary/50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 rounded-lg cursor-pointer h-full"
-          >
-            <img
-              src={getFileIconUrl(`file${type.extension}`)}
-              alt=""
-              className="w-6 h-6 mb-1"
-            />
-            <span className="text-xs font-medium">{type.label}</span>
-          </Label>
-        </div>
-      ))}
-    </RadioGroup>
+    <Select value={value} onValueChange={(val) => onChange(val as ProjectType)}>
+      <SelectTrigger aria-label="Project type">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {projectTypes.map((type) => (
+          <SelectItem key={type.value} value={type.value}>
+            <span className="flex items-center gap-2">
+              <img
+                src={getFileIconUrl(`file${type.extension}`)}
+                alt=""
+                className="h-4 w-4"
+              />
+              {type.label}
+            </span>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };
