@@ -351,7 +351,7 @@ const CreateCustomSetPage = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={() => navigate('/practice')} className="gap-1 text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="sm" onClick={() => navigate('/practice/custom')} className="gap-1 text-muted-foreground hover:text-foreground">
                 <ChevronDown className="h-4 w-4 rotate-90" />
                 Back
               </Button>

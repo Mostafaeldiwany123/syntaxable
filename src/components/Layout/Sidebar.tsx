@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, FolderKanban, LogOut, Users, Mail, UserCheck, Dumbbell, ChevronLeft, ChevronRight, CreditCard, Paintbrush, Lock, Trophy, Award, Github, Instagram, Linkedin, GraduationCap, ArrowLeft, CheckCircle2, Circle, ChevronDown, Swords } from "lucide-react";
+import { LayoutDashboard, FolderKanban, LogOut, Users, Mail, UserCheck, Dumbbell, ChevronLeft, ChevronRight, CreditCard, Paintbrush, Lock, Trophy, Award, Github, Instagram, Linkedin, GraduationCap, ArrowLeft, CheckCircle2, Circle, ChevronDown, Swords, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -111,6 +111,7 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
   };
 
   const socialItems = [
+    { to: "/duel", icon: Swords, label: "Duels" },
     { to: "/leaderboard", icon: Trophy, label: "Leaderboard" },
     { to: "/achievements", icon: Award, label: "Achievements" },
     { to: "/community", icon: Users, label: "Community" },
@@ -464,7 +465,7 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
 
                 {/* Practice — navigates to last visited practice page */}
                 {(() => {
-                  const isPracticeActive = location.pathname.startsWith('/practice');
+                  const isPracticeActive = location.pathname.startsWith('/practice') && !location.pathname.startsWith('/practice/custom');
                   return (
                     <button
                       onClick={handlePracticeClick}
@@ -492,9 +493,9 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                   );
                 })()}
 
-                {/* Duels */}
+                {/* Custom Sets — own tab */}
                 <NavLink
-                  to="/duel"
+                  to="/practice/custom"
                   onClick={handleNavClick}
                   className={({ isActive }) =>
                     `relative flex items-center text-sm font-medium transition-colors duration-200 rounded-lg ${isCollapsed && !isMobile
@@ -505,7 +506,7 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary/35"
                     }`
                   }
-                  title={isCollapsed && !isMobile ? "Duels" : undefined}
+                  title={isCollapsed && !isMobile ? "Custom Sets" : undefined}
                 >
                   {({ isActive }) => (
                     <>
@@ -517,8 +518,8 @@ export const Sidebar = ({ onNavigate, isCollapsed: propCollapsed = false, onTogg
                         />
                       )}
                       <span className={`relative z-10 flex items-center w-full ${isCollapsed && !isMobile ? 'justify-center' : ''}`}>
-                        <Swords className={`${isCollapsed && !isMobile ? '' : 'mr-3'} h-4 w-4 shrink-0`} />
-                        {(!isCollapsed || isMobile) && <span className="whitespace-nowrap">Duels</span>}
+                        <Package className={`${isCollapsed && !isMobile ? '' : 'mr-3'} h-4 w-4 shrink-0`} />
+                        {(!isCollapsed || isMobile) && <span className="whitespace-nowrap">Custom Sets</span>}
                       </span>
                     </>
                   )}

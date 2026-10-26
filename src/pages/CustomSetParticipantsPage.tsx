@@ -77,7 +77,7 @@ const CustomSetParticipantsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex min-h-[calc(100dvh-3.5rem)] items-center justify-center md:min-h-dvh">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );

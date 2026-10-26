@@ -157,7 +157,7 @@ const CustomSetViewPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[calc(100dvh-4rem)]">
+      <div className="flex min-h-[calc(100dvh-3.5rem)] items-center justify-center md:min-h-dvh">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -171,7 +171,7 @@ const CustomSetViewPage = () => {
           This custom set may have been deleted or you don't have the necessary permissions.
         </p>
         <Button asChild variant="outline" className="rounded-full">
-          <Link to="/practice">Back to Practice</Link>
+          <Link to="/practice/custom">Back to Custom Sets</Link>
         </Button>
       </div>
     );
@@ -224,7 +224,7 @@ const CustomSetViewPage = () => {
       <div className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
         <div className="flex items-center gap-3 min-w-0">
           <Button variant="ghost" size="sm" asChild className="gap-1">
-            <Link to="/practice">
+            <Link to="/practice/custom">
               <ArrowLeft className="h-4 w-4" />
               Back
             </Link>

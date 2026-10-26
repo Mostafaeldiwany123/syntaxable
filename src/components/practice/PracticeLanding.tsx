@@ -1,13 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Course } from '@/data/practiceProblems';
 import { TrackId, TRACK_LIST, getLanguagesForTrack, getTrackCourse } from '@/data/practice/tracks';
-import { useCustomSets, usePublicCustomSets, useRecentPracticeRooms } from '@/hooks/customSets';
-import { useAuth } from '@/hooks/useAuth';
-import { useProfile } from '@/hooks/profiles';
-import { Plus, BookOpen, Users, Search, X, ChevronDown, ArrowLeft, ArrowRight, Lock, Clock } from 'lucide-react';
-import { toast } from 'sonner';
-import { Input } from '@/components/ui/input';
+import { usePracticeProgress } from '@/hooks/practice';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, Variants } from 'framer-motion';
 
@@ -46,24 +41,6 @@ const allLanguages = [
   { id: 'typescript', label: 'TypeScript', icon: `${CDN_BASE}/typescript.svg` },
 ];
 
-const languageFilterOptions = [
-  { value: '', label: 'All Languages' },
-  { value: 'cpp', label: 'C++' },
-  { value: 'c', label: 'C' },
-  { value: 'csharp', label: 'C#' },
-  { value: 'python', label: 'Python' },
-  { value: 'java', label: 'Java' },
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'typescript', label: 'TypeScript' },
-];
-
-const sortOptions = [
-  { value: 'newest', label: 'Newest First' },
-  { value: 'oldest', label: 'Oldest First' },
-  { value: 'problems_desc', label: 'Most Problems' },
-  { value: 'problems_asc', label: 'Fewest Problems' },
-];
-
 interface PracticeLandingProps {
   courses: Course[];
   onSelectCourse: (course: Course, trackId?: TrackId) => void;
@@ -77,18 +54,17 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
   selectedTrack: propSelectedTrack,
   onSelectTrack: propOnSelectTrack,
 }) => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const { data: profile } = useProfile(user?.id);
-  const { data: customSets } = useCustomSets();
-  const { data: publicSets } = usePublicCustomSets();
-  const { data: recentRooms } = useRecentPracticeRooms(5);
-
   const [localTrack, setLocalTrack] = useState<TrackId | null>(() => {
     return propSelectedTrack || null;
   });
 
   const activeTrackId = propSelectedTrack !== undefined ? propSelectedTrack : localTrack;
+
+  const { data: progress } = usePracticeProgress();
+
+  const solvedIds = useMemo(() => {
+    return new Set((progress || []).map(p => p.problem_id));
+  }, [progress]);
 
   const handleSelectTrack = (trackId: TrackId | null) => {
     if (trackId) {
@@ -110,51 +86,52 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
     return TRACK_LIST.find(t => t.id === activeTrackId) || null;
   }, [activeTrackId]);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('newest');
+  const trackCards = useMemo(() => {
+    return TRACK_LIST.map(track => {
+      const languages = getLanguagesForTrack(track.id);
+      const seenProblemIds = new Set<string>();
+      let lessonCount = 0;
 
-  const isPro = profile?.tier === 'pro' || profile?.tier === 'admin';
+      languages.forEach(lang => {
+        const course = getTrackCourse(track.id, lang);
+        course?.lessons.forEach(lesson => {
+          lessonCount += 1;
+          lesson.problems.forEach(problem => seenProblemIds.add(problem.id));
+        });
+      });
 
-  const handleCreateSet = () => {
-    navigate('/practice/custom/create');
-  };
+      let solved = 0;
+      seenProblemIds.forEach(id => {
+        if (solvedIds.has(id)) solved += 1;
+      });
 
-  const handleViewMySets = () => {
-    navigate('/practice/custom');
-  };
+      return {
+        track,
+        languages,
+        lessonCount,
+        total: seenProblemIds.size,
+        solved,
+      };
+    });
+  }, [solvedIds]);
 
-  const filteredAndSortedPublicSets = useMemo(() => {
-    if (!publicSets) return [];
-
-    let filtered = publicSets.filter(set => {
-      const matchesSearch = searchQuery === '' ||
-        set.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (set.description?.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (set.owner_username?.toLowerCase().includes(searchQuery.toLowerCase()));
-
-      const matchesLanguage = !selectedLanguage || set.language === selectedLanguage;
-
-      return matchesSearch && matchesLanguage;
+  const overallProgress = useMemo(() => {
+    const allProblemIds = new Set<string>();
+    trackCards.forEach(card => {
+      getLanguagesForTrack(card.track.id).forEach(lang => {
+        getTrackCourse(card.track.id, lang)?.lessons.forEach(lesson => {
+          lesson.problems.forEach(problem => allProblemIds.add(problem.id));
+        });
+      });
     });
 
-    filtered = [...filtered].sort((a, b) => {
-      switch (sortBy) {
-        case 'newest':
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        case 'oldest':
-          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        case 'problems_desc':
-          return b.problem_count - a.problem_count;
-        case 'problems_asc':
-          return a.problem_count - b.problem_count;
-        default:
-          return 0;
-      }
+    let solved = 0;
+    allProblemIds.forEach(id => {
+      if (solvedIds.has(id)) solved += 1;
     });
 
-    return filtered;
-  }, [publicSets, searchQuery, selectedLanguage, sortBy]);
+    return { solved, total: allProblemIds.size };
+  }, [trackCards, solvedIds]);
 
   // Languages available for the selected track
   const availableTrackLanguages = useMemo(() => {
@@ -169,18 +146,19 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
         ? getTrackCourse(activeTrackId, lang.id)
         : courses.find(c => c.language === lang.id);
 
-      const problemCount = trackCourse?.lessons.reduce((sum, l) => sum + l.problems.length, 0) || 0;
+      const problems = trackCourse?.lessons.flatMap(lesson => lesson.problems) || [];
+      const solved = problems.filter(problem => solvedIds.has(problem.id)).length;
+
       return {
         ...lang,
         course: trackCourse,
-        problemCount,
+        lessonCount: trackCourse?.lessons.length || 0,
+        problemCount: problems.length,
+        solved,
         isAvailable: !!trackCourse && trackCourse.lessons.length > 0,
       };
     });
-  }, [courses, availableTrackLanguages, activeTrackId]);
-
-  const hasCustomSets = customSets && customSets.length > 0;
-  const hasPublicSets = publicSets && publicSets.length > 0;
+  }, [courses, availableTrackLanguages, activeTrackId, solvedIds]);
 
   return (
     <motion.div
@@ -200,7 +178,7 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
               <p className="text-muted-foreground mt-1 text-sm sm:text-base">
                 {activeTrack
                   ? 'Choose a programming language to start practicing.'
-                  : 'Choose a learning track to start practicing, or explore custom problem sets.'}
+                  : 'Choose a learning track to start practicing.'}
               </p>
             </motion.div>
             {activeTrack && (
@@ -221,321 +199,180 @@ export const PracticeLanding: React.FC<PracticeLandingProps> = ({
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
-          {/* LEVEL 1: Track Selection View (when no track is selected) */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-10">
           {!activeTrackId ? (
-            <div className="space-y-12">
-              {/* Category 1: Learning Tracks */}
-              <div>
-                <motion.div variants={itemVariants} className="mb-4">
-                  <h2 className="text-lg font-semibold text-foreground">
-                    Learning Tracks
+            <>
+              {/* Learning path intro */}
+              <motion.div
+                variants={itemVariants}
+                className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+              >
+                <div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-foreground tracking-tight">
+                    Learning path
                   </h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Structured paths from programming basics to advanced data structures.
+                  <p className="mt-0.5 max-w-xl text-sm text-muted-foreground">
+                    Three stages, in order. Pick a stage to choose your language — your progress follows you across all of them.
                   </p>
-                </motion.div>
+                </div>
 
-                <motion.div
-                  variants={containerVariants}
-                  className="grid grid-cols-1 md:grid-cols-3 gap-5"
-                >
-                  {TRACK_LIST.map((track) => {
-                    const langs = getLanguagesForTrack(track.id);
-                    return (
+                <div className="flex shrink-0 items-center gap-2 self-start rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground">
+                  <span className="font-semibold text-foreground">{overallProgress.solved}</span>
+                  <span>of {overallProgress.total} solved</span>
+                </div>
+              </motion.div>
+
+              {/* Stages */}
+              <motion.div
+                variants={containerVariants}
+                className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-7"
+              >
+                {trackCards.map(({ track, languages, lessonCount, total, solved }, index) => {
+                  const percent = total > 0 ? Math.round((solved / total) * 100) : 0;
+                  const isComplete = total > 0 && solved >= total;
+                  const ctaLabel = isComplete ? 'Review' : solved > 0 ? 'Continue' : 'Start';
+
+                  return (
+                    <div key={track.id} className="relative">
                       <motion.button
                         variants={itemVariants}
-                        key={track.id}
                         onClick={() => handleSelectTrack(track.id)}
-                        className="group relative overflow-hidden rounded-xl border border-border bg-card text-left transition-all hover:border-primary/50 hover:shadow-sm cursor-pointer flex flex-col justify-between"
+                        title={track.title}
+                        className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border bg-card text-left transition-all hover:border-primary/40 hover:shadow-lg hover:shadow-black/5 cursor-pointer"
                       >
-                        {/* Track Image Cover */}
-                        <div className="relative w-full h-36 overflow-hidden bg-muted/10 border-b border-border/40">
+                        {/* Cover */}
+                        <div className="relative h-40 w-full overflow-hidden">
                           <img
                             src={track.image}
                             alt={track.title}
-                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                           />
-                          {/* Floating Badges */}
-                          <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
-                            <span className="text-[11px] capitalize font-medium px-2 py-0.5 bg-background/90 text-foreground border border-border/60 rounded-md">
-                              {track.level}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/5" />
+
+                          <span className="absolute left-3.5 top-3.5 flex h-7 items-center rounded-full bg-white/95 px-2.5 text-xs font-bold text-black shadow-sm">
+                            Step {index + 1}
+                          </span>
+                          {track.isPro && (
+                            <span className="absolute right-3.5 top-3.5 rounded-full bg-amber-400/95 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-950 shadow-sm">
+                              Pro
                             </span>
-                            {track.isPro && (
-                              <span className="text-[10px] font-semibold px-2 py-0.5 bg-amber-500/15 text-amber-500 dark:text-amber-400 border border-amber-500/30 rounded-md">
-                                Pro
-                              </span>
-                            )}
+                          )}
+
+                          <div className="absolute inset-x-4 bottom-3.5">
+                            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/70">
+                              {track.level}
+                            </p>
+                            <h3 className="text-lg font-semibold leading-tight text-white">
+                              {track.shortTitle}
+                            </h3>
                           </div>
                         </div>
 
-                        {/* Content */}
-                        <div className="p-4 flex flex-col justify-between flex-1">
-                          <div>
-                            <h3 className="font-semibold text-sm sm:text-base mb-1 text-foreground group-hover:text-primary transition-colors line-clamp-1">
-                              {track.title}
-                            </h3>
-                            <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 mb-3">
-                              {track.description}
-                            </p>
-                          </div>
+                        {/* Body */}
+                        <div className="flex flex-1 flex-col p-4 sm:p-5">
+                          <p className="text-sm leading-relaxed text-muted-foreground line-clamp-2">
+                            {track.description}
+                          </p>
 
-                          <div className="pt-3 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground">
-                            <span className="font-medium text-foreground/80">
-                              {langs.length} {langs.length === 1 ? 'Language' : 'Languages'}
-                            </span>
-                            <span className="text-primary font-medium flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                              Start Track
-                              <ArrowRight className="w-3.5 h-3.5" />
-                            </span>
+                          <div className="mt-auto pt-5">
+                            <div className="mb-1.5 flex items-center justify-between text-xs">
+                              <span className="text-muted-foreground">
+                                {solved > 0 ? `${solved} of ${total} solved` : `${total} problems`}
+                              </span>
+                              <span className="font-medium tabular-nums text-foreground">{percent}%</span>
+                            </div>
+                            <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+                              <div
+                                className="h-full rounded-full bg-primary transition-all duration-500"
+                                style={{ width: `${percent}%` }}
+                              />
+                            </div>
+
+                            <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3">
+                              <span className="text-xs text-muted-foreground">
+                                {languages.length} languages · {lessonCount} lessons
+                              </span>
+                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
+                                {ctaLabel}
+                                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </motion.button>
-                    );
-                  })}
-                </motion.div>
-              </div>
-
-              {/* Category 2: Custom Sets (placed cleanly UNDER learning tracks) */}
-              <div className="pt-8 border-t border-border">
-                <motion.div variants={itemVariants} className="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <h2 className="text-lg font-semibold text-foreground">
-                      Custom Practice Sets
-                    </h2>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Create your own targeted problem sets or solve sets shared by the community.
-                    </p>
-                  </div>
-                </motion.div>
-
-                {/* Custom Sets Action Cards */}
-                <motion.div
-                  variants={containerVariants}
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
-                >
-                  {/* Create Custom Set Card */}
-                  <motion.button
-                    variants={itemVariants}
-                    onClick={handleCreateSet}
-                    className="group relative overflow-hidden rounded-lg border border-dashed border-primary/50 bg-card/50 p-6 text-left transition-colors hover:border-primary hover:bg-primary/5 cursor-pointer"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Plus className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-sm mb-1 text-foreground group-hover:text-primary transition-colors">
-                          Create Custom Set
-                        </h3>
-                        <p className="text-xs text-muted-foreground">
-                          Design custom problems and test cases for your study group or class.
-                        </p>
-                      </div>
                     </div>
-                  </motion.button>
-
-                  {/* My Sets Card */}
-                  {hasCustomSets && (
-                    <motion.button
-                      variants={itemVariants}
-                      onClick={handleViewMySets}
-                      className="group relative overflow-hidden rounded-lg border border-border bg-card p-6 text-left transition-colors hover:border-primary/50 hover:shadow-sm cursor-pointer"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                          <BookOpen className="w-5 h-5 text-muted-foreground" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium text-sm mb-1 text-foreground group-hover:text-primary transition-colors">
-                            My Created Sets
-                          </h3>
-                          <p className="text-xs text-muted-foreground">
-                            Manage and review your created problem collections.
-                          </p>
-                          <span className="inline-block mt-3 text-[10px] font-semibold px-2 py-0.5 bg-secondary text-muted-foreground rounded">
-                            {customSets?.length || 0} {customSets?.length === 1 ? 'set' : 'sets'}
-                          </span>
-                        </div>
-                      </div>
-                    </motion.button>
-                  )}
-
-                  {/* Joined Sets Card */}
-                  {recentRooms && recentRooms.length > 0 && (
-                    <motion.button
-                      variants={itemVariants}
-                      onClick={() => navigate('/practice/custom')}
-                      className="group relative overflow-hidden rounded-lg border border-border bg-card p-6 text-left transition-colors hover:border-primary/50 hover:shadow-sm cursor-pointer"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                          <Clock className="w-5 h-5 text-muted-foreground" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium text-sm mb-1 text-foreground group-hover:text-primary transition-colors">
-                            Joined Sets
-                          </h3>
-                          <p className="text-xs text-muted-foreground">
-                            View custom sets you have recently joined and solved.
-                          </p>
-                          <span className="inline-block mt-3 text-[10px] font-semibold px-2 py-0.5 bg-secondary text-muted-foreground rounded">
-                            {recentRooms.length} recent {recentRooms.length === 1 ? 'set' : 'sets'}
-                          </span>
-                        </div>
-                      </div>
-                    </motion.button>
-                  )}
-                </motion.div>
-
-                {/* Community / Public Sets */}
-                {hasPublicSets && (
-                  <motion.div variants={itemVariants} className="space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <h3 className="text-sm font-semibold text-muted-foreground">
-                        Community Sets
-                      </h3>
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        {/* Search */}
-                        <div className="relative">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            placeholder="Search community sets..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-9 w-full sm:w-48 h-8 text-xs bg-secondary/30"
-                          />
-                          {searchQuery && (
-                            <button
-                              onClick={() => setSearchQuery('')}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          )}
-                        </div>
-
-                        {/* Language Filter Dropdown */}
-                        <div className="relative">
-                          <select
-                            value={selectedLanguage}
-                            onChange={(e) => setSelectedLanguage(e.target.value)}
-                            className="appearance-none bg-secondary/30 border border-input rounded-md px-3 pr-8 h-8 text-xs cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary w-full"
-                          >
-                            {languageFilterOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
-                          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-                        </div>
-
-                        {/* Sort Dropdown */}
-                        <div className="relative">
-                          <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                            className="appearance-none bg-secondary/30 border border-input rounded-md px-3 pr-8 h-8 text-xs cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary w-full"
-                          >
-                            {sortOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
-                          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {filteredAndSortedPublicSets.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground text-xs">
-                        {searchQuery || selectedLanguage ? 'No sets match your search criteria.' : 'No public sets available.'}
-                      </div>
-                    ) : (
-                      <motion.div
-                        variants={containerVariants}
-                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-                      >
-                        {filteredAndSortedPublicSets.map((set) => (
-                          <motion.button
-                            variants={itemVariants}
-                            key={set.id}
-                            onClick={() => navigate(`/practice/custom/${set.id}`)}
-                            className="group relative overflow-hidden rounded-lg border border-border bg-card p-4 text-left transition-colors hover:border-primary/50 hover:shadow-sm cursor-pointer"
-                          >
-                            <div className="flex items-start gap-3">
-                              <div className="p-2 bg-primary/10 rounded-lg shrink-0">
-                                <img
-                                  src={`${CDN_BASE}/${set.language === 'c' ? 'c' : set.language === 'csharp' ? 'csharp' : set.language === 'cpp' ? 'cpp' : set.language === 'java' ? 'java' : set.language === 'javascript' ? 'javascript' : set.language === 'typescript' ? 'typescript' : 'python'}.svg`}
-                                  alt=""
-                                  className="w-5 h-5"
-                                />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-medium text-sm truncate group-hover:text-primary transition-colors">
-                                  {set.title}
-                                </h4>
-                                <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                                  {set.description || 'No description'}
-                                </p>
-                                <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                                  <span className="flex items-center gap-1">
-                                    <BookOpen className="h-3 w-3" />
-                                    {set.problem_count} problems
-                                  </span>
-                                  <span>•</span>
-                                  <span className="flex items-center gap-1">
-                                    <Users className="h-3 w-3" />
-                                    {set.owner_username || 'Unknown'}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </motion.button>
-                        ))}
-                      </motion.div>
-                    )}
-                  </motion.div>
-                )}
-              </div>
-            </div>
+                  );
+                })}
+              </motion.div>
+            </>
           ) : (
-            /* LEVEL 2: Language Selection for Selected Track (ONLY languages for this track!) */
+            /* Language selection for the selected track */
             <div>
-              <motion.h2 variants={itemVariants} className="text-lg font-semibold mb-4">
-                Available Languages
-              </motion.h2>
+              <motion.div
+                variants={itemVariants}
+                className="mb-5 flex items-end justify-between gap-4"
+              >
+                <div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-foreground tracking-tight">
+                    Choose a language
+                  </h2>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    Same track, your preferred syntax.
+                  </p>
+                </div>
+                <span className="shrink-0 text-xs text-muted-foreground">
+                  {languageCards.filter(card => card.isAvailable).length} available
+                </span>
+              </motion.div>
 
               <motion.div
                 variants={containerVariants}
-                className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
+                className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
               >
-                {languageCards.map((card) => (
-                  <motion.button
-                    variants={itemVariants}
-                    key={card.id}
-                    onClick={() => card.isAvailable && card.course && onSelectCourse(card.course, activeTrackId)}
-                    disabled={!card.isAvailable}
-                    className={`group relative overflow-hidden rounded-lg border border-border bg-card p-7 text-left transition-colors ${card.isAvailable
-                        ? 'hover:border-primary/50 hover:shadow-sm cursor-pointer'
+                {languageCards.map((card) => {
+                  const percent = card.problemCount > 0
+                    ? Math.round((card.solved / card.problemCount) * 100)
+                    : 0;
+
+                  return (
+                    <motion.button
+                      variants={itemVariants}
+                      key={card.id}
+                      onClick={() => card.isAvailable && card.course && onSelectCourse(card.course, activeTrackId)}
+                      disabled={!card.isAvailable}
+                      className={`group flex flex-col rounded-xl border border-border bg-card p-5 text-left transition-all ${card.isAvailable
+                        ? 'hover:border-primary/40 hover:shadow-md hover:shadow-black/5 cursor-pointer'
                         : 'opacity-50 cursor-not-allowed'
-                      }`}
-                  >
-                    <div className="flex flex-col items-center text-center h-full">
-                      <div className="mb-3 w-12 h-12 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                        <img src={card.icon} alt={card.label} className="w-8 h-8" />
+                        }`}
+                    >
+                      <div className="flex w-full items-start justify-between">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-border/60 bg-secondary/40">
+                          <img src={card.icon} alt={card.label} className="h-7 w-7" />
+                        </div>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground/40 transition-all group-hover:text-primary group-hover:translate-x-0.5" />
                       </div>
-                      <h3 className="font-medium text-base mb-2">{card.label}</h3>
-                      <div className="mt-auto">
-                        <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary/70 rounded">
-                          {card.problemCount} {card.problemCount === 1 ? 'problem' : 'problems'}
+
+                      <h3 className="mt-4 text-base font-semibold text-foreground">
+                        {card.label}
+                      </h3>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        {card.problemCount} problems · {card.lessonCount} lessons
+                      </p>
+
+                      <div className="mt-4 flex w-full items-center gap-2">
+                        <div className="h-1 flex-1 overflow-hidden rounded-full bg-secondary">
+                          <div
+                            className="h-full rounded-full bg-primary transition-all duration-500"
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
+                        <span className="text-[10px] font-medium tabular-nums text-muted-foreground">
+                          {card.solved}/{card.problemCount}
                         </span>
                       </div>
-                    </div>
-                  </motion.button>
-                ))}
+                    </motion.button>
+                  );
+                })}
               </motion.div>
             </div>
           )}

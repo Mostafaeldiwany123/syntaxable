@@ -472,7 +472,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
               <div 
                 ref={scrollContainerRef} 
                 onScroll={handleScroll} 
-                className="flex-1 overflow-y-auto p-4 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-border/60 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent"
+                className="flex-1 overflow-y-auto p-3 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-border/60 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent"
               >
                 {filteredLessons.length > 0 ? (
                   <div className="flex flex-col">
@@ -485,7 +485,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                       return (
                         <div 
                           key={lesson.id} 
-                          className="relative flex gap-4 items-stretch group cursor-pointer"
+                          className="relative flex gap-3 items-stretch group cursor-pointer"
                           onClick={() => {
                             setSelectedLessonId(lesson.id);
                             if (isMobile) {
@@ -494,7 +494,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                           }}
                         >
                           {/* Line & Icon node */}
-                          <div className="flex flex-col items-center shrink-0 w-10">
+                          <div className="flex flex-col items-center shrink-0 w-8">
                             {/* Top connector line */}
                             <div className={`w-0.5 flex-1 transition-all duration-300 ${
                               index === 0 
@@ -505,7 +505,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                             }`} />
                             
                             {/* Icon Node */}
-                            <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-300 z-10 ${
+                            <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300 z-10 ${
                               isSelected
                                 ? 'border-primary bg-primary text-primary-foreground shadow-[0_0_12px_rgba(59,130,246,0.35)] scale-105'
                                 : isLessonCompleted
@@ -514,7 +514,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                                 ? 'border-primary/50 bg-background text-primary'
                                 : 'border-border/80 bg-card text-muted-foreground/60'
                             }`}>
-                              <IconComponent className="w-4 h-4" />
+                              <IconComponent className="w-3.5 h-3.5" />
                             </div>
                             
                             {/* Bottom connector line */}
@@ -528,7 +528,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                           </div>
                           
                           {/* Lesson Text details container */}
-                          <div className={`flex-1 p-4 rounded-xl border transition-all mb-4 ${
+                          <div className={`flex-1 p-3 rounded-lg border transition-all mb-2 ${
                             isSelected
                               ? 'bg-primary/5 border-primary/45 shadow-sm'
                               : 'bg-card/30 border-border/40 hover:bg-card/65 hover:border-border/70'
@@ -550,11 +550,11 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                             </div>
                             
                             {/* Mini progress representation */}
-                            <div className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground">
+                            <div className="mt-2 flex items-center justify-between text-[10px] text-muted-foreground">
                               <span className="font-medium">{progress.completed}/{progress.total} Complete</span>
                               <span>{Math.round(progress.percent)}%</span>
                             </div>
-                            <div className="mt-1.5 h-1 w-full bg-secondary/50 rounded-full overflow-hidden">
+                            <div className="mt-1 h-1 w-full bg-secondary/50 rounded-full overflow-hidden">
                               <div 
                                 className={`h-full transition-all duration-500 ${isLessonCompleted ? 'bg-green-500' : 'bg-primary/80'}`}
                                 style={{ width: `${progress.percent}%` }}
@@ -590,138 +590,107 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -8 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="flex-1 flex flex-col overflow-y-auto p-8"
+                    className="flex-1 flex flex-col overflow-y-auto p-6"
                   >
-                    <div className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl">
-                      {/* Breadcrumb / Category */}
-                      <span className="text-xs font-medium text-primary block mb-2">
-                        Lesson Module Overview
-                      </span>
-                      
+                    <div className="w-full max-w-5xl">
                       {/* Title & Description */}
-                      <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight mb-3">
+                      <span className="text-xs font-medium text-primary block mb-1.5">Lesson Module</span>
+                      <h2 className="text-2xl font-bold text-foreground tracking-tight mb-2">
                         {activeLesson.title}
                       </h2>
-                      <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+                      <p className="text-sm text-muted-foreground leading-relaxed mb-5">
                         {activeLesson.description}
                       </p>
 
-                      {/* Stats Section */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                        <div className="bg-card border border-border/50 rounded-xl p-5 shadow-sm flex flex-col justify-center">
-                          <span className="text-xs text-muted-foreground block mb-1">Solved Challenges</span>
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-3xl font-bold text-foreground">
-                              {activeLessonProgress.completed}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              of {activeLessonProgress.total} completed
-                            </span>
-                          </div>
-                          
-                          <div className="mt-3.5">
-                            <div className="flex justify-between items-center text-[10px] text-muted-foreground mb-1 font-medium">
-                              <span>Completion</span>
-                              <span>{Math.round(activeLessonProgress.percent)}%</span>
-                            </div>
-                            <div className="h-1.5 w-full bg-secondary border border-border/30 rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-primary transition-all duration-500 ease-out"
-                                style={{ width: `${activeLessonProgress.percent}%` }}
-                              />
-                            </div>
+                      {/* Stats Row */}
+                      <div className="flex items-center gap-4 mb-5">
+                        <div className="flex items-center gap-2 bg-card border border-border/50 rounded-lg px-3 py-2">
+                          <span className="text-xs text-muted-foreground">Progress</span>
+                          <span className="text-sm font-bold text-foreground">
+                            {activeLessonProgress.completed}/{activeLessonProgress.total}
+                          </span>
+                          <div className="w-16 h-1 bg-secondary rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-primary transition-all duration-500"
+                              style={{ width: `${activeLessonProgress.percent}%` }}
+                            />
                           </div>
                         </div>
-
-                        <div className="bg-card border border-border/50 rounded-xl p-5 shadow-sm flex flex-col justify-between">
-                          <div>
-                            <span className="text-xs text-muted-foreground block mb-2">Core Concepts Covered</span>
-                            <div className="flex flex-wrap gap-1.5">
-                              {activeLesson.topics && activeLesson.topics.length > 0 ? (
-                                activeLesson.topics.map((topic, i) => (
-                                  <Badge key={i} variant="secondary" className="text-[10px] px-2.5 py-0.5 rounded font-normal bg-secondary/80 text-foreground border border-border/10">
-                                    {topic}
-                                  </Badge>
-                                ))
-                              ) : (
-                                <span className="text-xs text-muted-foreground/60 italic">No custom topics tagged</span>
-                              )}
-                            </div>
+                        {activeLesson.topics && activeLesson.topics.length > 0 && (
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {activeLesson.topics.map((topic, i) => (
+                              <Badge key={i} variant="secondary" className="text-[10px] px-2 py-0.5 rounded font-normal">
+                                {topic}
+                              </Badge>
+                            ))}
                           </div>
-                        </div>
-                      </div>
-
-                      {/* Problems header */}
-                      <div className="flex items-center justify-between mb-4 border-b border-border/40 pb-2">
-                        <h3 className="font-semibold text-sm text-foreground">
-                          Problems to Solve
-                        </h3>
-                        <span className="text-xs text-muted-foreground">{activeLesson.problems.length} Challenges</span>
+                        )}
                       </div>
 
                       {/* Problems List */}
-                      <div className="space-y-3">
-                        {sortedProblems.map((problem) => {
-                          const isSolved = completedProblems.has(problem.id);
-                          const localCode = localStorage.getItem(`practice-code-${problem.id}`);
-                          const hasStarted = !isSolved && localCode !== null && localCode !== problem.starterCode;
-                          const buttonText = isSolved ? "Review" : hasStarted ? "Continue" : "Solve";
-                          const isLocked = isDataStructures && !isPro;
-                          
-                          return (
-                            <div 
-                              key={problem.id}
-                              onClick={() => isLocked ? setIsUpgradeOpen(true) : onSelectProblem(problem)}
-                              className="group flex items-center justify-between p-4 rounded-xl border border-border/40 bg-card/30 hover:border-primary/30 hover:bg-card/70 transition-all duration-200 cursor-pointer"
-                            >
-                              <div className="flex items-center gap-3.5 min-w-0">
-                                {isSolved ? (
-                                  <div className="w-5.5 h-5.5 rounded-full bg-green-500/10 border border-green-500/30 flex items-center justify-center shrink-0">
-                                    <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
-                                  </div>
-                                ) : (
-                                  <div className="w-5.5 h-5.5 rounded-full border border-muted-foreground/25 flex items-center justify-center shrink-0">
-                                    <Circle className="w-3.5 h-3.5 text-muted-foreground/25" />
-                                  </div>
-                                )}
-                                
-                                <div className="min-w-0">
-                                  <h4 className="font-semibold text-sm text-foreground truncate group-hover:text-primary transition-colors">
-                                    {problem.title}
-                                  </h4>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <DifficultyBadge difficulty={problem.difficulty} />
-                                    {problem.topics && problem.topics.length > 0 && (
-                                      <>
-                                        <span className="text-[10px] text-muted-foreground">•</span>
-                                        <span className="text-xs text-muted-foreground truncate max-w-[280px]">
-                                          {problem.topics.join(', ')}
-                                        </span>
-                                      </>
-                                    )}
+                      <div className="border border-border rounded-xl bg-card overflow-hidden">
+                        <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-secondary/30">
+                          <h3 className="font-semibold text-xs text-foreground">Problems</h3>
+                          <span className="text-[10px] text-muted-foreground">{activeLesson.problems.length} challenges</span>
+                        </div>
+                        <div className="divide-y divide-border/50">
+                          {sortedProblems.map((problem) => {
+                            const isSolved = completedProblems.has(problem.id);
+                            const localCode = localStorage.getItem(`practice-code-${problem.id}`);
+                            const hasStarted = !isSolved && localCode !== null && localCode !== problem.starterCode;
+                            const buttonText = isSolved ? "Review" : hasStarted ? "Continue" : "Solve";
+                            const isLocked = isDataStructures && !isPro;
+                            
+                            return (
+                              <div 
+                                key={problem.id}
+                                onClick={() => isLocked ? setIsUpgradeOpen(true) : onSelectProblem(problem)}
+                                className="flex items-center justify-between px-4 py-3 hover:bg-secondary/20 transition-colors cursor-pointer"
+                              >
+                                <div className="flex items-center gap-3 min-w-0">
+                                  {isSolved ? (
+                                    <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                                  ) : (
+                                    <Circle className="w-4 h-4 text-muted-foreground/30 shrink-0" />
+                                  )}
+                                  <div className="min-w-0">
+                                    <h4 className="font-medium text-sm text-foreground truncate">
+                                      {problem.title}
+                                    </h4>
+                                    <div className="flex items-center gap-1.5 mt-0.5">
+                                      <DifficultyBadge difficulty={problem.difficulty} />
+                                      {problem.topics && problem.topics.length > 0 && (
+                                        <>
+                                          <span className="text-[10px] text-muted-foreground">·</span>
+                                          <span className="text-xs text-muted-foreground truncate max-w-[200px]">
+                                            {problem.topics.join(', ')}
+                                          </span>
+                                        </>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
+                                
+                                <Button
+                                  size="sm"
+                                  variant={isSolved ? "ghost" : "default"}
+                                  onClick={(e) => {
+                                    if (isLocked) {
+                                      e.stopPropagation();
+                                      setIsUpgradeOpen(true);
+                                    } else {
+                                      onSelectProblem(problem);
+                                    }
+                                  }}
+                                  className={`h-7 text-[10px] gap-1 px-2.5 shrink-0 ${isLocked ? 'opacity-40 hover:opacity-60 cursor-pointer' : ''}`}
+                                >
+                                  <span>{buttonText}</span>
+                                  <Play className="w-2.5 h-2.5 fill-current" />
+                                </Button>
                               </div>
-                              
-                              <Button
-                                size="sm"
-                                variant={isSolved ? "outline" : "default"}
-                                onClick={(e) => {
-                                  if (isLocked) {
-                                    e.stopPropagation();
-                                    setIsUpgradeOpen(true);
-                                  } else {
-                                    onSelectProblem(problem);
-                                  }
-                                }}
-                                className={`ml-4 gap-1.5 px-3 shrink-0 shadow-sm ${isLocked ? 'opacity-40 hover:opacity-60 cursor-pointer' : ''}`}
-                              >
-                                <span className="text-xs font-semibold">{buttonText}</span>
-                                <Play className="w-3 h-3 fill-current opacity-80" />
-                              </Button>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
                   </motion.div>
