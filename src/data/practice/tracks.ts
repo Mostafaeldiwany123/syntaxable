@@ -33,9 +33,16 @@ import { oopPart4 as cppOopPart4 } from './cpp/lessons/12-oop-part-4';
 import { oopPart5 as cppOopPart5 } from './cpp/lessons/13-oop-part-5';
 import { oopPart6 as cppOopPart6 } from './cpp/lessons/14-oop-part-6';
 import { templates as cppTemplates } from './cpp/lessons/15-templates';
-import { arrayLists as cppArrayLists } from './cpp/lessons/16-array-lists';
-import { vectors as cppVectors } from './cpp/lessons/17-vectors';
-import { linkedLists as cppLinkedLists } from './cpp/lessons/18-linked-lists';
+import { arrayLists as cppArrayLists } from './cpp/lessons/23-array-lists';
+import { sllFoundations as cppSllFoundations } from './cpp/lessons/24-sll-foundations';
+import { sllOperations as cppSllOperations } from './cpp/lessons/25-sll-operations';
+import { complexityStructures as cppComplexityStructures } from './cpp/lessons/26-complexity-structures';
+import { complexityBounds as cppComplexityBounds } from './cpp/lessons/27-complexity-bounds';
+import { dllCircular as cppDllCircular } from './cpp/lessons/28-dll-circular';
+import { stacks as cppStacks } from './cpp/lessons/29-stacks';
+import { mixedReview as cppMixedReview } from './cpp/lessons/30-mixed-review';
+import { queues as cppQueues } from './cpp/lessons/31-queues';
+import { priorityQueues as cppPriorityQueues } from './cpp/lessons/32-priority-queues';
 
 // Python Lessons
 import { basicsPart1 as pyBasics1 } from './python/lessons/01-basics-part-1';
@@ -122,7 +129,7 @@ export const TRACK_LIST: TrackMetadata[] = [
     id: 'data-structures',
     title: 'Data Structures',
     shortTitle: 'Data Structures',
-    description: 'Learn memory structures, pointer references, node links, dynamic arrays, and foundational data structures.',
+    description: 'Implement array lists, singly, doubly, and circular linked lists, analyze complexity, and build stacks, queues, and priority queues.',
     icon: 'boxes',
     image: '/imgs/tracks/track-datastructures.jpg',
     level: 'Advanced',
@@ -224,8 +231,15 @@ const trackLessonMap: Record<TrackId, Record<string, Lesson[]>> = {
   'data-structures': {
     cpp: [
       cppArrayLists,
-      cppVectors,
-      cppLinkedLists,
+      cppSllFoundations,
+      cppSllOperations,
+      cppComplexityStructures,
+      cppComplexityBounds,
+      cppDllCircular,
+      cppStacks,
+      cppMixedReview,
+      cppQueues,
+      cppPriorityQueues,
     ],
     python: [
       pyDs1,

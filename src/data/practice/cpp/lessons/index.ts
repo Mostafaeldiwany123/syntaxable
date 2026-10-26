@@ -20,9 +20,16 @@ import { oopPart4 } from './12-oop-part-4';
 import { oopPart5 } from './13-oop-part-5';
 import { oopPart6 } from './14-oop-part-6';
 import { templates } from './15-templates';
-import { arrayLists } from './16-array-lists';
-import { vectors } from './17-vectors';
-import { linkedLists } from './18-linked-lists';
+import { arrayLists } from './23-array-lists';
+import { sllFoundations } from './24-sll-foundations';
+import { sllOperations } from './25-sll-operations';
+import { complexityStructures } from './26-complexity-structures';
+import { complexityBounds } from './27-complexity-bounds';
+import { dllCircular } from './28-dll-circular';
+import { stacks } from './29-stacks';
+import { mixedReview } from './30-mixed-review';
+import { queues } from './31-queues';
+import { priorityQueues } from './32-priority-queues';
 import type { Lesson } from '../../types';
 
 export const cppLessons: Lesson[] = [
@@ -49,6 +56,13 @@ export const cppLessons: Lesson[] = [
   oopPart6,
   templates,
   arrayLists,
-  vectors,
-  linkedLists,
+  sllFoundations,
+  sllOperations,
+  complexityStructures,
+  complexityBounds,
+  dllCircular,
+  stacks,
+  mixedReview,
+  queues,
+  priorityQueues,
 ].sort((a, b) => a.order - b.order);
